@@ -26,17 +26,19 @@ def lookup_user_name(user_id):
     return None
   return all_users[user_id]["name"]
 
-if __name__ == "__main__":
+def connect():
   if not client.rtm_connect(with_team_state=False):
     print("Could not connect to Slack!")
     exit(1)
 
   print("Connected!")
 
+def init():
   bot_id = client.api_call("auth.test")["user_id"]
   print("Tourney bot ID: {}".format(bot_id))
 
   # Find the channel ID of designated channel name.
+  global all_channels
   all_channels = get_channels()
   channel_id = lookup_channel_name(CHANNEL_NAME)
   if channel_id is None:
@@ -48,3 +50,7 @@ if __name__ == "__main__":
   for user in get_users():
     all_users[user["id"]] = user
   print("Detected {} users..".format(len(all_users)))
+
+if __name__ == "__main__":
+  connect()
+  init()
