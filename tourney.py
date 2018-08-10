@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 import os
+import time
+import re
 from slackclient import SlackClient
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 bot_id = None
+channel_id = None
 all_channels = None
 all_users = {}
 
+DEBUG = False
 CHANNEL_NAME = "foosball"
+RTM_READ_DELAY = 1 # seconds
+COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 
 def get_channels():
   return client.api_call("channels.list", exclude_archived=1, exclude_members=1)["channels"]
@@ -23,8 +29,35 @@ def get_users():
 
 def lookup_user_name(user_id):
   if not user_id in all_users:
-    return None
+    return user_id
   return all_users[user_id]["name"]
+
+def parse_commands(events):
+  for event in events:
+    if event["type"] == "message" and not "subtype" in event:
+      msg = event["text"]
+      m = re.search(COMMAND_REGEX, msg)
+      if m:
+        return event["user"], m.group(1).lower(), m.group(2).strip()
+  return None, None, None
+
+def handle_command(user_id, command, args=None):
+  response = None
+  user_name = lookup_user_name(user_id)
+  command = command.lower()
+
+  if command.startswith("help"):
+    response = """
+As the foosball bot, I accept the following commands:
+  *!help* - Shows this text.
+  *!join* - Join game of the day.
+"""
+  elif command.startswith("join"):
+    # TODO: Actually record this info!
+    response = "{}, you've joined today's game!".format(user_name)
+
+  if response is not None:
+    client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def connect():
   if not client.rtm_connect(with_team_state=False):
@@ -40,6 +73,7 @@ def init():
   # Find the channel ID of designated channel name.
   global all_channels
   all_channels = get_channels()
+  global channel_id
   channel_id = lookup_channel_name(CHANNEL_NAME)
   if channel_id is None:
     print("Could not find ID for channel: {}".format(CHANNEL_NAME))
@@ -51,6 +85,18 @@ def init():
     all_users[user["id"]] = user
   print("Detected {} users..".format(len(all_users)))
 
+def repl():
+  print("Entering REPL..")
+  while True:
+    events = client.rtm_read()
+    if DEBUG:
+      print(events)
+    user_id, command, args = parse_commands(events)
+    if user_id and command:
+      handle_command(user_id, command, args)
+    time.sleep(RTM_READ_DELAY)
+
 if __name__ == "__main__":
   connect()
   init()
+  repl()
