@@ -5,6 +5,7 @@ from slackclient import SlackClient
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 bot_id = None
 all_channels = None
+all_users = {}
 
 CHANNEL_NAME = "foosball"
 
@@ -16,6 +17,14 @@ def lookup_channel_name(name):
     if channel["name"] == name:
       return channel["id"]
   return None
+
+def get_users():
+  return client.api_call("users.list")["members"]
+
+def lookup_user_name(user_id):
+  if not user_id in all_users:
+    return None
+  return all_users[user_id]["name"]
 
 if __name__ == "__main__":
   if not client.rtm_connect(with_team_state=False):
@@ -34,3 +43,8 @@ if __name__ == "__main__":
     print("Could not find ID for channel: {}".format(CHANNEL_NAME))
     exit(1)
   print("#{} channel ID: {}".format(CHANNEL_NAME, channel_id))
+
+  # Map user IDs to their info.
+  for user in get_users():
+    all_users[user["id"]] = user
+  print("Detected {} users..".format(len(all_users)))
