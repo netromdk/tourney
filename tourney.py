@@ -9,6 +9,7 @@ bot_id = None
 channel_id = None
 all_channels = None
 all_users = {}
+participants = []
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
@@ -50,11 +51,31 @@ def handle_command(user_id, command, args=None):
     response = """
 As the foosball bot, I accept the following commands:
   *!help* - Shows this text.
+  *!list* - List users that joined game of the day.
   *!join* - Join game of the day.
+  *!leave* - Leave game of the day.
 """
+  elif command.startswith("list"):
+    amount = len(participants)
+    if amount == 0:
+      response = "No participants have joined yet!"
+    else:
+      response = "List of {} participants for game of the day:".format(amount)
+      for uid in participants:
+        name = lookup_user_name(uid)
+        response += "\n{}".format(name)
   elif command.startswith("join"):
-    # TODO: Actually record this info!
-    response = "{}, you've joined today's game!".format(user_name)
+    if user_id not in participants:
+      participants.append(user_id)
+      response = "{}, you've joined today's game!".format(user_name)
+    else:
+      response = "{}, you've _already_ joined today's game!".format(user_name)
+  elif command.startswith("leave"):
+    if user_id not in participants:
+      response = "{}, you've _not_ joined today's game!".format(user_name)
+    else:
+      participants.remove(user_id)
+      response = "{}, you've left today's game!".format(user_name)
 
   if response is not None:
     client.api_call("chat.postMessage", channel=channel_id, text=response)
