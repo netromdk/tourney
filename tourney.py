@@ -14,7 +14,7 @@ participants = []
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
-RTM_READ_DELAY = 1 # seconds
+RTM_READ_DELAY = 0.5 # seconds
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 
 def get_channels():
