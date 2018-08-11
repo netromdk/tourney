@@ -73,6 +73,23 @@ def create_schedule(amount):
     matches += [(i,i+1,1), (i,i+2,1), (i+1,i+2,1)]
   return matches
 
+def create_matches():
+  response = "<!channel>\n"
+  teams = create_teams()
+  if teams is None:
+    response += "Could not create teams! There must be at least 4 participants!"
+  else:
+    response += "<!channel>\n{} teams: ".format(len(teams))
+    for i in range(len(teams)):
+      fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
+      response += "\n\t*T{}*: {}".format(i, fmt)
+    sched = create_schedule(len(teams))
+    response += "\n\nSchedule"
+    for match in sched:
+      plural = "s" if match[2] > 1 else ""
+      response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
+  client.api_call("chat.postMessage", channel=channel_id, text=response)
+
 def parse_commands(events):
   cmds = []
   for event in events:
@@ -96,7 +113,6 @@ As the foosball bot, I accept the following commands:
   *!list* - List users that joined game of the day.
   *!join* - Join game of the day.
   *!leave* - Leave game of the day.
-  *!create* - Create teams for game of the day.
 """
   elif command.startswith("list"):
     amount = len(participants)
@@ -119,20 +135,6 @@ As the foosball bot, I accept the following commands:
     else:
       participants.remove(user_id)
       response = "{}, you've left today's game!".format(user_name)
-  elif command.startswith("create"):
-    teams = create_teams()
-    if teams is None:
-      response = "Could not create teams! There must be at least 4 participants!"
-    else:
-      response = "<!channel>\n{} teams: ".format(len(teams))
-      for i in range(len(teams)):
-        fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
-        response += "\n\t*T{}*: {}".format(i, fmt)
-      sched = create_schedule(len(teams))
-      response += "\n\nSchedule"
-      for match in sched:
-        plural = "s" if match[2] > 1 else ""
-        response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
 
   if response is not None:
     client.api_call("chat.postMessage", channel=channel_id, text=response)
@@ -150,7 +152,7 @@ def scheduled_actions():
   if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
      not midday_announce:
     midday_announce = True
-    handle_command(Command(bot_id, "create"))
+    create_matches()
 
 def connect():
   if not client.rtm_connect(with_team_state=False):
