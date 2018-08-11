@@ -48,19 +48,29 @@ def create_teams():
     del(teams[-1])
   return teams
 
+class Command:
+  """Command encapsulates a command issued by a user and with optional arguments."""
+
+  def __init__(self, user_id, command, args=None):
+    self.user_id = user_id;
+    self.command = command.strip().lower();
+    self.args = args;
+
 def parse_commands(events):
+  cmds = []
   for event in events:
     if event["type"] == "message" and not "subtype" in event:
       msg = event["text"]
       m = re.search(COMMAND_REGEX, msg)
       if m:
-        return event["user"], m.group(1).lower(), m.group(2).strip()
-  return None, None, None
+        cmds.append(Command(event["user"], m.group(1), m.group(2).strip()))
+  return cmds
 
-def handle_command(user_id, command, args=None):
+def handle_command(cmd):
   response = None
+  user_id = cmd.user_id
   user_name = lookup_user_name(user_id)
-  command = command.lower()
+  command = cmd.command
 
   if command.startswith("help"):
     response = """
@@ -98,7 +108,7 @@ As the foosball bot, I accept the following commands:
       response = "Could not create teams! There must be at least 4 participants!"
     else:
       # TODO: create playing schedule from teams!
-      response = "Teams: "
+      response = "{} teams: ".format(len(teams))
       for i in range(len(teams)):
         response += "\nT{}: {}".format(i, [lookup_user_name(uid) for uid in teams[i]])
 
@@ -137,9 +147,8 @@ def repl():
     events = client.rtm_read()
     if DEBUG:
       print(events)
-    user_id, command, args = parse_commands(events)
-    if user_id and command:
-      handle_command(user_id, command, args)
+    for cmd in parse_commands(events):
+      handle_command(cmd)
     time.sleep(RTM_READ_DELAY)
 
 if __name__ == "__main__":
