@@ -143,6 +143,11 @@ def scheduled_actions():
   """Execute actions at scheduled times."""
   global morning_announce, midday_announce
   now = datetime.today()
+
+  # Ignore on saturdays and sundays.
+  if now.weekday() >= 5:
+    return
+
   h = now.hour
   m = now.minute
   if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and not morning_announce:
