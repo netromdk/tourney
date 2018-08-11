@@ -1,6 +1,7 @@
 import os
 import time
 import re
+from datetime import datetime
 from random import shuffle
 from slackclient import SlackClient
 
@@ -12,11 +13,13 @@ channel_id = None
 all_channels = None
 all_users = {}
 participants = []
+morning_announce = False
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
 RTM_READ_DELAY = 0.5 # seconds
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
+MORNING_ANNOUNCE_HOUR = 9
 
 def get_channels():
   return client.api_call("channels.list", exclude_archived=1, exclude_members=1)["channels"]
@@ -131,6 +134,16 @@ As the foosball bot, I accept the following commands:
   if response is not None:
     client.api_call("chat.postMessage", channel=channel_id, text=response)
 
+def scheduled_actions():
+  """Execute actions at scheduled times."""
+  global morning_announce
+  now = datetime.today()
+  h = now.hour
+  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and not morning_announce:
+    morning_announce = True
+    client.api_call("chat.postMessage", channel=channel_id,
+      text="<!channel> Remember to join today's game before 11:50 by using '!join'.")
+
 def connect():
   if not client.rtm_connect(with_team_state=False):
     print("Could not connect to Slack!")
@@ -160,6 +173,7 @@ def init():
 def repl():
   print("Entering REPL..")
   while True:
+    scheduled_actions()
     events = client.rtm_read()
     if DEBUG:
       print(events)
