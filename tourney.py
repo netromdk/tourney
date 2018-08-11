@@ -2,6 +2,7 @@
 import os
 import time
 import re
+from random import shuffle
 from slackclient import SlackClient
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
@@ -33,6 +34,20 @@ def lookup_user_name(user_id):
     return user_id
   return all_users[user_id]["name"]
 
+def create_teams():
+  amount = len(participants)
+  if amount < 4:
+    return None
+  lst = participants
+  for i in range(3):
+    shuffle(lst)
+  teams = [lst[i:i+2] for i in range(0, amount, 2)]
+  # Make last team of three persons if not even number.
+  if amount % 2 != 0:
+    teams[-2].append(teams[-1][0])
+    del(teams[-1])
+  return teams
+
 def parse_commands(events):
   for event in events:
     if event["type"] == "message" and not "subtype" in event:
@@ -54,6 +69,7 @@ As the foosball bot, I accept the following commands:
   *!list* - List users that joined game of the day.
   *!join* - Join game of the day.
   *!leave* - Leave game of the day.
+  *!create* - Create teams for game of the day.
 """
   elif command.startswith("list"):
     amount = len(participants)
@@ -76,6 +92,15 @@ As the foosball bot, I accept the following commands:
     else:
       participants.remove(user_id)
       response = "{}, you've left today's game!".format(user_name)
+  elif command.startswith("create"):
+    teams = create_teams()
+    if teams is None:
+      response = "Could not create teams! There must be at least 4 participants!"
+    else:
+      # TODO: create playing schedule from teams!
+      response = "Teams: "
+      for i in range(len(teams)):
+        response += "\nT{}: {}".format(i, [lookup_user_name(uid) for uid in teams[i]])
 
   if response is not None:
     client.api_call("chat.postMessage", channel=channel_id, text=response)
