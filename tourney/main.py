@@ -14,12 +14,15 @@ all_channels = None
 all_users = {}
 participants = []
 morning_announce = False
+midday_announce = False
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
 RTM_READ_DELAY = 0.5 # seconds
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 MORNING_ANNOUNCE_HOUR = 9
+MIDDAY_ANNOUNCE_HOUR = 11
+MIDDAY_ANNOUNCE_MINUTE = 50
 
 def get_channels():
   return client.api_call("channels.list", exclude_archived=1, exclude_members=1)["channels"]
@@ -121,7 +124,7 @@ As the foosball bot, I accept the following commands:
     if teams is None:
       response = "Could not create teams! There must be at least 4 participants!"
     else:
-      response = "{} teams: ".format(len(teams))
+      response = "<!channel>\n{} teams: ".format(len(teams))
       for i in range(len(teams)):
         fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
         response += "\n\t*T{}*: {}".format(i, fmt)
@@ -136,13 +139,18 @@ As the foosball bot, I accept the following commands:
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
-  global morning_announce
+  global morning_announce, midday_announce
   now = datetime.today()
   h = now.hour
+  m = now.minute
   if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and not morning_announce:
     morning_announce = True
     client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using '!join'.")
+  if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
+     not midday_announce:
+    midday_announce = True
+    handle_command(Command(bot_id, "create"))
 
 def connect():
   if not client.rtm_connect(with_team_state=False):
