@@ -49,6 +49,24 @@ def create_teams():
     del(teams[-1])
   return teams
 
+def pick_pairs(amount):
+  """Picks non-overlapping team pairs of 2 rounds."""
+  return [(i,i+1,2) for i in range(0, amount, 2)]
+
+def create_schedule(amount):
+  """Takes amount of teams to schedule for."""
+  matches = []
+  if amount % 2 == 0:
+    matches = pick_pairs(amount)
+  else:
+    twoRoundMathces = amount - 3
+    if twoRoundMathces > 0:
+      matches = pick_pairs(twoRoundMathces)
+    # Add last 3 matches of 1 round each.
+    i = twoRoundMathces
+    matches += [(i,i+1,1), (i,i+2,1), (i+1,i+2,1)]
+  return matches
+
 def parse_commands(events):
   cmds = []
   for event in events:
@@ -100,10 +118,15 @@ As the foosball bot, I accept the following commands:
     if teams is None:
       response = "Could not create teams! There must be at least 4 participants!"
     else:
-      # TODO: create playing schedule from teams!
       response = "{} teams: ".format(len(teams))
       for i in range(len(teams)):
-        response += "\nT{}: {}".format(i, [lookup_user_name(uid) for uid in teams[i]])
+        fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
+        response += "\n\t*T{}*: {}".format(i, fmt)
+      sched = create_schedule(len(teams))
+      response += "\n\nSchedule"
+      for match in sched:
+        plural = "s" if match[2] > 1 else ""
+        response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
 
   if response is not None:
     client.api_call("chat.postMessage", channel=channel_id, text=response)
