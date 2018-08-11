@@ -79,7 +79,7 @@ def create_matches():
   if teams is None:
     response += "Could not create teams! There must be at least 4 participants!"
   else:
-    response += "<!channel>\n{} teams: ".format(len(teams))
+    response += "{} teams: ".format(len(teams))
     for i in range(len(teams)):
       fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
       response += "\n\t*T{}*: {}".format(i, fmt)
@@ -88,6 +88,7 @@ def create_matches():
     for match in sched:
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
+    participants.clear()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def parse_commands(events):
