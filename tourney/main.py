@@ -4,6 +4,8 @@ import re
 from random import shuffle
 from slackclient import SlackClient
 
+from .command import Command
+
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 bot_id = None
 channel_id = None
@@ -46,14 +48,6 @@ def create_teams():
     teams[-2].append(teams[-1][0])
     del(teams[-1])
   return teams
-
-class Command:
-  """Command encapsulates a command issued by a user and with optional arguments."""
-
-  def __init__(self, user_id, command, args=None):
-    self.user_id = user_id;
-    self.command = command.strip().lower();
-    self.args = args;
 
 def parse_commands(events):
   cmds = []
