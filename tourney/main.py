@@ -111,10 +111,10 @@ def handle_command(cmd):
   if command.startswith("help"):
     response = """
 As the foosball bot, I accept the following commands:
-  *!help* - Shows this text.
-  *!list* - List users that joined game of the day.
-  *!join* - Join game of the day.
-  *!leave* - Leave game of the day.
+  `!help` - Shows this text.
+  `!list` - List users that joined game of the day.
+  `!join` - Join game of the day.
+  `!leave` - Leave game of the day.
 """
   elif command.startswith("list"):
     ephemeral = False
@@ -139,11 +139,13 @@ As the foosball bot, I accept the following commands:
       participants.remove(user_id)
       response = "{}, you've left today's game!".format(user_name)
 
-  if response is not None:
-    if ephemeral:
-      client.api_call("chat.postEphemeral", channel=channel_id, text=response, user=user_id)
-    else:
-      client.api_call("chat.postMessage", channel=channel_id, text=response)
+  if response is None:
+    response = "Unknown command! Try `!help` for supported commands."
+
+  if ephemeral:
+    client.api_call("chat.postEphemeral", channel=channel_id, text=response, user=user_id)
+  else:
+    client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
@@ -159,7 +161,7 @@ def scheduled_actions():
   if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and not morning_announce:
     morning_announce = True
     client.api_call("chat.postMessage", channel=channel_id,
-      text="<!channel> Remember to join today's game before 11:50 by using '!join'.")
+      text="<!channel> Remember to join today's game before 11:50 by using `!join`.")
   if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
      not midday_announce:
     midday_announce = True
