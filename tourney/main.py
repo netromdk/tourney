@@ -106,6 +106,7 @@ def handle_command(cmd):
   user_id = cmd.user_id
   user_name = lookup_user_name(user_id)
   command = cmd.command
+  ephemeral = True
 
   if command.startswith("help"):
     response = """
@@ -116,6 +117,7 @@ As the foosball bot, I accept the following commands:
   *!leave* - Leave game of the day.
 """
   elif command.startswith("list"):
+    ephemeral = False
     amount = len(participants)
     if amount == 0:
       response = "No participants have joined yet!"
@@ -138,7 +140,10 @@ As the foosball bot, I accept the following commands:
       response = "{}, you've left today's game!".format(user_name)
 
   if response is not None:
-    client.api_call("chat.postMessage", channel=channel_id, text=response)
+    if ephemeral:
+      client.api_call("chat.postEphemeral", channel=channel_id, text=response, user=user_id)
+    else:
+      client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
