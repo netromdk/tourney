@@ -13,7 +13,7 @@ channel_id = None
 all_channels = None
 all_users = {}
 participants = []
-morning_announce = False
+morning_announce = None # Will contain ts of announcement message.
 midday_announce = False
 
 DEBUG = False
@@ -23,6 +23,8 @@ COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 MORNING_ANNOUNCE_HOUR = 9
 MIDDAY_ANNOUNCE_HOUR = 11
 MIDDAY_ANNOUNCE_MINUTE = 50
+POSITIVE_REACTIONS = ["+1", "the_horns", "metal", "raised_hands", "ok", "ok_hand"]
+NEGATIVE_REACTIONS = ["-1", "middle_finger"]
 
 def get_channels():
   return client.api_call("channels.list", exclude_archived=1, exclude_members=1)["channels"]
@@ -91,15 +93,28 @@ def create_matches():
     participants.clear()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
-def parse_commands(events):
-  cmds = []
+def parse_events(events):
   for event in events:
-    if event["type"] == "message" and not "subtype" in event:
+    event_type = event["type"]
+
+    # Handle commands.
+    if event_type == "message" and not "subtype" in event:
       msg = event["text"].strip()
       m = re.match(COMMAND_REGEX, msg)
       if m:
-        cmds.append(Command(event["user"], m.group(1), m.group(2).strip()))
-  return cmds
+        handle_command(Command(event["user"], m.group(1), m.group(2).strip()))
+
+    # Adding a positive reaction to morning announce message will join game, negative will leave
+    # game, and removing reaction will do the opposite action.
+    elif event_type == "reaction_added" or event_type == "reaction_removed":
+      added = (event_type == "reaction_added")
+      pos = (event["reaction"] in POSITIVE_REACTIONS)
+      neg = (event["reaction"] in NEGATIVE_REACTIONS)
+      if event["item"]["ts"] == morning_announce:
+        if (added and pos) or (not added and neg):
+          handle_command(Command(event["user"], "join"))
+        elif (added and neg) or (not added and pos):
+          handle_command(Command(event["user"], "leave"))
 
 def handle_command(cmd):
   response = None
@@ -158,10 +173,11 @@ def scheduled_actions():
 
   h = now.hour
   m = now.minute
-  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and not morning_announce:
-    morning_announce = True
-    client.api_call("chat.postMessage", channel=channel_id,
-      text="<!channel> Remember to join today's game before 11:50 by using `!join`.")
+  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and morning_announce is None:
+    resp = client.api_call("chat.postMessage", channel=channel_id,
+      text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
+           "reaction to this message!")
+    morning_announce = resp["ts"]
   if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
      not midday_announce:
     midday_announce = True
@@ -200,8 +216,7 @@ def repl():
     events = client.rtm_read()
     if DEBUG:
       print(events)
-    for cmd in parse_commands(events):
-      handle_command(cmd)
+    parse_events(events)
     time.sleep(RTM_READ_DELAY)
 
 def start_tourney():
