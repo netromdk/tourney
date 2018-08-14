@@ -84,7 +84,7 @@ def create_matches():
       fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
       response += "\n\t*T{}*: {}".format(i, fmt)
     sched = create_schedule(len(teams))
-    response += "\n\nSchedule"
+    response += "\n\nSchedule:"
     for match in sched:
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
