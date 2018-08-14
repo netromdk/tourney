@@ -95,8 +95,8 @@ def parse_commands(events):
   cmds = []
   for event in events:
     if event["type"] == "message" and not "subtype" in event:
-      msg = event["text"]
-      m = re.search(COMMAND_REGEX, msg)
+      msg = event["text"].strip()
+      m = re.match(COMMAND_REGEX, msg)
       if m:
         cmds.append(Command(event["user"], m.group(1), m.group(2).strip()))
   return cmds
