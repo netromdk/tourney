@@ -204,20 +204,21 @@ def connect():
   print("Connected!")
 
 def init():
-  # TODO: Only query info if unset! like if bot id is known then don't query it!
   state = State.get()
-  state.set_bot_id(client.api_call("auth.test")["user_id"])
+  if state.bot_id() is None:
+    state.set_bot_id(client.api_call("auth.test")["user_id"])
   print("Tourney bot ID: {}".format(state.bot_id()))
 
   # Find the channel ID of designated channel name.
-  global all_channels
-  all_channels = get_channels()
-  channel_id = lookup_channel_name(CHANNEL_NAME)
-  if channel_id is None:
-    print("Could not find ID for channel: {}".format(CHANNEL_NAME))
-    exit(1)
-  state.set_channel_id(channel_id)
-  print("#{} channel ID: {}".format(CHANNEL_NAME, channel_id))
+  if state.channel_id() is None:
+    global all_channels
+    all_channels = get_channels()
+    channel_id = lookup_channel_name(CHANNEL_NAME)
+    if channel_id is None:
+      print("Could not find ID for channel: {}".format(CHANNEL_NAME))
+      exit(1)
+    state.set_channel_id(channel_id)
+  print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
 
   # Map user IDs to their info.
   for user in get_users():
