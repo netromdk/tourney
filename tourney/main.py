@@ -168,16 +168,25 @@ def scheduled_actions():
   m = now.minute
   state = State.get()
   channel_id = state.channel_id()
+
+  # Morning announcement for participants to join game.
   if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and \
      state.morning_announce() is None:
     resp = client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
            "reaction to this message!")
     state.set_morning_announce(resp["ts"])
-  if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
-     not state.midday_announce():
+    state.save()
+
+  # Midday announcement of game.
+  if h == MIDDAY_ANNOUNCE_HOUR and m >= MIDDAY_ANNOUNCE_MINUTE and not state.midday_announce():
     state.set_midday_announce(True)
+    state.save()
     create_matches()
+  elif h > MIDDAY_ANNOUNCE_HOUR and state.midday_announce():
+    print("Clearing midday announce")
+    state.set_midday_announce(False)
+    state.save()
 
 def connect():
   if not client.rtm_connect(with_team_state=False):
