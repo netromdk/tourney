@@ -91,6 +91,8 @@ def create_matches():
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
     participants.clear()
+    global morning_announce
+    morning_announce = None
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def parse_events(events):
