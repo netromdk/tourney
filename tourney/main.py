@@ -7,10 +7,10 @@ from slackclient import SlackClient
 
 from .command import Command
 from .state import State
+from .lookup import Lookup
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
-all_channels = None
-all_users = {}
+lookup = Lookup(client)
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
@@ -21,23 +21,6 @@ MIDDAY_ANNOUNCE_HOUR = 11
 MIDDAY_ANNOUNCE_MINUTE = 50
 POSITIVE_REACTIONS = ["+1", "the_horns", "metal", "raised_hands", "ok", "ok_hand"]
 NEGATIVE_REACTIONS = ["-1", "middle_finger"]
-
-def get_channels():
-  return client.api_call("channels.list", exclude_archived=1, exclude_members=1)["channels"]
-
-def lookup_channel_name(name):
-  for channel in all_channels:
-    if channel["name"] == name:
-      return channel["id"]
-  return None
-
-def get_users():
-  return client.api_call("users.list")["members"]
-
-def lookup_user_name(user_id):
-  if not user_id in all_users:
-    return user_id
-  return all_users[user_id]["name"]
 
 def create_teams():
   participants = State.get().participants()
@@ -81,7 +64,7 @@ def create_matches():
   else:
     response += "{} teams: ".format(len(teams))
     for i in range(len(teams)):
-      fmt = ", ".join([lookup_user_name(uid) for uid in teams[i]])
+      fmt = ", ".join([lookup.user_name_by_id(uid) for uid in teams[i]])
       response += "\n\t*T{}*: {}".format(i, fmt)
     sched = create_schedule(len(teams))
     response += "\n\nSchedule:"
@@ -123,7 +106,7 @@ def parse_events(events):
 def handle_command(cmd):
   response = None
   user_id = cmd.user_id
-  user_name = lookup_user_name(user_id)
+  user_name = lookup.user_name_by_id(user_id)
   command = cmd.command
   ephemeral = True
   state = State.get()
@@ -146,7 +129,7 @@ As the foosball bot, I accept the following commands:
     else:
       response = "List of {} participants for game of the day:".format(amount)
       for uid in participants:
-        name = lookup_user_name(uid)
+        name = lookup.user_name_by_id(uid)
         response += "\n{}".format(name)
     if amount < 4:
       response += "\nAt least 4 participants are required to create matches."
@@ -205,25 +188,21 @@ def connect():
 
 def init():
   state = State.get()
+
   if state.bot_id() is None:
     state.set_bot_id(client.api_call("auth.test")["user_id"])
   print("Tourney bot ID: {}".format(state.bot_id()))
 
   # Find the channel ID of designated channel name.
   if state.channel_id() is None:
-    global all_channels
-    all_channels = get_channels()
-    channel_id = lookup_channel_name(CHANNEL_NAME)
+    channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
     if channel_id is None:
       print("Could not find ID for channel: {}".format(CHANNEL_NAME))
       exit(1)
     state.set_channel_id(channel_id)
   print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
 
-  # Map user IDs to their info.
-  for user in get_users():
-    all_users[user["id"]] = user
-  print("Detected {} users..".format(len(all_users)))
+  state.save()
 
 def repl():
   print("Entering REPL..")
