@@ -143,6 +143,8 @@ As the foosball bot, I accept the following commands:
       for uid in participants:
         name = lookup_user_name(uid)
         response += "\n{}".format(name)
+    if amount < 4:
+      response += "\nAt least 4 participants are required to create matches."
   elif command.startswith("join"):
     if user_id not in participants:
       participants.append(user_id)
