@@ -6,15 +6,11 @@ from random import shuffle
 from slackclient import SlackClient
 
 from .command import Command
+from .state import State
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
-bot_id = None
-channel_id = None
 all_channels = None
 all_users = {}
-participants = []
-morning_announce = None # Will contain ts of announcement message.
-midday_announce = False
 
 DEBUG = False
 CHANNEL_NAME = "foosball"
@@ -44,6 +40,7 @@ def lookup_user_name(user_id):
   return all_users[user_id]["name"]
 
 def create_teams():
+  participants = State.get().participants()
   amount = len(participants)
   if amount < 4:
     return None
@@ -76,6 +73,7 @@ def create_schedule(amount):
   return matches
 
 def create_matches():
+  state = State.get()
   response = "<!channel>\n"
   teams = create_teams()
   if teams is None:
@@ -90,9 +88,13 @@ def create_matches():
     for match in sched:
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
-    participants.clear()
-    global morning_announce
-    morning_announce = None
+
+    # Clear state.
+    state.set_participants([])
+    state.set_morning_announce(None)
+    state.save()
+
+  channel_id = state.channel_id()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 def parse_events(events):
@@ -112,7 +114,7 @@ def parse_events(events):
       added = (event_type == "reaction_added")
       pos = (event["reaction"] in POSITIVE_REACTIONS)
       neg = (event["reaction"] in NEGATIVE_REACTIONS)
-      if event["item"]["ts"] == morning_announce:
+      if event["item"]["ts"] == State.get().morning_announce():
         if (added and pos) or (not added and neg):
           handle_command(Command(event["user"], "join"))
         elif (added and neg) or (not added and pos):
@@ -124,6 +126,9 @@ def handle_command(cmd):
   user_name = lookup_user_name(user_id)
   command = cmd.command
   ephemeral = True
+  state = State.get()
+  channel_id = state.channel_id()
+  participants = state.participants()
 
   if command.startswith("help"):
     response = """
@@ -147,7 +152,8 @@ As the foosball bot, I accept the following commands:
       response += "\nAt least 4 participants are required to create matches."
   elif command.startswith("join"):
     if user_id not in participants:
-      participants.append(user_id)
+      state.add_participant(user_id)
+      state.save()
       response = "{}, you've joined today's game!".format(user_name)
     else:
       response = "{}, you've _already_ joined today's game!".format(user_name)
@@ -155,7 +161,8 @@ As the foosball bot, I accept the following commands:
     if user_id not in participants:
       response = "{}, you've _not_ joined today's game!".format(user_name)
     else:
-      participants.remove(user_id)
+      state.remove_participant(user_id)
+      state.save()
       response = "{}, you've left today's game!".format(user_name)
 
   if response is None:
@@ -168,23 +175,25 @@ As the foosball bot, I accept the following commands:
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
-  global morning_announce, midday_announce
-  now = datetime.today()
 
   # Ignore on saturdays and sundays.
+  now = datetime.today()
   if now.weekday() >= 5:
     return
 
   h = now.hour
   m = now.minute
-  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and morning_announce is None:
+  state = State.get()
+  channel_id = state.channel_id()
+  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and \
+     state.morning_announce() is None:
     resp = client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
            "reaction to this message!")
-    morning_announce = resp["ts"]
+    state.set_morning_announce(resp["ts"])
   if h >= MIDDAY_ANNOUNCE_HOUR and h < MIDDAY_ANNOUNCE_HOUR+1 and m >= MIDDAY_ANNOUNCE_MINUTE and \
-     not midday_announce:
-    midday_announce = True
+     not state.midday_announce():
+    state.set_midday_announce(True)
     create_matches()
 
 def connect():
@@ -195,17 +204,19 @@ def connect():
   print("Connected!")
 
 def init():
-  bot_id = client.api_call("auth.test")["user_id"]
-  print("Tourney bot ID: {}".format(bot_id))
+  # TODO: Only query info if unset! like if bot id is known then don't query it!
+  state = State.get()
+  state.set_bot_id(client.api_call("auth.test")["user_id"])
+  print("Tourney bot ID: {}".format(state.bot_id()))
 
   # Find the channel ID of designated channel name.
   global all_channels
   all_channels = get_channels()
-  global channel_id
   channel_id = lookup_channel_name(CHANNEL_NAME)
   if channel_id is None:
     print("Could not find ID for channel: {}".format(CHANNEL_NAME))
     exit(1)
+  state.set_channel_id(channel_id)
   print("#{} channel ID: {}".format(CHANNEL_NAME, channel_id))
 
   # Map user IDs to their info.
