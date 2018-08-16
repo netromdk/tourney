@@ -121,7 +121,7 @@ As the foosball bot, I accept the following commands:
       response = "List of {} participants for game of the day:".format(amount)
       for uid in participants:
         name = lookup.user_name_by_id(uid)
-        response += "\n{}".format(name)
+        response += "\n\t{}".format(name)
     if amount < 4:
       response += "\nAt least 4 participants are required to create matches."
   elif command.startswith("join"):
