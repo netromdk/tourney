@@ -120,9 +120,13 @@ def handle_command(cmd):
 As the foosball bot, I accept the following commands:
   `!help` - Shows this text.
   `!list` - List users that joined game of the day.
-  `!join` - Join game of the day.
-  `!leave` - Leave game of the day.
-"""
+  `!join` or positive reaction - Join game of the day.
+  `!leave` or negative reaction - Leave game of the day.
+
+Positive reactions: {}
+Negative reactions: {}
+""".format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
+           " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
   elif command.startswith("list"):
     ephemeral = False
     amount = len(participants)
