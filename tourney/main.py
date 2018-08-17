@@ -78,9 +78,20 @@ def parse_events(events):
     # Handle commands.
     if event_type == "message" and not "subtype" in event:
       msg = event["text"].strip()
+      user_id = event["user"]
+
       m = re.match(COMMAND_REGEX, msg)
       if m:
-        handle_command(Command(event["user"], m.group(1), m.group(2).strip()))
+        handle_command(Command(user_id, m.group(1), m.group(2).strip()))
+        continue
+
+      m = re.match(REACTION_REGEX, msg)
+      if m:
+        reaction = m.group(1)
+        if reaction in POSITIVE_REACTIONS:
+          handle_command(Command(user_id, "join"))
+        elif reaction in NEGATIVE_REACTIONS:
+          handle_command(Command(user_id, "leave"))
 
     # Adding a positive reaction to morning announce message will join game, negative will leave
     # game, and removing reaction will do the opposite action.

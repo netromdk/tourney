@@ -3,7 +3,9 @@ DEBUG = False
 
 CHANNEL_NAME = "foosball"
 RTM_READ_DELAY = 0.5 # seconds
+
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
+REACTION_REGEX = ":(.+):"
 
 MORNING_ANNOUNCE_HOUR = 9
 MIDDAY_ANNOUNCE_HOUR = 11
