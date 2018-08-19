@@ -1,2 +1,2 @@
 # tourney
-Slack turnament bot
+Slack general match generator bot 
