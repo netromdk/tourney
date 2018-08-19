@@ -14,9 +14,6 @@ from .scores import Scores
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
 
-# TODO: Put into State!
-teams = []
-
 def create_teams():
   participants = State.get().participants()
   amount = len(participants)
@@ -53,7 +50,6 @@ def create_schedule(amount):
 def create_matches():
   state = State.get()
   response = "<!channel>\n"
-  global teams
   teams = create_teams()
   if teams is None:
     response += "Could not create teams! There must be at least 4 participants!"
@@ -68,7 +64,8 @@ def create_matches():
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
 
-    # Clear state.
+    # Remember teams but clear participants and morning announce.
+    state.set_teams(teams)
     state.set_participants([])
     state.set_morning_announce(None)
     state.save()
@@ -160,6 +157,7 @@ Negative reactions: {}
       state.save()
       response = "{}, you've left today's game!".format(user_name)
   elif command.startswith("score"):
+    teams = state.teams()
     if len(teams) == 0:
       response = "Cannot report scores when no teams have been created!"
     else:
