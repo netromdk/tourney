@@ -6,6 +6,7 @@ RTM_READ_DELAY = 0.5 # seconds
 
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 REACTION_REGEX = ":(.+):"
+SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
 
 MORNING_ANNOUNCE_HOUR = 9
 MIDDAY_ANNOUNCE_HOUR = 11

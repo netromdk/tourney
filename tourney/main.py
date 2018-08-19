@@ -9,9 +9,13 @@ from .command import Command
 from .state import State
 from .lookup import Lookup
 from .constants import *
+from .scores import Scores
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
+
+# TODO: Put into State!
+teams = []
 
 def create_teams():
   participants = State.get().participants()
@@ -49,6 +53,7 @@ def create_schedule(amount):
 def create_matches():
   state = State.get()
   response = "<!channel>\n"
+  global teams
   teams = create_teams()
   if teams is None:
     response += "Could not create teams! There must be at least 4 participants!"
@@ -122,6 +127,7 @@ As the foosball bot, I accept the following commands:
   `!list` - List users that joined game of the day.
   `!join` or positive reaction - Join game of the day.
   `!leave` or negative reaction - Leave game of the day.
+  `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
 
 Positive reactions: {}
 Negative reactions: {}
@@ -153,6 +159,32 @@ Negative reactions: {}
       state.remove_participant(user_id)
       state.save()
       response = "{}, you've left today's game!".format(user_name)
+  elif command.startswith("score"):
+    if len(teams) == 0:
+      response = "Cannot report scores when no teams have been created!"
+    else:
+      example = "`!score T0 12 T3 16`"
+      m = re.match(SCORE_ARGS_REGEX, cmd.args)
+      if not m:
+        response = "Requires arguments for teams and scores! Like {}".format(example)
+      else:
+        team_a = int(m.group(1)[1:])
+        team_a_score = int(m.group(2))
+        team_b = int(m.group(3)[1:])
+        team_b_score = int(m.group(4))
+        r = range(len(teams))
+        if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
+           (team_a_score % 8 == 0 or team_b_score % 8 == 0):
+          scores = Scores.get()
+          scores.add(teams[team_a], team_a_score, teams[team_b], team_b_score)
+          scores.save()
+          response = "Added scores!"
+        else:
+          response = """
+Invalid arguments!
+Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
+Example: {}
+""".format(example)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
@@ -203,6 +235,7 @@ def connect():
 
 def init():
   state = State.get()
+  scores = Scores.get()
 
   if state.bot_id() is None:
     state.set_bot_id(client.api_call("auth.test")["user_id"])
