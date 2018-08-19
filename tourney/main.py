@@ -125,6 +125,7 @@ As the foosball bot, I accept the following commands:
   `!join` or positive reaction - Join game of the day.
   `!leave` or negative reaction - Leave game of the day.
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
+  `!stats` - Prints general statistics of all games.
 
 Positive reactions: {}
 Negative reactions: {}
@@ -183,6 +184,22 @@ Invalid arguments!
 Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
 Example: {}
 """.format(example)
+  elif command.startswith("stats"):
+    scores = Scores.get()
+    matches = scores.matches()
+    amount = len(matches)
+    if amount == 0:
+      response = "There are no recorded matches!"
+    else:
+      total_score = 0
+      for match in matches:
+        total_score += match[2] + match[4]
+      avg_score = total_score / amount
+      response = """
+Total matches: {}
+Total score: {}
+Average score per match: {}
+""".format(amount, total_score, avg_score)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."

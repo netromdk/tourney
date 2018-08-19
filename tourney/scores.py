@@ -31,6 +31,9 @@ class Scores:
       second_score
     ])
 
+  def matches(self):
+    return self.__scores
+
   def file_path(self):
     return os.path.expanduser("~/.tourney/scores.json")
 
