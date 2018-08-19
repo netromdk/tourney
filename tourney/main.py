@@ -64,7 +64,9 @@ def create_matches():
     for match in sched:
       plural = "s" if match[2] > 1 else ""
       response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
-      unrecorded_matches.append([match[0], match[1]])
+      key = [match[0], match[1]]
+      key.sort()
+      unrecorded_matches.append(key)
 
     # Remember teams and unrecorded matches but clear participants and morning announce.
     state.set_teams(teams)
@@ -178,13 +180,10 @@ Negative reactions: {}
         r = range(len(teams))
         if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
            (team_a_score % 8 == 0 or team_b_score % 8 == 0):
-          key1 = [team_a, team_b]
-          key2 = [team_b, team_a]
-          if key1 in unrecorded_matches or key2 in unrecorded_matches:
-            if key1 in unrecorded_matches:
-              unrecorded_matches.remove(key1)
-            if key2 in unrecorded_matches:
-              unrecorded_matches.remove(key2)
+          key = [team_a, team_b]
+          key.sort()
+          if key in unrecorded_matches:
+            unrecorded_matches.remove(key)
             state.set_unrecorded_matches(unrecorded_matches)
             state.save()
             scores = Scores.get()
