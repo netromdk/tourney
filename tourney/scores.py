@@ -24,7 +24,7 @@ class Scores:
   def add(self, first_team, first_score, second_team, second_score):
     """Add a match scores with each team being a list of slack user IDs."""
     self.__scores.append([
-      datetime.today().timestamp(),
+      datetime.utcnow().timestamp(),
       first_team,
       first_score,
       second_team,
