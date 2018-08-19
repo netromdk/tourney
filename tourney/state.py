@@ -62,6 +62,12 @@ class State:
   def teams(self):
     return self.__teams
 
+  def set_unrecorded_matches(self, unrecorded_matches):
+    self.__unrecorded_matches = unrecorded_matches
+
+  def unrecorded_matches(self):
+    return self.__unrecorded_matches
+
   def file_path(self):
     return os.path.expanduser("~/.tourney/state.json")
 
@@ -72,6 +78,7 @@ class State:
     self.__morning_announce = None
     self.__midday_announce = False
     self.__teams = []
+    self.__unrecorded_matches = []
 
   def save(self):
     data = {
@@ -80,7 +87,8 @@ class State:
       "participants": self.participants(),
       "morning_announce": self.morning_announce(),
       "midday_announce": self.midday_announce(),
-      "teams": self.teams()
+      "teams": self.teams(),
+      "unrecorded_matches": self.unrecorded_matches()
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
@@ -101,4 +109,6 @@ class State:
         self.set_midday_announce(data["midday_announce"])
       if "teams" in data:
         self.set_teams(data["teams"])
+      if "unrecorded_matches" in data:
+        self.set_unrecorded_matches(data["unrecorded_matches"])
       print("State loaded from: {}".format(self.file_path()))
