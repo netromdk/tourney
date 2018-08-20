@@ -212,14 +212,41 @@ Example: {}
       response = "There are no recorded matches!"
     else:
       total_score = 0
+      avg_delta = 0
+      player_scores = {}
+
+      def player_score_count(team, score):
+        for player in team:
+          if not player in player_scores:
+            player_scores[player] = 0
+          player_scores[player] += score
+
       for match in matches:
-        total_score += match[2] + match[4]
+        team_a = match[1]
+        score_a = match[2]
+        team_b = match[3]
+        score_b = match[4]
+        total_score += score_a + score_b
+        avg_delta += abs(score_a - score_b)
+        player_score_count(team_a, score_a)
+        player_score_count(team_b, score_b)
       avg_score = total_score / amount
+      avg_delta /= amount
+
+      # Sort player scores greatest first.
+      score_ranking = [(p, player_scores[p]) for p in player_scores]
+      score_ranking.sort(key=lambda pair: pair[1], reverse=True)
+      top_players = score_ranking[0:4]
+      top_players = \
+        ", ".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in top_players])
+
       response = """
 Total matches: {}
 Total score: {}
-Average score per match: {}
-""".format(amount, total_score, avg_score)
+Average score: {:.2f}
+Average delta: {:.2f}
+Top players (by score): {}
+""".format(amount, total_score, avg_score, avg_delta, top_players)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
