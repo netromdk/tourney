@@ -183,13 +183,18 @@ Negative reactions: {}
           key = [team_a, team_b]
           key.sort()
           if key in unrecorded_matches:
-            unrecorded_matches.remove(key)
-            state.set_unrecorded_matches(unrecorded_matches)
-            state.save()
-            scores = Scores.get()
-            scores.add(teams[team_a], team_a_score, teams[team_b], team_b_score)
-            scores.save()
-            response = "Added scores!"
+            ids_a = teams[team_a]
+            ids_b = teams[team_b]
+            if user_id in ids_a or user_id in ids_b:
+              unrecorded_matches.remove(key)
+              state.set_unrecorded_matches(unrecorded_matches)
+              state.save()
+              scores = Scores.get()
+              scores.add(ids_a, team_a_score, ids_b, team_b_score)
+              scores.save()
+              response = "Added scores!"
+            else:
+              response = "Only participants of a match can report the score!"
           else:
             response = "Match has already been recorded!"
         else:
