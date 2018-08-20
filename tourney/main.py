@@ -292,6 +292,25 @@ def scheduled_actions():
     state.set_morning_announce(resp["ts"])
     state.save()
 
+  # Reminder announcement for remaining participants to join game.
+  start = datetime.combine(date.today(), REMINDER_ANNOUNCE)
+  end = start + timedelta(minutes=30)
+  if now >= start and now < end and not state.reminder_announce():
+    scores = Scores.get()
+    remaining = scores.recent_users(7) - set(state.participants())
+    if len(remaining) == 0:
+      print("No one to remind!")
+    else:
+      fmt = ", ".join(["<@{}>".format(uid) for uid in remaining])
+      client.api_call("chat.postMessage", channel=channel_id,
+        text="{} Remember to join today's game before 11:50!".format(fmt))
+    state.set_reminder_announce(True)
+    state.save()
+  elif now > end and state.reminder_announce():
+    print("Clearing reminder announce")
+    state.set_reminder_announce(False)
+    state.save()
+
   # Midday announcement of game.
   start = datetime.combine(date.today(), MIDDAY_ANNOUNCE)
   end = start + timedelta(minutes=10)

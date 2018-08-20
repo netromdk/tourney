@@ -11,6 +11,7 @@ REACTION_REGEX = ":(.+):"
 SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
 
 MORNING_ANNOUNCE = time(9)
+REMINDER_ANNOUNCE = time(11)
 MIDDAY_ANNOUNCE = time(11, 50)
 
 POSITIVE_REACTIONS = ["+1", "the_horns", "metal", "raised_hands", "ok", "ok_hand", "fire"]

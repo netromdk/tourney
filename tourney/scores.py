@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Scores:
   __instance = None
@@ -33,6 +33,16 @@ class Scores:
 
   def matches(self):
     return self.__scores
+
+  def recent_users(self, last_days):
+    """Returns active users within `last_days`."""
+    past = datetime.utcnow() - timedelta(days=last_days)
+    res = []
+    for match in self.matches():
+      if datetime.fromtimestamp(match[0]) >= past:
+        for player in match[1] + match[3]:
+          res.append(player)
+    return set(res)
 
   def file_path(self):
     return os.path.expanduser("~/.tourney/scores.json")

@@ -50,6 +50,12 @@ class State:
   def morning_announce(self):
     return self.__morning_announce
 
+  def set_reminder_announce(self, reminder_announce):
+    self.__reminder_announce = reminder_announce
+
+  def reminder_announce(self):
+    return self.__reminder_announce
+
   def set_midday_announce(self, midday_announce):
     self.__midday_announce = midday_announce
 
@@ -76,6 +82,7 @@ class State:
     self.__channel_id = None
     self.__participants = []
     self.__morning_announce = None
+    self.__reminder_announce = False
     self.__midday_announce = False
     self.__teams = []
     self.__unrecorded_matches = []
@@ -86,6 +93,7 @@ class State:
       "channel_id": self.channel_id(),
       "participants": self.participants(),
       "morning_announce": self.morning_announce(),
+      "reminder_announce": self.reminder_announce(),
       "midday_announce": self.midday_announce(),
       "teams": self.teams(),
       "unrecorded_matches": self.unrecorded_matches()
@@ -105,6 +113,8 @@ class State:
         self.set_participants(data["participants"])
       if "morning_announce" in data:
         self.set_morning_announce(data["morning_announce"])
+      if "reminder_announce" in data:
+        self.set_reminder_announce(data["reminder_announce"])
       if "midday_announce" in data:
         self.set_midday_announce(data["midday_announce"])
       if "teams" in data:
