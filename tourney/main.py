@@ -241,28 +241,27 @@ Example: {}
       avg_score = total_score / amount
       avg_delta /= amount
 
-      # Sort player scores greatest first.
-      score_ranking = [(p, player_scores[p]) for p in player_scores]
-      score_ranking.sort(key=lambda pair: pair[1], reverse=True)
-      top_players = score_ranking[0:4]
-      top_players = \
-        ", ".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in top_players])
+      def sort_and_format(dict, amount):
+        ranking = [(p, dict[p]) for p in dict]
+        ranking.sort(key=lambda pair: pair[1], reverse=True)
+        subset = ranking[0:amount]
+        return "\n\t" + \
+          "\n\t".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in subset])
 
-      # Sort player wins greatest first.
-      win_ranking = [(p, player_wins[p]) for p in player_wins]
-      win_ranking.sort(key=lambda pair: pair[1], reverse=True)
-      top_winners = win_ranking[0:4]
-      top_winners = \
-        ", ".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in top_winners])
+      # Sort player scores and wins greatest first.
+      top_amount = 5
+      top_players = sort_and_format(player_scores, top_amount)
+      top_winners = sort_and_format(player_wins, top_amount)
 
       response = """
 Total matches: {}
 Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
-Top players (by score): {}
-Top players (by wins): {}
-""".format(amount, total_score, avg_score, avg_delta, top_players, top_winners)
+Top {} players (by score): {}
+Top {} players (by wins): {}
+""".format(amount, total_score, avg_score, avg_delta, top_amount, top_players, top_amount, \
+           top_winners)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
