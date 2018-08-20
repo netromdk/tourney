@@ -214,6 +214,7 @@ Example: {}
       total_score = 0
       avg_delta = 0
       player_scores = {}
+      player_wins = {}
 
       def player_score_count(team, score):
         for player in team:
@@ -230,6 +231,13 @@ Example: {}
         avg_delta += abs(score_a - score_b)
         player_score_count(team_a, score_a)
         player_score_count(team_b, score_b)
+        win_team = team_a
+        if score_b > score_a:
+          win_team = team_b
+        for player in win_team:
+          if player not in player_wins:
+            player_wins[player] = 0
+          player_wins[player] += 1
       avg_score = total_score / amount
       avg_delta /= amount
 
@@ -240,13 +248,21 @@ Example: {}
       top_players = \
         ", ".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in top_players])
 
+      # Sort player wins greatest first.
+      win_ranking = [(p, player_wins[p]) for p in player_wins]
+      win_ranking.sort(key=lambda pair: pair[1], reverse=True)
+      top_winners = win_ranking[0:4]
+      top_winners = \
+        ", ".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in top_winners])
+
       response = """
 Total matches: {}
 Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top players (by score): {}
-""".format(amount, total_score, avg_score, avg_delta, top_players)
+Top players (by wins): {}
+""".format(amount, total_score, avg_score, avg_delta, top_players, top_winners)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
