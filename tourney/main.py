@@ -199,6 +199,7 @@ Teams must be input like 'T1' and scores must be positive and one be divisible b
 Example: {}
 """.format(example)
   elif command.startswith("stats"):
+    ephemeral = False
     scores = Scores.get()
     matches = scores.matches()
     amount = len(matches)
