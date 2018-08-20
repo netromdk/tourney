@@ -1,7 +1,7 @@
 import os
-import time
+from time import sleep
 import re
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from random import shuffle
 from slackclient import SlackClient
 
@@ -279,14 +279,13 @@ def scheduled_actions():
   if now.weekday() >= 5:
     return
 
-  h = now.hour
-  m = now.minute
   state = State.get()
   channel_id = state.channel_id()
 
   # Morning announcement for participants to join game.
-  if h >= MORNING_ANNOUNCE_HOUR and h < MORNING_ANNOUNCE_HOUR+1 and \
-     state.morning_announce() is None:
+  start = datetime.combine(date.today(), MORNING_ANNOUNCE)
+  end = start + timedelta(hours=1)
+  if now >= start and now < end and state.morning_announce() is None:
     resp = client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
            "reaction to this message!")
@@ -294,11 +293,13 @@ def scheduled_actions():
     state.save()
 
   # Midday announcement of game.
-  if h == MIDDAY_ANNOUNCE_HOUR and m >= MIDDAY_ANNOUNCE_MINUTE and not state.midday_announce():
+  start = datetime.combine(date.today(), MIDDAY_ANNOUNCE)
+  end = start + timedelta(minutes=10)
+  if now >= start and now < end and not state.midday_announce():
     state.set_midday_announce(True)
     state.save()
     create_matches()
-  elif h > MIDDAY_ANNOUNCE_HOUR and state.midday_announce():
+  elif now > end and state.midday_announce():
     print("Clearing midday announce")
     state.set_midday_announce(False)
     state.save()
@@ -337,7 +338,7 @@ def repl():
     if DEBUG:
       print(events)
     parse_events(events)
-    time.sleep(RTM_READ_DELAY)
+    sleep(RTM_READ_DELAY)
 
 def start_tourney():
   connect()
