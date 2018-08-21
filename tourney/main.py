@@ -125,7 +125,10 @@ def handle_command(cmd):
   channel_id = state.channel_id()
   participants = state.participants()
 
-  if command.startswith("help"):
+  if not cmd.allowed():
+    response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
+
+  elif command == "help":
     response = """
 As the foosball bot, I accept the following commands:
   `!help` - Shows this text.
@@ -139,7 +142,7 @@ Positive reactions: {}
 Negative reactions: {}
 """.format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
            " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
-  elif command.startswith("list"):
+  elif command == "list":
     ephemeral = False
     amount = len(participants)
     if amount == 0:
@@ -151,21 +154,21 @@ Negative reactions: {}
         response += "\n\t{}".format(name)
     if amount < 4:
       response += "\nAt least 4 participants are required to create matches."
-  elif command.startswith("join"):
+  elif command == "join":
     if user_id not in participants:
       state.add_participant(user_id)
       state.save()
       response = "{}, you've joined today's game!".format(user_name)
     else:
       response = "{}, you've _already_ joined today's game!".format(user_name)
-  elif command.startswith("leave"):
+  elif command == "leave":
     if user_id not in participants:
       response = "{}, you've _not_ joined today's game!".format(user_name)
     else:
       state.remove_participant(user_id)
       state.save()
       response = "{}, you've left today's game!".format(user_name)
-  elif command.startswith("score"):
+  elif command == "score":
     teams = state.teams()
     unrecorded_matches = state.unrecorded_matches()
     if len(teams) == 0:
@@ -206,7 +209,7 @@ Invalid arguments!
 Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
 Example: {}
 """.format(example)
-  elif command.startswith("stats"):
+  elif command == "stats":
     ephemeral = False
     scores = Scores.get()
     matches = scores.matches()
@@ -340,6 +343,9 @@ def init():
   config = Config.get()
   state = State.get()
   scores = Scores.get()
+
+  if len(config.privileged_users()) == 0:
+    print("No privileged users defined in config!")
 
   if state.bot_id() is None:
     state.set_bot_id(client.api_call("auth.test")["user_id"])
