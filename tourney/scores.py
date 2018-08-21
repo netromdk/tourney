@@ -10,8 +10,9 @@ class Scores:
       self.reset()
       try:
         self.load()
-      except:
-        print("Scores file does not exist: {}".format(self.file_path()))
+      except Exception as ex:
+        print("Scores file could not load: {}".format(self.file_path()))
+        print(ex)
 
       Scores.__instance = self
 

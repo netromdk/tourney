@@ -9,8 +9,9 @@ class State:
       self.reset()
       try:
         self.load()
-      except:
-        print("State file does not exist: {}".format(self.file_path()))
+      except Exception as ex:
+        print("State file could not load: {}".format(self.file_path()))
+        print(ex)
 
       State.__instance = self
 
