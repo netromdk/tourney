@@ -51,8 +51,8 @@ class State:
   def morning_announce(self):
     return self.__morning_announce
 
-  def set_reminder_announce(self, reminder_announce):
-    self.__reminder_announce = reminder_announce
+  def set_reminder_announce(self, ts):
+    self.__reminder_announce = ts
 
   def reminder_announce(self):
     return self.__reminder_announce
@@ -83,7 +83,7 @@ class State:
     self.__channel_id = None
     self.__participants = []
     self.__morning_announce = None
-    self.__reminder_announce = False
+    self.__reminder_announce = None
     self.__midday_announce = False
     self.__teams = []
     self.__unrecorded_matches = []

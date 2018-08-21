@@ -100,13 +100,15 @@ def parse_events(events):
         elif reaction in NEGATIVE_REACTIONS:
           handle_command(Command(user_id, "leave"))
 
-    # Adding a positive reaction to morning announce message will join game, negative will leave
-    # game, and removing reaction will do the opposite action.
+    # Adding a positive reaction to morning or reminder announce message will join game, negative
+    # will leave game, and removing reaction will do the opposite action.
     elif event_type == "reaction_added" or event_type == "reaction_removed":
       added = (event_type == "reaction_added")
       pos = (event["reaction"] in POSITIVE_REACTIONS)
       neg = (event["reaction"] in NEGATIVE_REACTIONS)
-      if event["item"]["ts"] == State.get().morning_announce():
+      ts = event["item"]["ts"]
+      state = State.get()
+      if ts == state.morning_announce() or ts == state.reminder_announce():
         if (added and pos) or (not added and neg):
           handle_command(Command(event["user"], "join"))
         elif (added and neg) or (not added and pos):
@@ -285,7 +287,7 @@ def scheduled_actions():
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + timedelta(hours=1)
-  if now >= start and now < end and state.morning_announce() is None:
+  if now >= start and now < end and not state.morning_announce():
     resp = client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
            "reaction to this message!")
@@ -300,15 +302,17 @@ def scheduled_actions():
     remaining = scores.recent_users(7) - set(state.participants())
     if len(remaining) == 0:
       print("No one to remind!")
+      # Something that won't match timestamp but still isn't None.
+      state.set_reminder_announce(1)
     else:
       fmt = ", ".join(["<@{}>".format(uid) for uid in remaining])
-      client.api_call("chat.postMessage", channel=channel_id,
+      resp = client.api_call("chat.postMessage", channel=channel_id,
         text="{} Remember to join today's game before 11:50!".format(fmt))
-    state.set_reminder_announce(True)
+      state.set_reminder_announce(resp["ts"])
     state.save()
   elif now > end and state.reminder_announce():
     print("Clearing reminder announce")
-    state.set_reminder_announce(False)
+    state.set_reminder_announce(None)
     state.save()
 
   # Midday announcement of game.
