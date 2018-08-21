@@ -3,6 +3,8 @@ from datetime import time
 # Will print all read events to stdout.
 DEBUG = False
 
+DATA_PATH = "~/.tourney"
+
 CHANNEL_NAME = "foosball"
 RTM_READ_DELAY = 0.5 # seconds
 

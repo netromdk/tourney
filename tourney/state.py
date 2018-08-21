@@ -1,6 +1,8 @@
 import os
 import json
 
+from .constants import DATA_PATH
+
 class State:
   __instance = None
 
@@ -76,7 +78,7 @@ class State:
     return self.__unrecorded_matches
 
   def file_path(self):
-    return os.path.expanduser("~/.tourney/state.json")
+    return os.path.expanduser("{}/state.json".format(DATA_PATH))
 
   def reset(self):
     self.__bot_id = None

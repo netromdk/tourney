@@ -2,6 +2,8 @@ import os
 import json
 from datetime import datetime, timedelta
 
+from .constants import DATA_PATH
+
 class Scores:
   __instance = None
 
@@ -46,7 +48,7 @@ class Scores:
     return set(res)
 
   def file_path(self):
-    return os.path.expanduser("~/.tourney/scores.json")
+    return os.path.expanduser("{}/scores.json".format(DATA_PATH))
 
   def reset(self):
     self.__scores = []

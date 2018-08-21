@@ -1,6 +1,8 @@
 import os
 import json
 
+from .constants import DATA_PATH
+
 class Config:
   __instance = None
 
@@ -31,7 +33,7 @@ class Config:
     return self.__privileged_users
 
   def file_path(self):
-    return os.path.expanduser("~/.tourney/config.json")
+    return os.path.expanduser("{}/config.json".format(DATA_PATH))
 
   def reset(self):
     self.__privileged_users = []
