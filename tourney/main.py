@@ -1,6 +1,7 @@
 import os
-from time import sleep
 import re
+import itertools
+from time import sleep
 from datetime import datetime, date, timedelta
 from random import shuffle
 from slackclient import SlackClient
@@ -137,6 +138,7 @@ As the foosball bot, I accept the following commands:
   `!leave` or negative reaction - Leave game of the day.
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!stats` - Prints general statistics of all games.
+  `!undoteams` - Undoes teams and matches and restores as joined participants. (*privileged!*)
 
 Positive reactions: {}
 Negative reactions: {}
@@ -268,6 +270,20 @@ Top {} players (by score): {}
 Top {} players (by wins): {}
 """.format(amount, total_score, avg_score, avg_delta, top_amount, top_players, top_amount, \
            top_winners)
+  elif command == "undoteams":
+    ephemeral = False
+
+    if len(state.teams()) == 0:
+      response = "No teams and matches to undo!"
+    else:
+      # Flatten teams lists.
+      state.set_participants(list(itertools.chain.from_iterable(state.teams())))
+
+      state.set_teams([])
+      state.set_unrecorded_matches([])
+      state.set_midday_announce(False)
+      state.save()
+      response = "Matches have been undone and teams have been reverted as joined participants!"
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
