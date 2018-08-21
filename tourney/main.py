@@ -139,6 +139,7 @@ As the foosball bot, I accept the following commands:
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!stats` - Prints general statistics of all games.
   `!undoteams` - Undoes teams and matches and restores as joined participants. (*privileged!*)
+  `!generate` - Generate teams and matches from joined participants. (*privileged!*)
 
 Positive reactions: {}
 Negative reactions: {}
@@ -284,6 +285,9 @@ Top {} players (by wins): {}
       state.set_midday_announce(False)
       state.save()
       response = "Matches have been undone and teams have been reverted as joined participants!"
+  elif command == "generate":
+    create_matches()
+    return
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
