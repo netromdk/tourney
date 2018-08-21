@@ -10,6 +10,7 @@ from .state import State
 from .lookup import Lookup
 from .constants import *
 from .scores import Scores
+from .config import Config
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
@@ -336,6 +337,7 @@ def connect():
   print("Connected!")
 
 def init():
+  config = Config.get()
   state = State.get()
   scores = Scores.get()
 
