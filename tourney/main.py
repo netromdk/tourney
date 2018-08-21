@@ -307,7 +307,8 @@ def scheduled_actions():
     else:
       fmt = ", ".join(["<@{}>".format(uid) for uid in remaining])
       resp = client.api_call("chat.postMessage", channel=channel_id,
-        text="{} Remember to join today's game before 11:50!".format(fmt))
+        text="{} Remember to join today's game before 11:50 by using `!join` or :+1: "
+             "reaction to this message!".format(fmt))
       state.set_reminder_announce(resp["ts"])
     state.save()
   elif now > end and state.reminder_announce():
