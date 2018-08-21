@@ -124,4 +124,3 @@ class State:
         self.set_teams(data["teams"])
       if "unrecorded_matches" in data:
         self.set_unrecorded_matches(data["unrecorded_matches"])
-      print("State loaded from: {}".format(self.file_path()))

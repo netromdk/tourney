@@ -51,4 +51,3 @@ class Config:
       data = json.load(fp)
       if "privileged_users" in data:
         self.__privileged_users = data["privileged_users"]
-      print("Config loaded from: {}".format(self.file_path()))

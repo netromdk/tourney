@@ -66,4 +66,3 @@ class Scores:
       data = json.load(fp)
       if "scores" in data:
         self.__scores = data["scores"]
-      print("Scores loaded from: {}".format(self.file_path()))
