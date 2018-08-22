@@ -241,12 +241,15 @@ Example: {}
         player_score_count(team_a, score_a)
         player_score_count(team_b, score_b)
         win_team = team_a
+        win_score = score_a
         if score_b > score_a:
           win_team = team_b
+          win_score = score_b
         for player in win_team:
           if player not in player_wins:
             player_wins[player] = 0
-          player_wins[player] += 1
+          # Count rounds won.
+          player_wins[player] += (win_score // 8)
       avg_score = total_score / amount
       avg_delta /= amount
 
@@ -268,7 +271,7 @@ Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (by score): {}
-Top {} players (by wins): {}
+Top {} players (by rounds won): {}
 """.format(amount, total_score, avg_score, avg_delta, top_amount, top_players, top_amount, \
            top_winners)
   elif command == "undoteams":
