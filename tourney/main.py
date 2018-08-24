@@ -139,6 +139,7 @@ As the foosball bot, I accept the following commands:
   `!leave` or negative reaction - Leave game of the day.
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!stats` - Prints general statistics of all games.
+  `!mystats` - Prints statistics of all games about invoker.
   `!undoteams` - Undoes teams and matches and restores as joined participants. (*privileged!*)
   `!generate` - Generate teams and matches from joined participants. (*privileged!*)
 
@@ -222,6 +223,13 @@ Example: {}
     else:
       stats.save()
       response = stats.general_response(lookup)
+  elif command == "mystats":
+    stats = Stats.get()
+    if not stats.generate():
+      response = "There are no recorded matches!"
+    else:
+      stats.save()
+      response = stats.personal_response(lookup, user_id)
   elif command == "undoteams":
     ephemeral = False
 

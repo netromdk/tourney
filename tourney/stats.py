@@ -36,6 +36,7 @@ class Stats:
     else:
       total_score = 0
       avg_delta = 0
+      player_matches = {}
       player_scores = {}
       player_wins = {}
 
@@ -44,6 +45,9 @@ class Stats:
           if not player in player_scores:
             player_scores[player] = 0
           player_scores[player] += score
+          if not player in player_matches:
+            player_matches[player] = 0
+          player_matches[player] += 1
 
       for match in matches:
         team_a = match[1]
@@ -78,6 +82,15 @@ class Stats:
       self.__top_amount = 5
       self.__top_scorers = sort(player_scores, self.__top_amount)
       self.__top_winners = sort(player_wins, self.__top_amount)
+
+      # Personal player info.
+      for player in player_matches:
+        info = {
+          "total_matches": player_matches[player],
+          "total_score": player_scores[player],
+          "total_wins": player_wins[player],
+        }
+        self.__personal[player] = info
     return True
 
   def general_response(self, lookup):
@@ -92,6 +105,16 @@ Top {} players (by rounds won): {}
            self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
            self.__fmt_top(self.__top_winners, lookup))
 
+  def personal_response(self, lookup, user_id):
+    if not user_id in self.__personal:
+      return "No personal statistics recorded yet!"
+    stats = self.__personal[user_id]
+    return """
+Total matches: {}
+Total score: {}
+Total won rounds: {}
+""".format(stats["total_matches"], stats["total_score"], stats["total_wins"])
+
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
 
@@ -103,6 +126,7 @@ Top {} players (by rounds won): {}
     self.__top_amount = 5
     self.__top_scorers = []
     self.__top_winners = []
+    self.__personal = {}
 
   def save(self):
     data = {
@@ -113,6 +137,7 @@ Top {} players (by rounds won): {}
       "top_amount": self.__top_amount,
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
+      "personal": self.__personal
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
@@ -135,6 +160,8 @@ Top {} players (by rounds won): {}
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
         self.__top_winners = data["top_winners"]
+      if "personal" in data:
+        self.__personal = data["personal"]
 
   def __fmt_top(self, lst, lookup):
     return "\n\t" + \
