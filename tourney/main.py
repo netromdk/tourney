@@ -205,6 +205,11 @@ Negative reactions: {}
               scores.add(ids_a, team_a_score, ids_b, team_b_score)
               scores.save()
               response = "Added scores!"
+              rem = len(unrecorded_matches)
+              if rem == 0:
+                response += "\nNo more matches left to record! Check `!stats`"
+              else:
+                response += "\n{} matches left to record!".format(rem)
             else:
               response = "Only participants of a match can report the score!"
           else:
