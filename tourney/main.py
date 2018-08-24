@@ -206,7 +206,7 @@ Negative reactions: {}
             else:
               response = "Only participants of a match can report the score!"
           else:
-            response = "Match has already been recorded!"
+            response = "Match has already been recorded or isn't scheduled!"
         else:
           response = """
 Invalid arguments!
