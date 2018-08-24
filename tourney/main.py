@@ -12,6 +12,7 @@ from .lookup import Lookup
 from .constants import *
 from .scores import Scores
 from .config import Config
+from .stats import Stats
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
@@ -215,66 +216,12 @@ Example: {}
 """.format(example)
   elif command == "stats":
     ephemeral = False
-    scores = Scores.get()
-    matches = scores.matches()
-    amount = len(matches)
-    if amount == 0:
+    stats = Stats.get()
+    if not stats.generate():
       response = "There are no recorded matches!"
     else:
-      total_score = 0
-      avg_delta = 0
-      player_scores = {}
-      player_wins = {}
-
-      def player_score_count(team, score):
-        for player in team:
-          if not player in player_scores:
-            player_scores[player] = 0
-          player_scores[player] += score
-
-      for match in matches:
-        team_a = match[1]
-        score_a = match[2]
-        team_b = match[3]
-        score_b = match[4]
-        total_score += score_a + score_b
-        avg_delta += abs(score_a - score_b)
-        player_score_count(team_a, score_a)
-        player_score_count(team_b, score_b)
-        win_team = team_a
-        win_score = score_a
-        if score_b > score_a:
-          win_team = team_b
-          win_score = score_b
-        for player in win_team:
-          if player not in player_wins:
-            player_wins[player] = 0
-          # Count rounds won.
-          player_wins[player] += (win_score // 8)
-      avg_score = total_score / amount
-      avg_delta /= amount
-
-      def sort_and_format(dict, amount):
-        ranking = [(p, dict[p]) for p in dict]
-        ranking.sort(key=lambda pair: pair[1], reverse=True)
-        subset = ranking[0:amount]
-        return "\n\t" + \
-          "\n\t".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in subset])
-
-      # Sort player scores and wins greatest first.
-      top_amount = 5
-      top_players = sort_and_format(player_scores, top_amount)
-      top_winners = sort_and_format(player_wins, top_amount)
-
-      response = """
-Total matches: {}
-Total score: {}
-Average score: {:.2f}
-Average delta: {:.2f}
-Top {} players (by score): {}
-Top {} players (by rounds won): {}
-""".format(amount, total_score, avg_score, avg_delta, top_amount, top_players, top_amount, \
-           top_winners)
+      stats.save()
+      response = stats.general_response(lookup)
   elif command == "undoteams":
     ephemeral = False
 
@@ -367,6 +314,7 @@ def init():
   config = Config.get()
   state = State.get()
   scores = Scores.get()
+  stats = Stats.get()
 
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")
