@@ -26,6 +26,7 @@ class Stats:
     return Stats.__instance
 
   def generate(self):
+    self.reset()
     scores = Scores.get()
     matches = scores.matches()
     amount = len(matches)
