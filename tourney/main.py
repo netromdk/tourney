@@ -172,6 +172,7 @@ Negative reactions: {}
       state.save()
       response = "{}, you've left today's game!".format(user_name)
   elif command == "score":
+    ephemeral = False
     teams = state.teams()
     unrecorded_matches = state.unrecorded_matches()
     if len(teams) == 0:
