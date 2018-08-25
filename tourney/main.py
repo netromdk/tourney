@@ -57,7 +57,7 @@ def create_matches():
   teams = create_teams()
   unrecorded_matches = []
   if teams is None:
-    response += "Could not create teams! There must be at least 4 participants!"
+    response += "No games possible! At least 4 players are required!"
   else:
     response += "{} teams: ".format(len(teams))
     for i in range(len(teams)):
@@ -141,8 +141,8 @@ As the foosball bot, I accept the following commands:
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!stats` - Prints general statistics of all games.
   `!mystats` - Prints statistics of all games about invoker.
-  `!undoteams` - Undoes teams and matches and restores as joined participants. (*privileged!*)
-  `!generate` - Generate teams and matches from joined participants. (*privileged!*)
+  `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
+  `!generate` - Generate teams and matches from players joined. (*privileged!*)
   `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
 
 Positive reactions: {}
@@ -153,14 +153,14 @@ Negative reactions: {}
     ephemeral = False
     amount = len(participants)
     if amount == 0:
-      response = "No participants have joined yet!"
+      response = "No players have joined yet!"
     else:
-      response = "List of {} participants for game of the day:".format(amount)
+      response = "List of {} players for game of the day:".format(amount)
       for uid in participants:
         name = lookup.user_name_by_id(uid)
         response += "\n\t{}".format(name)
     if amount < 4:
-      response += "\nAt least 4 participants are required to create matches."
+      response += "\nAt least 4 players are required to create matches."
   elif command == "join":
     if user_id not in participants:
       state.add_participant(user_id)
@@ -213,7 +213,7 @@ Negative reactions: {}
               else:
                 response += "\n{} matches left to record!".format(rem)
             else:
-              response = "Only participants of a match can report the score!"
+              response = "Only players of a match can report the score!"
           else:
             response = "Match has already been recorded or isn't scheduled!"
         else:
@@ -226,14 +226,14 @@ Example: {}
     ephemeral = False
     stats = Stats.get()
     if not stats.generate():
-      response = "There are no recorded matches!"
+      response = "There are no recorded matches to generate statistics from!"
     else:
       stats.save()
       response = stats.general_response(lookup)
   elif command == "mystats":
     stats = Stats.get()
     if not stats.generate():
-      response = "There are no recorded matches!"
+      response = "There are no recorded matches to generate statistics from!"
     else:
       stats.save()
       response = stats.personal_response(lookup, user_id)
@@ -241,7 +241,7 @@ Example: {}
     ephemeral = False
 
     if len(state.teams()) == 0:
-      response = "No teams and matches to undo!"
+      response = "No teams and matches to dissolve!"
     else:
       # Flatten teams lists.
       state.set_participants(list(itertools.chain.from_iterable(state.teams())))
@@ -250,7 +250,8 @@ Example: {}
       state.set_unrecorded_matches([])
       state.set_midday_announce(False)
       state.save()
-      response = "Matches have been undone and teams have been reverted as joined participants!"
+      response = \
+        "Games have been canceled, teams dissolved, and all players are on the market again!"
   elif command == "generate":
     create_matches()
     return
