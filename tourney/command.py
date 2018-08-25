@@ -1,5 +1,6 @@
+import re
 from .config import Config
-from .constants import PRIVILEGED_COMMANDS
+from .constants import COMMAND_REGEX, PRIVILEGED_COMMANDS
 
 class Command:
   """Command encapsulates a command issued by a user and with optional arguments."""
@@ -8,6 +9,15 @@ class Command:
     self.user_id = user_id
     self.command = command.strip().lower()
     self.args = args
+
+  @staticmethod
+  def parse(event):
+    """Parse command from RTM event."""
+    msg = event["text"].strip()
+    m = re.match(COMMAND_REGEX, msg)
+    if not m:
+      return None
+    return Command(event["user"], m.group(1), m.group(2).strip())
 
   def allowed(self):
     """Check if user, who wrote command is allowed to execute it."""

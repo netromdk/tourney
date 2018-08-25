@@ -90,9 +90,9 @@ def parse_events(events):
       msg = event["text"].strip()
       user_id = event["user"]
 
-      m = re.match(COMMAND_REGEX, msg)
-      if m:
-        handle_command(Command(user_id, m.group(1), m.group(2).strip()))
+      cmd = Command.parse(event)
+      if cmd:
+        handle_command(cmd)
         continue
 
       m = re.match(REACTION_REGEX, msg)
