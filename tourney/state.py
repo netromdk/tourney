@@ -71,6 +71,12 @@ class State:
   def teams(self):
     return self.__teams
 
+  def set_team_names(self, team_names):
+    self.__team_names = team_names
+
+  def team_names(self):
+    return self.__team_names
+
   def set_unrecorded_matches(self, unrecorded_matches):
     self.__unrecorded_matches = unrecorded_matches
 
@@ -88,6 +94,7 @@ class State:
     self.__reminder_announce = None
     self.__midday_announce = False
     self.__teams = []
+    self.__team_names = []
     self.__unrecorded_matches = []
 
   def save(self):
@@ -99,6 +106,7 @@ class State:
       "reminder_announce": self.reminder_announce(),
       "midday_announce": self.midday_announce(),
       "teams": self.teams(),
+      "team_names": self.team_names(),
       "unrecorded_matches": self.unrecorded_matches()
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
@@ -122,5 +130,7 @@ class State:
         self.set_midday_announce(data["midday_announce"])
       if "teams" in data:
         self.set_teams(data["teams"])
+      if "team_names" in data:
+        self.set_team_names(data["team_names"])
       if "unrecorded_matches" in data:
         self.set_unrecorded_matches(data["unrecorded_matches"])

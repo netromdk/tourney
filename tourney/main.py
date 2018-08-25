@@ -19,19 +19,24 @@ client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
 
 def create_teams():
+  """Create teams and random team names."""
   participants = State.get().participants()
   amount = len(participants)
   if amount < 4:
-    return None
+    return None, None
   lst = participants
   for i in range(3):
     shuffle(lst)
   teams = [lst[i:i+2] for i in range(0, amount, 2)]
+
   # Make last team of three persons if not even number.
   if amount % 2 != 0:
     teams[-2].append(teams[-1][0])
     del(teams[-1])
-  return teams
+
+  names = TEAM_NAMES
+  shuffle(names)
+  return teams, names[0:len(teams)]
 
 def pick_pairs(amount):
   """Picks non-overlapping team pairs of 2 rounds."""
@@ -54,7 +59,7 @@ def create_schedule(amount):
 def create_matches():
   state = State.get()
   response = "<!channel>\n"
-  teams = create_teams()
+  teams, names = create_teams()
   unrecorded_matches = []
   if teams is None:
     response += "No games possible! At least 4 players are required!"
@@ -62,18 +67,23 @@ def create_matches():
     response += "{} teams: ".format(len(teams))
     for i in range(len(teams)):
       fmt = ", ".join([lookup.user_name_by_id(uid) for uid in teams[i]])
-      response += "\n\t*T{}*: {}".format(i, fmt)
+      name = names[i]
+      response += "\n\t[T{}] *{}*: {}".format(i, name, fmt)
     sched = create_schedule(len(teams))
     response += "\n\nSchedule:"
     for match in sched:
       plural = "s" if match[2] > 1 else ""
-      response += "\n\t*T{}* vs. *T{}* ({} round{})".format(match[0], match[1], match[2], plural)
+      name_a = names[match[0]]
+      name_b = names[match[1]]
+      response += "\n\t[T{}] *{}* vs. [T{}] *{}* ({} round{})".\
+        format(match[0], name_a, match[1], name_b, match[2], plural)
       key = [match[0], match[1]]
       key.sort()
       unrecorded_matches.append(key)
 
     # Remember teams and unrecorded matches but clear participants and morning announce.
     state.set_teams(teams)
+    state.set_team_names(names)
     state.set_unrecorded_matches(unrecorded_matches)
     state.set_participants([])
     state.set_morning_announce(None)
@@ -247,6 +257,7 @@ Example: {}
       state.set_participants(list(itertools.chain.from_iterable(state.teams())))
 
       state.set_teams([])
+      state.set_team_names([])
       state.set_unrecorded_matches([])
       state.set_midday_announce(False)
       state.save()
