@@ -1,6 +1,7 @@
 import os
 import re
 import itertools
+import subprocess
 from time import sleep
 from datetime import datetime, date, timedelta
 from random import shuffle
@@ -142,6 +143,7 @@ As the foosball bot, I accept the following commands:
   `!mystats` - Prints statistics of all games about invoker.
   `!undoteams` - Undoes teams and matches and restores as joined participants. (*privileged!*)
   `!generate` - Generate teams and matches from joined participants. (*privileged!*)
+  `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
 
 Positive reactions: {}
 Negative reactions: {}
@@ -252,6 +254,9 @@ Example: {}
   elif command == "generate":
     create_matches()
     return
+  elif command == "autoupdate":
+    subprocess.Popen(["/bin/sh", "autoupdate.sh"])
+    exit(0)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
