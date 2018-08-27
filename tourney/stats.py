@@ -84,6 +84,10 @@ class Stats:
       self.__avg_score = total_score / amount
       self.__avg_delta = avg_delta / amount
 
+      # Average all players' total scores by the amount of rounds they played.
+      for player in player_scores:
+        player_scores[player] /= player_rounds[player]
+
       def sort(dict, amount):
         ranking = [(p, dict[p]) for p in dict]
         ranking.sort(key=lambda pair: pair[1], reverse=True)
@@ -112,8 +116,8 @@ Total rounds: {}
 Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
-Top {} players (by score): {}
-Top {} players (by rounds won): {}
+Top {} players (avg score / round): {}
+Top {} players (rounds won): {}
 """.format(self.__matches, self.__rounds, self.__total_score, self.__avg_score, self.__avg_delta, \
            self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
            self.__fmt_top(self.__top_winners, lookup))
@@ -183,7 +187,13 @@ and won {:.1f}% ({} rounds)!
       if "personal" in data:
         self.__personal = data["personal"]
 
+  def __fmt_num(self, num):
+    if isinstance(num, float):
+      return "{:.2f}".format(num)
+    return "{}".format(num)
+
   def __fmt_top(self, lst, lookup):
     return "\n\t" + \
-      "\n\t".join(["{} ({})".format(lookup.user_name_by_id(p[0]), p[1]) for p in lst])
+      "\n\t".join(["{} ({})".format(lookup.user_name_by_id(p[0]), self.__fmt_num(p[1])) \
+        for p in lst])
 
