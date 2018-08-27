@@ -34,9 +34,11 @@ class Stats:
     if amount == 0:
       return False
     else:
+      rounds = 0
       total_score = 0
       avg_delta = 0
       player_matches = {}
+      player_rounds = {}
       player_scores = {}
       player_wins = {}
 
@@ -63,12 +65,21 @@ class Stats:
         if score_b > score_a:
           win_team = team_b
           win_score = score_b
+
+        # Count rounds won.
+        match_rounds = (win_score // 8)
+        rounds += match_rounds
+
         for player in win_team:
           if player not in player_wins:
             player_wins[player] = 0
-          # Count rounds won.
-          player_wins[player] += (win_score // 8)
+          player_wins[player] += match_rounds
+        for player in team_a + team_b:
+          if player not in player_rounds:
+            player_rounds[player] = 0
+          player_rounds[player] += match_rounds
 
+      self.__rounds = rounds
       self.__total_score = total_score
       self.__avg_score = total_score / amount
       self.__avg_delta = avg_delta / amount
@@ -87,6 +98,7 @@ class Stats:
       for player in player_matches:
         info = {
           "total_matches": player_matches[player],
+          "total_rounds": player_rounds[player],
           "total_score": player_scores[player],
           "total_wins": player_wins[player],
         }
@@ -96,30 +108,35 @@ class Stats:
   def general_response(self, lookup):
     return """
 Total matches: {}
+Total rounds: {}
 Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (by score): {}
 Top {} players (by rounds won): {}
-""".format(self.__matches, self.__total_score, self.__avg_score, self.__avg_delta, \
+""".format(self.__matches, self.__rounds, self.__total_score, self.__avg_score, self.__avg_delta, \
            self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
            self.__fmt_top(self.__top_winners, lookup))
 
   def personal_response(self, lookup, user_id):
+    user_id = "p3"
     if not user_id in self.__personal:
       return "No personal statistics recorded yet!"
     stats = self.__personal[user_id]
+    rounds = stats["total_rounds"]
+    wins = stats["total_wins"]
+    win_ratio = wins / rounds * 100.0
     return """
-Total matches: {}
-Total score: {}
-Total won rounds: {}
-""".format(stats["total_matches"], stats["total_score"], stats["total_wins"])
+You scored {} goals in {} matches ({} rounds),
+and won {:.1f}% ({} rounds)!
+""".format(stats["total_score"], stats["total_matches"], rounds, win_ratio, wins)
 
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
 
   def reset(self):
     self.__matches = 0
+    self.__rounds = 0
     self.__total_score = 0
     self.__avg_score = 0.0
     self.__avg_delta = 0.0
@@ -131,6 +148,7 @@ Total won rounds: {}
   def save(self):
     data = {
       "matches": self.__matches,
+      "rounds": self.__rounds,
       "total_score": self.__total_score,
       "avg_score": self.__avg_score,
       "avg_delta": self.__avg_delta,
@@ -148,6 +166,8 @@ Total won rounds: {}
       data = json.load(fp)
       if "matches" in data:
         self.__matches = data["matches"]
+      if "rounds" in data:
+        self.__rounds = data["rounds"]
       if "total_score" in data:
         self.__total_score = data["total_score"]
       if "avg_score" in data:
