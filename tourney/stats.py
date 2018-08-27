@@ -84,9 +84,11 @@ class Stats:
       self.__avg_score = total_score / amount
       self.__avg_delta = avg_delta / amount
 
-      # Average all players' total scores by the amount of rounds they played.
+      # Average all players' total scores and won rounds by the amount of rounds they played.
       for player in player_scores:
         player_scores[player] /= player_rounds[player]
+      for player in player_wins:
+        player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
 
       def sort(dict, amount):
         ranking = [(p, dict[p]) for p in dict]
@@ -117,7 +119,7 @@ Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (avg score / round): {}
-Top {} players (rounds won): {}
+Top {} players (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__total_score, self.__avg_score, self.__avg_delta, \
            self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
            self.__fmt_top(self.__top_winners, lookup))
