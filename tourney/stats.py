@@ -125,7 +125,6 @@ Top {} players (% of rounds won): {}
            self.__fmt_top(self.__top_winners, lookup))
 
   def personal_response(self, lookup, user_id):
-    user_id = "p3"
     if not user_id in self.__personal:
       return "No personal statistics recorded yet!"
     stats = self.__personal[user_id]
