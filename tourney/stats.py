@@ -129,12 +129,12 @@ Top {} players (% of rounds won): {}
       return "No personal statistics recorded yet!"
     stats = self.__personal[user_id]
     rounds = stats["total_rounds"]
-    wins = stats["total_wins"]
-    win_ratio = wins / rounds * 100.0
+    win_perc = stats["total_wins"]
+    win_rounds = int(win_perc * rounds / 100.0)
     return """
-You scored {} goals in {} matches ({} rounds),
+You scored {:.2f} goals on average in {} matches ({} rounds),
 and won {:.1f}% ({} rounds)!
-""".format(stats["total_score"], stats["total_matches"], rounds, win_ratio, wins)
+""".format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds)
 
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
