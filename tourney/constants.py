@@ -16,7 +16,18 @@ MORNING_ANNOUNCE = time(9)
 REMINDER_ANNOUNCE = time(11)
 MIDDAY_ANNOUNCE = time(11, 50)
 
-POSITIVE_REACTIONS = ["+1", "the_horns", "metal", "raised_hands", "ok", "ok_hand", "fire"]
+POSITIVE_REACTIONS = [
+  "+1",
+  "the_horns",
+  "metal",
+  "raised_hands",
+  "ok",
+  "ok_hand",
+  "fire",
+  "tada",
+  "confetti_ball"
+]
+
 NEGATIVE_REACTIONS = ["-1", "middle_finger"]
 
 PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate"]
