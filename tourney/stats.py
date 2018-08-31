@@ -194,7 +194,17 @@ and won {:.1f}% ({} rounds)!
     return "{}".format(num)
 
   def __fmt_top(self, lst, lookup):
-    return "\n\t" + \
-      "\n\t".join(["{} ({})".format(lookup.user_name_by_id(p[0]), self.__fmt_num(p[1])) \
-        for p in lst])
-
+    """Expects that `self.__personal` has already been filled!"""
+    res = ""
+    i = 0
+    medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
+    for player in lst:
+      name = lookup.user_name_by_id(player[0])
+      num = self.__fmt_num(player[1])
+      rounds = self.__personal[player[0]]["total_rounds"]
+      medal = ""
+      if i < 3:
+        medal = ":{}: ".format(medals[i])
+      res += "\n\t{}{}: {} ({} rounds)".format(medal, name, num, rounds)
+      i += 1
+    return res
