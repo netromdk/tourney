@@ -41,6 +41,7 @@ class Stats:
       player_rounds = {}
       player_scores = {}
       player_wins = {}
+      teams = {}
 
       def player_score_count(team, score):
         for player in team:
@@ -51,10 +52,20 @@ class Stats:
             player_matches[player] = 0
           player_matches[player] += 1
 
+      def team_win_count(team_key, team, win_team, match_rounds):
+        if not team_key in teams:
+          teams[team_key] = (0, 0)
+        t = teams[team_key]
+        teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
+
       for match in matches:
         team_a = match[1]
+        team_a.sort()
+        team_a_key = ",".join(team_a) # lists/sets aren't hashable so turn into string.
         score_a = match[2]
         team_b = match[3]
+        team_b.sort()
+        team_b_key = ",".join(team_b) # Make hashable.
         score_b = match[4]
         total_score += score_a + score_b
         avg_delta += abs(score_a - score_b)
@@ -69,6 +80,10 @@ class Stats:
         # Count rounds won.
         match_rounds = (win_score // 8)
         rounds += match_rounds
+
+        # Count rounds and wins for team configurations.
+        team_win_count(team_a_key, team_a, win_team, match_rounds)
+        team_win_count(team_b_key, team_b, win_team, match_rounds)
 
         for player in win_team:
           if player not in player_wins:
@@ -90,6 +105,11 @@ class Stats:
       for player in player_wins:
         player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
 
+      # Substitute all team wins with the ratio of winning compared to rounds played.
+      for team in teams:
+        res = teams[team]
+        teams[team] = (res[0] / res[1], res[1])
+
       def sort(dict, amount):
         ranking = [(p, dict[p]) for p in dict]
         ranking.sort(key=lambda pair: pair[1], reverse=True)
@@ -99,6 +119,12 @@ class Stats:
       self.__top_amount = 5
       self.__top_scorers = sort(player_scores, self.__top_amount)
       self.__top_winners = sort(player_wins, self.__top_amount)
+      self.__top_teams = sort(teams, self.__top_amount)
+
+      # Substitute top team string representations with list: "p1,p2" -> ["p1", "p2"]
+      for i in range(len(self.__top_teams)):
+        team = self.__top_teams[i]
+        self.__top_teams[i] = (team[0].split(","), team[1])
 
       # Personal player info.
       for player in player_matches:
@@ -120,9 +146,11 @@ Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
+Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__total_score, self.__avg_score, self.__avg_delta, \
            self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
-           self.__fmt_top(self.__top_winners, lookup))
+           self.__fmt_top(self.__top_winners, lookup), self.__top_amount, \
+           self.__fmt_top_teams(self.__top_teams, lookup))
 
   def personal_response(self, lookup, user_id):
     if not user_id in self.__personal:
@@ -148,6 +176,7 @@ and won {:.1f}% ({} rounds)!
     self.__top_amount = 5
     self.__top_scorers = []
     self.__top_winners = []
+    self.__top_teams = []
     self.__personal = {}
 
   def save(self):
@@ -160,6 +189,7 @@ and won {:.1f}% ({} rounds)!
       "top_amount": self.__top_amount,
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
+      "top_teams": self.__top_teams,
       "personal": self.__personal
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
@@ -185,6 +215,8 @@ and won {:.1f}% ({} rounds)!
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
         self.__top_winners = data["top_winners"]
+      if "top_teams" in data:
+        self.__top_teams = data["top_teams"]
       if "personal" in data:
         self.__personal = data["personal"]
 
@@ -206,5 +238,20 @@ and won {:.1f}% ({} rounds)!
       if i < 3:
         medal = ":{}: ".format(medals[i])
       res += "\n\t{}{}: {} ({} rounds)".format(medal, name, num, rounds)
+      i += 1
+    return res
+
+  def __fmt_top_teams(self, lst, lookup):
+    res = ""
+    i = 0
+    medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
+    for team in lst:
+      names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
+      win_ratio = self.__fmt_num(team[1][0] * 100.0)
+      rounds = team[1][1]
+      medal = ""
+      if i < 3:
+        medal = ":{}: ".format(medals[i])
+      res += "\n\t{}{}: {} ({} rounds)".format(medal, names, win_ratio, rounds)
       i += 1
     return res
