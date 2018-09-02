@@ -219,7 +219,8 @@ Negative reactions: {}
               response = "Added scores!"
               rem = len(unrecorded_matches)
               if rem == 0:
-                response += "\nNo more matches left to record! Check `!stats`"
+                response += "\nNo more matches left to record!"
+                handle_command(Command(user_id, "stats"))
               else:
                 response += "\n{} matches left to record!".format(rem)
             else:
