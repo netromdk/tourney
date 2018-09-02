@@ -95,6 +95,7 @@ class Stats:
           player_rounds[player] += match_rounds
 
       self.__rounds = rounds
+      self.__team_amount = len(teams)
       self.__total_score = total_score
       self.__avg_score = total_score / amount
       self.__avg_delta = avg_delta / amount
@@ -141,14 +142,16 @@ class Stats:
     return """
 Total matches: {}
 Total rounds: {}
+Total teams: {}
 Total score: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
-""".format(self.__matches, self.__rounds, self.__total_score, self.__avg_score, self.__avg_delta, \
-           self.__top_amount, self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
+""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, \
+           self.__avg_score, self.__avg_delta, self.__top_amount, \
+           self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
            self.__fmt_top(self.__top_winners, lookup), self.__top_amount, \
            self.__fmt_top_teams(self.__top_teams, lookup))
 
@@ -170,6 +173,7 @@ and won {:.1f}% ({} rounds)!
   def reset(self):
     self.__matches = 0
     self.__rounds = 0
+    self.__team_amount = 0
     self.__total_score = 0
     self.__avg_score = 0.0
     self.__avg_delta = 0.0
@@ -183,6 +187,7 @@ and won {:.1f}% ({} rounds)!
     data = {
       "matches": self.__matches,
       "rounds": self.__rounds,
+      "team_amount": self.__team_amount,
       "total_score": self.__total_score,
       "avg_score": self.__avg_score,
       "avg_delta": self.__avg_delta,
@@ -203,6 +208,8 @@ and won {:.1f}% ({} rounds)!
         self.__matches = data["matches"]
       if "rounds" in data:
         self.__rounds = data["rounds"]
+      if "team_amount" in data:
+        self.__team_amount = data["team_amount"]
       if "total_score" in data:
         self.__total_score = data["total_score"]
       if "avg_score" in data:
