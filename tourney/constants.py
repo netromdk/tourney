@@ -7,6 +7,7 @@ DATA_PATH = "~/.tourney"
 
 CHANNEL_NAME = "foosball"
 RTM_READ_DELAY = 0.5 # seconds
+RECONNECT_DELAY = 5.0 # seconds
 
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 REACTION_REGEX = ":(.+):"

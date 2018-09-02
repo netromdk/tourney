@@ -335,11 +335,19 @@ def scheduled_actions():
     state.save()
 
 def connect():
-  if not client.rtm_connect(with_team_state=False):
-    print("Could not connect to Slack!")
-    exit(1)
+  delay = RECONNECT_DELAY
+  while True:
+    try:
+      # After successful connection, reconnect if connection drops.
+      ret = client.rtm_connect(reconnect=True, auto_reconnect=True, with_team_state=False)
+      if ret:
+        print("Connected!")
+        break
+    except Exception as ex:
+      print(ex)
 
-  print("Connected!")
+    print("Could not connect, retrying in {} seconds..".format(delay))
+    sleep(delay)
 
 def init():
   config = Config.get()
