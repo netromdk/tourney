@@ -164,7 +164,7 @@ Top {} teams (% of rounds won): {}
     win_rounds = int(win_perc * rounds / 100.0)
     return """
 You scored {:.2f} goals on average in {} matches ({} rounds),
-and won {:.1f}% ({} rounds)!
+and won {:.2f}% ({} rounds)!
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds)
 
   def file_path(self):
