@@ -111,16 +111,15 @@ class Stats:
         res = teams[team]
         teams[team] = (res[0] / res[1], res[1])
 
-      def sort(dict, amount):
+      def sort(dict):
         ranking = [(p, dict[p]) for p in dict]
         ranking.sort(key=lambda pair: pair[1], reverse=True)
-        return ranking[0:amount]
+        return ranking
 
       # Sort player scores and wins greatest first.
-      self.__top_amount = 5
-      self.__top_scorers = sort(player_scores, self.__top_amount)
-      self.__top_winners = sort(player_wins, self.__top_amount)
-      self.__top_teams = sort(teams, self.__top_amount)
+      self.__top_scorers = sort(player_scores)
+      self.__top_winners = sort(player_wins)
+      self.__top_teams = sort(teams)
 
       # Substitute top team string representations with list: "p1,p2" -> ["p1", "p2"]
       for i in range(len(self.__top_teams)):
@@ -139,6 +138,7 @@ class Stats:
     return True
 
   def general_response(self, lookup):
+    top_amount = 5
     return """
 Total matches: {}
 Total rounds: {}
@@ -150,10 +150,10 @@ Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, \
-           self.__avg_score, self.__avg_delta, self.__top_amount, \
-           self.__fmt_top(self.__top_scorers, lookup), self.__top_amount, \
-           self.__fmt_top(self.__top_winners, lookup), self.__top_amount, \
-           self.__fmt_top_teams(self.__top_teams, lookup))
+           self.__avg_score, self.__avg_delta, top_amount, \
+           self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount, \
+           self.__fmt_top(self.__top_winners, top_amount, lookup), top_amount, \
+           self.__fmt_top_teams(self.__top_teams, top_amount, lookup))
 
   def personal_response(self, lookup, user_id):
     if not user_id in self.__personal:
@@ -177,7 +177,6 @@ and won {:.2f}% ({} rounds)!
     self.__total_score = 0
     self.__avg_score = 0.0
     self.__avg_delta = 0.0
-    self.__top_amount = 5
     self.__top_scorers = []
     self.__top_winners = []
     self.__top_teams = []
@@ -191,7 +190,6 @@ and won {:.2f}% ({} rounds)!
       "total_score": self.__total_score,
       "avg_score": self.__avg_score,
       "avg_delta": self.__avg_delta,
-      "top_amount": self.__top_amount,
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
       "top_teams": self.__top_teams,
@@ -216,8 +214,6 @@ and won {:.2f}% ({} rounds)!
         self.__avg_score = data["avg_score"]
       if "avg_delta" in data:
         self.__avg_delta = data["avg_delta"]
-      if "top_amount" in data:
-        self.__top_amount = data["top_amount"]
       if "top_scorers" in data:
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
@@ -232,12 +228,12 @@ and won {:.2f}% ({} rounds)!
       return "{:.2f}".format(num)
     return "{}".format(num)
 
-  def __fmt_top(self, lst, lookup):
+  def __fmt_top(self, lst, amount, lookup):
     """Expects that `self.__personal` has already been filled!"""
     res = ""
     i = 0
     medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
-    for player in lst:
+    for player in lst[0:amount]:
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
       rounds = self.__personal[player[0]]["total_rounds"]
@@ -248,11 +244,11 @@ and won {:.2f}% ({} rounds)!
       i += 1
     return res
 
-  def __fmt_top_teams(self, lst, lookup):
+  def __fmt_top_teams(self, lst, amount, lookup):
     res = ""
     i = 0
     medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
-    for team in lst:
+    for team in lst[0:amount]:
       names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
       win_ratio = self.__fmt_num(team[1][0] * 100.0)
       rounds = team[1][1]
