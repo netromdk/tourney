@@ -111,25 +111,24 @@ class Stats:
         res = teams[team]
         teams[team] = (res[0] / res[1], res[1])
 
-      def sort(dict):
-        # Sort for value associated player, largest first.
+      def to_list(dict):
         ranking = [(p, dict[p]) for p in dict]
-        ranking.sort(key=lambda pair: pair[1], reverse=True)
         return ranking
 
-      # Sort players/teams with greatest scores and wins first.
-      self.__top_scorers = sort(player_scores)
-      self.__top_winners = sort(player_wins)
-      self.__top_teams = sort(teams)
+      # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
+      # nudge factor only count a 1/1000th.
+      self.__top_scorers = to_list(player_scores)
+      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]]/1000, reverse=True)
 
-      # Secondary sortings when having the same scores or wins.
-      self.__top_scorers.sort(key=lambda pair: player_wins[pair[0]], reverse=True)
-      self.__top_winners.sort(key=lambda pair: player_scores[pair[0]], reverse=True)
+      self.__top_winners = to_list(player_wins)
+      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]]/80, reverse=True)
 
       def teams_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
         avg_score = sum(scores) / len(scores)
-        return avg_score + pair[1][0]
+        return avg_score / 80 + pair[1][0]
+
+      self.__top_teams = to_list(teams)
       self.__top_teams.sort(key=teams_key, reverse=True)
 
       # Substitute top team string representations with list: "p1,p2" -> ["p1", "p2"]
