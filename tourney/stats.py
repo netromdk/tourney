@@ -149,6 +149,7 @@ class Stats:
 
   def general_response(self, lookup):
     top_amount = 5
+    team_amount = 10
     return """
 Total matches: {}
 Total rounds: {}
@@ -162,8 +163,8 @@ Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, \
            self.__avg_score, self.__avg_delta, top_amount, \
            self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount, \
-           self.__fmt_top(self.__top_winners, top_amount, lookup), top_amount, \
-           self.__fmt_top_teams(self.__top_teams, top_amount, lookup))
+           self.__fmt_top(self.__top_winners, top_amount, lookup), team_amount, \
+           self.__fmt_top_teams(self.__top_teams, team_amount, lookup))
 
   def personal_response(self, lookup, user_id):
     if not user_id in self.__personal:
