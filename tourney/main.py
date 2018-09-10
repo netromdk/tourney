@@ -233,6 +233,56 @@ Invalid arguments!
 Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
 Example: {}
 """.format(example)
+  elif command == "win" or command == "lose":
+    win = command == "win"
+    ephemeral = False
+    teams = state.teams()
+    unrecorded_matches = state.unrecorded_matches()
+    if len(teams) == 0:
+      response = "Cannot report scores when no teams have been created!"
+    else:
+      example = "`!{} 12 16`".format(command)
+      m = re.match(WIN_ARGS_REGEX, cmd.args)
+      if not m:
+        response = "Requires arguments for scores! Like {}".format(example)
+      else:
+        scores = list(map((int), m.groups()))
+        winIndex = scores.index(max(scores))
+        loseIndex = scores.index(min(scores))
+        if win:
+          myScore = int(winIndex)
+          theirScore = int(loseIndex)
+        else:
+          myScore = int(loseIndex)
+          theirScore = int(winIndex)
+        if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
+          myTeams = [x for x in teams if user_id in x]
+          if len(myTeams) == 1:
+            for myTeam in myTeams:
+              myTeamIndex = teams.index(myTeam)
+              myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
+              if len(myMatches) == 1:
+                myMatch = myMatches[0]
+                theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
+                theirTeam = teams[theirTeamIndex]
+
+                unrecorded_matches.remove(myMatch)
+                state.set_unrecorded_matches(unrecorded_matches)
+                state.save()
+                scores = Scores.get()
+                scores.add(myTeam, myScore, theirTeam, theirScore)
+                scores.save()
+                response = "Added scores for T{} v T{}!".format(myMatch[0], myMatch[1])
+              elif len(myMatches) > 1:
+                response = "You appear in multiple matches. Please use explicit scoring with !score."
+              else:
+                response = "Found no unscored matches with you as a player."
+          elif len(myTeams) > 1:
+            response = "You appear in multiple teams. Please use explicit scoring with !score."
+          else:
+            response = "You do not appear in any teams."
+        else:
+          response = "Scores must be positive and one be divisible by 8."
   elif command == "stats":
     ephemeral = False
     stats = Stats.get()
