@@ -252,11 +252,11 @@ Example: {}
         winIndex = scores.index(max(scores))
         loseIndex = scores.index(min(scores))
         if win:
-          myScore = int(winIndex)
-          theirScore = int(loseIndex)
+          myScore = scores[winIndex]
+          theirScore = scores[loseIndex]
         else:
-          myScore = int(loseIndex)
-          theirScore = int(winIndex)
+          myScore = scores[loseIndex]
+          theirScore = scores[winIndex]
         if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
           myTeams = [x for x in teams if user_id in x]
           if len(myTeams) == 1:
