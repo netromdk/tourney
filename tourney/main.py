@@ -258,27 +258,25 @@ Example: {}
         if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
           myTeams = [x for x in teams if user_id in x]
           if len(myTeams) == 1:
-            for myTeam in myTeams:
-              myTeamIndex = teams.index(myTeam)
-              myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
-              if len(myMatches) == 1:
-                myMatch = myMatches[0]
-                theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
-                theirTeam = teams[theirTeamIndex]
+            myTeam = myTeams[0]
+            myTeamIndex = teams.index(myTeam)
+            myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
+            if len(myMatches) == 1:
+              myMatch = myMatches[0]
+              theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
+              theirTeam = teams[theirTeamIndex]
 
-                unrecorded_matches.remove(myMatch)
-                state.set_unrecorded_matches(unrecorded_matches)
-                state.save()
-                scores = Scores.get()
-                scores.add(myTeam, myScore, theirTeam, theirScore)
-                scores.save()
-                response = "Added scores for T{} v T{}!".format(myMatch[0], myMatch[1])
-              elif len(myMatches) > 1:
-                response = "You appear in multiple matches. Please use explicit scoring with !score."
-              else:
-                response = "Found no unscored matches with you as a player."
-          elif len(myTeams) > 1:
-            response = "You appear in multiple teams. Please use explicit scoring with !score."
+              unrecorded_matches.remove(myMatch)
+              state.set_unrecorded_matches(unrecorded_matches)
+              state.save()
+              scores = Scores.get()
+              scores.add(myTeam, myScore, theirTeam, theirScore)
+              scores.save()
+              response = "Added scores for T{} v T{}!".format(myMatch[0], myMatch[1])
+            elif len(myMatches) > 1:
+              response = "You appear in multiple matches. Please use explicit scoring with !score."
+            else:
+              response = "Found no unscored matches with you as a player."
           else:
             response = "You do not appear in any teams."
         else:
