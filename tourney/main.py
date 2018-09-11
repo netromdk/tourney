@@ -272,7 +272,7 @@ Example: {}
               scores = Scores.get()
               scores.add(myTeam, myScore, theirTeam, theirScore)
               scores.save()
-              response = "Added scores for T{} v T{}!".format(myMatch[0], myMatch[1])
+              response = "Added scores for T{} ({} pts) v T{} ({} pts)!".format(myTeamIndex, myScore, theirTeamIndex, theirScore)
             elif len(myMatches) > 1:
               response = "You appear in multiple matches. Please use explicit scoring with !score."
             else:
