@@ -3,7 +3,7 @@ import re
 import itertools
 import subprocess
 from time import sleep
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from random import shuffle
 from slackclient import SlackClient
 
@@ -342,7 +342,7 @@ def scheduled_actions():
 
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
-  end = start + timedelta(hours=1)
+  end = start + MORNING_ANNOUNCE_DELTA
   if now >= start and now < end and not state.morning_announce():
     resp = client.api_call("chat.postMessage", channel=channel_id,
       text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
@@ -352,7 +352,7 @@ def scheduled_actions():
 
   # Reminder announcement for remaining participants to join game.
   start = datetime.combine(date.today(), REMINDER_ANNOUNCE)
-  end = start + timedelta(minutes=30)
+  end = start + REMINDER_ANNOUNCE_DELTA
   if now >= start and now < end and not state.reminder_announce():
     scores = Scores.get()
     remaining = scores.recent_users(7) - set(state.participants())
@@ -374,7 +374,7 @@ def scheduled_actions():
 
   # Midday announcement of game.
   start = datetime.combine(date.today(), MIDDAY_ANNOUNCE)
-  end = start + timedelta(minutes=10)
+  end = start + MIDDAY_ANNOUNCE_DELTA
   if now >= start and now < end and not state.midday_announce():
     state.set_midday_announce(True)
     state.save()

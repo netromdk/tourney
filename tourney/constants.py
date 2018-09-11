@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import time, timedelta
 
 # Will print all read events to stdout.
 DEBUG = False
@@ -15,8 +15,13 @@ SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
 WIN_ARGS_REGEX = "(\\d+)\\s+(\\d+)"
 
 MORNING_ANNOUNCE = time(9)
+MORNING_ANNOUNCE_DELTA = timedelta(hours=1)
+
 REMINDER_ANNOUNCE = time(11)
+REMINDER_ANNOUNCE_DELTA = timedelta(minutes=30)
+
 MIDDAY_ANNOUNCE = time(11, 50)
+MIDDAY_ANNOUNCE_DELTA = timedelta(minutes=10)
 
 POSITIVE_REACTIONS = [
   "+1",
