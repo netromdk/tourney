@@ -12,6 +12,7 @@ RECONNECT_DELAY = 5.0 # seconds
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
 REACTION_REGEX = ":(.+):"
 SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
+WIN_ARGS_REGEX = "(\\d+)\\s+(\\d+)"
 
 MORNING_ANNOUNCE = time(9)
 REMINDER_ANNOUNCE = time(11)
