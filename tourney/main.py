@@ -190,6 +190,7 @@ Negative reactions: {}
   elif command == "score":
     ephemeral = False
     teams = state.teams()
+    names = state.team_names()
     unrecorded_matches = state.unrecorded_matches()
     if len(teams) == 0:
       response = "Cannot report scores when no teams have been created!"
@@ -201,8 +202,10 @@ Negative reactions: {}
       else:
         team_a = int(m.group(1)[1:])
         team_a_score = int(m.group(2))
+        team_a_name = names[team_a]
         team_b = int(m.group(3)[1:])
         team_b_score = int(m.group(4))
+        team_b_name = names[team_b]
         r = range(len(teams))
         if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
            (team_a_score % 8 == 0 or team_b_score % 8 == 0):
@@ -218,7 +221,8 @@ Negative reactions: {}
               scores = Scores.get()
               scores.add(ids_a, team_a_score, ids_b, team_b_score)
               scores.save()
-              response = "Added scores!"
+              response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
+                format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
               rem = len(unrecorded_matches)
               if rem == 0:
                 response += "\nNo more matches left to record!"
@@ -239,6 +243,7 @@ Example: {}
     win = command == "win"
     ephemeral = False
     teams = state.teams()
+    names = state.team_names()
     unrecorded_matches = state.unrecorded_matches()
     if len(teams) == 0:
       response = "Cannot report scores when no teams have been created!"
@@ -262,11 +267,13 @@ Example: {}
           if len(myTeams) == 1:
             myTeam = myTeams[0]
             myTeamIndex = teams.index(myTeam)
+            myTeamName = names[myTeamIndex]
             myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
             if len(myMatches) == 1:
               myMatch = myMatches[0]
               theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
               theirTeam = teams[theirTeamIndex]
+              theirTeamName = names[theirTeamIndex]
 
               unrecorded_matches.remove(myMatch)
               state.set_unrecorded_matches(unrecorded_matches)
@@ -274,7 +281,8 @@ Example: {}
               scores = Scores.get()
               scores.add(myTeam, myScore, theirTeam, theirScore)
               scores.save()
-              response = "Added scores for T{} ({} pts) v T{} ({} pts)!".format(myTeamIndex, myScore, theirTeamIndex, theirScore)
+              response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
+                format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
               rem = len(unrecorded_matches)
               if rem == 0:
                 response += "\nNo more matches left to record!"
