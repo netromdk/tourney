@@ -275,6 +275,12 @@ Example: {}
               scores.add(myTeam, myScore, theirTeam, theirScore)
               scores.save()
               response = "Added scores for T{} ({} pts) v T{} ({} pts)!".format(myTeamIndex, myScore, theirTeamIndex, theirScore)
+              rem = len(unrecorded_matches)
+              if rem == 0:
+                response += "\nNo more matches left to record!"
+                handle_command(Command(user_id, "stats"))
+              else:
+                response += "\n{} matches left to record!".format(rem)
             elif len(myMatches) > 1:
               response = "You appear in multiple matches. Please use explicit scoring with !score."
             else:
