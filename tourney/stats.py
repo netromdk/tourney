@@ -3,6 +3,7 @@ import json
 
 from .constants import DATA_PATH
 from .scores import Scores
+from .util import fmt_duration
 
 class Stats:
   __instance = None
@@ -42,6 +43,8 @@ class Stats:
       player_scores = {}
       player_wins = {}
       teams = {}
+      oldest_time = None
+      newest_time = None
 
       def player_score_count(team, score):
         for player in team:
@@ -59,6 +62,16 @@ class Stats:
         teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
 
       for match in matches:
+        match_time = match[0]
+        if oldest_time is None:
+          oldest_time = match_time
+        elif newest_time is None:
+          newest_time = match_time
+        elif match_time < oldest_time:
+          oldest_time = match_time
+        elif match_time > newest_time:
+          newest_time = match_time
+
         team_a = match[1]
         team_a.sort()
         team_a_key = ",".join(team_a) # lists/sets aren't hashable so turn into string.
@@ -99,6 +112,8 @@ class Stats:
       self.__total_score = total_score
       self.__avg_score = total_score / amount
       self.__avg_delta = avg_delta / amount
+      self.__oldest_score_time = oldest_time
+      self.__newest_score_time = newest_time
 
       # Average all players' total scores and won rounds by the amount of rounds they played.
       for player in player_scores:
@@ -150,17 +165,19 @@ class Stats:
   def general_response(self, lookup):
     top_amount = 5
     team_amount = 10
+    total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
     return """
 Total matches: {}
 Total rounds: {}
 Total teams: {}
 Total score: {}
+Total duration: {}
 Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
-""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, \
+""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur, \
            self.__avg_score, self.__avg_delta, top_amount, \
            self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount, \
            self.__fmt_top(self.__top_winners, top_amount, lookup), team_amount, \
@@ -194,6 +211,8 @@ You have been in {} teams: {}
     self.__total_score = 0
     self.__avg_score = 0.0
     self.__avg_delta = 0.0
+    self.__oldest_score_time = None
+    self.__newest_score_time = None
     self.__top_scorers = []
     self.__top_winners = []
     self.__top_teams = []
@@ -207,6 +226,8 @@ You have been in {} teams: {}
       "total_score": self.__total_score,
       "avg_score": self.__avg_score,
       "avg_delta": self.__avg_delta,
+      "oldest_score_time": self.__oldest_score_time,
+      "newest_score_time": self.__newest_score_time,
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
       "top_teams": self.__top_teams,
@@ -231,6 +252,10 @@ You have been in {} teams: {}
         self.__avg_score = data["avg_score"]
       if "avg_delta" in data:
         self.__avg_delta = data["avg_delta"]
+      if "oldest_score_time" in data:
+        self.__oldest_score_time = data["oldest_score_time"]
+      if "newest_score_time" in data:
+        self.__newest_score_time = data["newest_score_time"]
       if "top_scorers" in data:
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
