@@ -118,15 +118,15 @@ class Stats:
       # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
       # nudge factor only count a 1/1000th.
       self.__top_scorers = to_list(player_scores)
-      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]]/1000, reverse=True)
+      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]]/10000, reverse=True)
 
       self.__top_winners = to_list(player_wins)
-      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]]/80, reverse=True)
+      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]]/800, reverse=True)
 
       def teams_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
         avg_score = sum(scores) / len(scores)
-        return avg_score / 80 + pair[1][0]
+        return avg_score / 800 + pair[1][0]
 
       self.__top_teams = to_list(teams)
       self.__top_teams.sort(key=teams_key, reverse=True)
