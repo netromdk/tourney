@@ -63,9 +63,8 @@ class Stats:
 
       for match in matches:
         match_time = match[0]
-        if oldest_time is None:
+        if oldest_time is None and newest_time is None:
           oldest_time = match_time
-        elif newest_time is None:
           newest_time = match_time
         elif match_time < oldest_time:
           oldest_time = match_time
