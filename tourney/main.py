@@ -191,6 +191,7 @@ Negative reactions: {}
       response = "{}, you've left today's game!".format(user_name)
   elif command == "score":
     ephemeral = False
+    channel_id = state.channel_id()
     teams = state.teams()
     names = state.team_names()
     unrecorded_matches = state.unrecorded_matches()
@@ -244,6 +245,7 @@ Example: {}
   elif command == "win" or command == "lose":
     win = command == "win"
     ephemeral = False
+    channel_id = state.channel_id()
     teams = state.teams()
     names = state.team_names()
     unrecorded_matches = state.unrecorded_matches()
