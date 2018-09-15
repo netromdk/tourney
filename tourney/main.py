@@ -135,7 +135,9 @@ def handle_command(cmd):
   command = cmd.command
   ephemeral = True
   state = State.get()
-  channel_id = state.channel_id()
+  channel_id = cmd.channel
+  if not channel_id:
+    channel_id = state.channel_id()
   participants = state.participants()
 
   if not cmd.allowed():
