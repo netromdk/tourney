@@ -12,6 +12,7 @@ from .help_command import HelpCommand
 from .list_command import ListCommand
 from .join_command import JoinCommand
 from .leave_command import LeaveCommand
+from .score_command import ScoreCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -117,6 +118,8 @@ def parse_command(event):
     cmd = JoinCommand()
   elif command == "leave":
     cmd = LeaveCommand()
+  elif command == "score":
+    cmd = ScoreCommand()
 
   if cmd is None:
     return None
@@ -179,59 +182,6 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "score":
-  #     ephemeral = False
-  #     channel_id = state.channel_id()
-  #     teams = state.teams()
-  #     names = state.team_names()
-  #     unrecorded_matches = state.unrecorded_matches()
-  #     if len(teams) == 0:
-  #       response = "Cannot report scores when no teams have been created!"
-  #     else:
-  #       example = "`!score T0 12 T3 16`"
-  #       m = re.match(SCORE_ARGS_REGEX, cmd.args)
-  #       if not m:
-  #         response = "Requires arguments for teams and scores! Like {}".format(example)
-  #       else:
-  #         team_a = int(m.group(1)[1:])
-  #         team_a_score = int(m.group(2))
-  #         team_a_name = names[team_a]
-  #         team_b = int(m.group(3)[1:])
-  #         team_b_score = int(m.group(4))
-  #         team_b_name = names[team_b]
-  #         r = range(len(teams))
-  #         if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
-  #            (team_a_score % 8 == 0 or team_b_score % 8 == 0):
-  #           key = [team_a, team_b]
-  #           key.sort()
-  #           if key in unrecorded_matches:
-  #             ids_a = teams[team_a]
-  #             ids_b = teams[team_b]
-  #             if user_id in ids_a or user_id in ids_b:
-  #               unrecorded_matches.remove(key)
-  #               state.set_unrecorded_matches(unrecorded_matches)
-  #               state.save()
-  #               scores = Scores.get()
-  #               scores.add(ids_a, team_a_score, ids_b, team_b_score)
-  #               scores.save()
-  #               response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
-  #                 format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
-  #               rem = len(unrecorded_matches)
-  #               if rem == 0:
-  #                 response += "\nNo more matches left to record!"
-  #                 handle_command(Command(user_id, "stats"))
-  #               else:
-  #                 response += "\n{} matches left to record!".format(rem)
-  #             else:
-  #               response = "Only players of a match can report the score!"
-  #           else:
-  #             response = "Match has already been recorded or isn't scheduled!"
-  #         else:
-  #           response = """
-  # Invalid arguments!
-  # Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
-  # Example: {}
-  # """.format(example)
   #   elif command == "win" or command == "lose":
   #     win = command == "win"
   #     ephemeral = False
