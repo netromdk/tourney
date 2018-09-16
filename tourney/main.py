@@ -1,6 +1,5 @@
 import os
 import re
-import itertools
 import subprocess
 from time import sleep
 from datetime import datetime, date
@@ -17,6 +16,7 @@ from .win_command import WinCommand
 from .lose_command import LoseCommand
 from .stats_command import StatsCommand
 from .mystats_command import MyStatsCommand
+from .undoteams_command import UndoTeamsCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -132,6 +132,8 @@ def parse_command(event):
     cmd = StatsCommand()
   elif command == "mystats":
     cmd = MyStatsCommand()
+  elif command == "undoteams":
+    cmd = UndoTeamsCommand()
 
   if cmd is None:
     return None
@@ -194,22 +196,6 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "undoteams":
-  #     ephemeral = False
-
-  #     if len(state.teams()) == 0:
-  #       response = "No teams and matches to dissolve!"
-  #     else:
-  #       # Flatten teams lists.
-  #       state.set_participants(list(itertools.chain.from_iterable(state.teams())))
-
-  #       state.set_teams([])
-  #       state.set_team_names([])
-  #       state.set_unrecorded_matches([])
-  #       state.set_midday_announce(False)
-  #       state.save()
-  #       response = \
-  #         "Games have been canceled, teams dissolved, and all players are on the market again!"
   #   elif command == "generate":
   #     create_matches()
   #     return
