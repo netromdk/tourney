@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .config import Config
-from .constants import PRIVILEGED_COMMANDS
+from .util import command_allowed
 
 class Command(ABC):
   """Command encapsulates a command issued by a user and with optional arguments."""
@@ -43,9 +42,7 @@ class Command(ABC):
 
   def allowed(self):
     """Check if user, who wrote command is allowed to execute it."""
-    if self.name() in PRIVILEGED_COMMANDS:
-      return self.user_id() in Config.get().privileged_users()
-    return True
+    return command_allowed(self.name(), self.user_id())
 
   @abstractmethod
   def execute(self, lookup=None):

@@ -23,6 +23,7 @@ from .constants import *
 from .scores import Scores
 from .config import Config
 from .stats import Stats
+from .util import command_allowed
 
 client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
 lookup = Lookup(client)
@@ -136,11 +137,12 @@ def parse_command(event):
     cmd = UndoTeamsCommand()
 
   # Special command handling.
-  elif command == "generate":
-    create_matches()
-  elif command == "autoupdate":
-    subprocess.Popen(["/bin/sh", "autoupdate.sh"])
-    exit(0)
+  if command_allowed(command, user_id):
+    if command == "generate":
+      create_matches()
+    elif command == "autoupdate":
+      subprocess.Popen(["/bin/sh", "autoupdate.sh"])
+      exit(0)
 
   if cmd is None:
     return None

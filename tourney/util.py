@@ -1,3 +1,6 @@
+from .constants import PRIVILEGED_COMMANDS
+from .config import Config
+
 def fmt_duration(secs, show_ms=False):
   ms = 0
   if isinstance(secs, float):
@@ -29,3 +32,8 @@ def fmt_duration(secs, show_ms=False):
     res.append("{}ms".format(ms))
 
   return " ".join(res)
+
+def command_allowed(cmd, user_id):
+  if cmd in PRIVILEGED_COMMANDS:
+    return user_id in Config.get().privileged_users()
+  return True
