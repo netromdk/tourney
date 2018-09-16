@@ -135,6 +135,13 @@ def parse_command(event):
   elif command == "undoteams":
     cmd = UndoTeamsCommand()
 
+  # Special command handling.
+  elif command == "generate":
+    create_matches()
+  elif command == "autoupdate":
+    subprocess.Popen(["/bin/sh", "autoupdate.sh"])
+    exit(0)
+
   if cmd is None:
     return None
 
@@ -181,7 +188,6 @@ def parse_events(events):
           handle_command(Command(event["user"], "leave"))
 
 def handle_command(cmd):
-  response = None
   user_id = cmd.user_id()
   user_name = lookup.user_name_by_id(user_id)
   command = cmd.name()
@@ -192,16 +198,11 @@ def handle_command(cmd):
     channel_id = state.channel_id()
   participants = state.participants()
 
+  response = None
   if not cmd.allowed():
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "generate":
-  #     create_matches()
-  #     return
-  #   elif command == "autoupdate":
-  #     subprocess.Popen(["/bin/sh", "autoupdate.sh"])
-  #     exit(0)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
