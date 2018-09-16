@@ -1,4 +1,3 @@
-import re
 from abc import ABC, abstractmethod
 
 from .config import Config
@@ -8,7 +7,7 @@ class Command(ABC):
   """Command encapsulates a command issued by a user and with optional arguments."""
 
   def __init__(self, name):
-    self.__name = name
+    self.__name = name.lower()
     self.__user_id = None
     self.__args = ""
     self.__channel = None
