@@ -49,6 +49,7 @@ class Command(ABC):
     return True
 
   @abstractmethod
-  def execute(self):
-    """Action to execute. Returns response to send or None on failure."""
+  def execute(self, lookup=None):
+    """Action to execute with optinal lookup class instance. Returns response to send or None on
+    failure."""
     pass

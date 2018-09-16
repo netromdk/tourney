@@ -5,7 +5,7 @@ class HelpCommand(Command):
   def __init__(self):
     super(HelpCommand, self).__init__("help")
 
-  def execute(self):
+  def execute(self, lookup=None):
     return """
 As the foosball bot, I accept the following commands:
   `!help` - Shows this text.
