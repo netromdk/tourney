@@ -15,7 +15,8 @@ from .config import Config
 from .stats import Stats
 from .util import command_allowed
 
-client = SlackClient(os.environ.get("TOURNEY_BOT_TOKEN"))
+bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
+client = SlackClient(bot_token)
 lookup = Lookup(client)
 
 def create_teams():
@@ -323,6 +324,10 @@ def repl():
     sleep(RTM_READ_DELAY)
 
 def start_tourney():
+  if not bot_token:
+    print("TOURNEY_BOT_TOKEN must be defined in environment!")
+    exit(1)
+
   connect()
   init()
   repl()
