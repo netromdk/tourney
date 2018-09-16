@@ -10,6 +10,7 @@ from slackclient import SlackClient
 from .command import Command
 from .help_command import HelpCommand
 from .list_command import ListCommand
+from .join_command import JoinCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -111,6 +112,8 @@ def parse_command(event):
     cmd = HelpCommand()
   elif command == "list":
     cmd = ListCommand()
+  elif command == "join":
+    cmd = JoinCommand()
 
   if cmd is None:
     return None
@@ -173,25 +176,6 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "list":
-  #     ephemeral = False
-  #     amount = len(participants)
-  #     if amount == 0:
-  #       response = "No players have joined yet!"
-  #     else:
-  #       response = "List of {} players for game of the day:".format(amount)
-  #       for uid in participants:
-  #         name = lookup.user_name_by_id(uid)
-  #         response += "\n\t{}".format(name)
-  #     if amount < 4:
-  #       response += "\nAt least 4 players are required to create matches."
-  #   elif command == "join":
-  #     if user_id not in participants:
-  #       state.add_participant(user_id)
-  #       state.save()
-  #       response = "{}, you've joined today's game!".format(user_name)
-  #     else:
-  #       response = "{}, you've _already_ joined today's game!".format(user_name)
   #   elif command == "leave":
   #     if user_id not in participants:
   #       response = "{}, you've _not_ joined today's game!".format(user_name)
