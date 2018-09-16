@@ -8,6 +8,7 @@ from random import shuffle
 from slackclient import SlackClient
 
 from .command import Command
+from .help_command import HelpCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -155,214 +156,216 @@ def parse_events(events):
 
 def handle_command(cmd):
   response = None
-  user_id = cmd.user_id
+  user_id = cmd.user_id()
   user_name = lookup.user_name_by_id(user_id)
-  command = cmd.command
+  command = cmd.name()
   ephemeral = True
   state = State.get()
-  channel_id = cmd.channel
+  channel_id = cmd.channel()
   if not channel_id:
     channel_id = state.channel_id()
   participants = state.participants()
 
   if not cmd.allowed():
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
+  else:
+    response = cmd.execute()
 
-  elif command == "help":
-    response = """
-As the foosball bot, I accept the following commands:
-  `!help` - Shows this text.
-  `!list` - List users that joined game of the day.
-  `!join` or positive reaction - Join game of the day.
-  `!leave` or negative reaction - Leave game of the day.
-  `!win` - Add match scores (irrelevant order) as a member of the winning team. Example: `!win 8 3`
-  `!lose` - Add match scores (irrelevant order) as a member of the losing team. Example: `!lose 8 3`
-  `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
-  `!stats` - Prints general statistics of all games.
-  `!mystats` - Prints statistics of all games about invoker.
-  `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
-  `!generate` - Generate teams and matches from players joined. (*privileged!*)
-  `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
+  #   elif command == "help":
+  #     response = """
+  # As the foosball bot, I accept the following commands:
+  #   `!help` - Shows this text.
+  #   `!list` - List users that joined game of the day.
+  #   `!join` or positive reaction - Join game of the day.
+  #   `!leave` or negative reaction - Leave game of the day.
+  #   `!win` - Add match scores (irrelevant order) as a member of the winning team. Example: `!win 8 3`
+  #   `!lose` - Add match scores (irrelevant order) as a member of the losing team. Example: `!lose 8 3`
+  #   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
+  #   `!stats` - Prints general statistics of all games.
+  #   `!mystats` - Prints statistics of all games about invoker.
+  #   `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
+  #   `!generate` - Generate teams and matches from players joined. (*privileged!*)
+  #   `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
 
-Positive reactions: {}
-Negative reactions: {}
-""".format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
-           " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
-  elif command == "list":
-    ephemeral = False
-    amount = len(participants)
-    if amount == 0:
-      response = "No players have joined yet!"
-    else:
-      response = "List of {} players for game of the day:".format(amount)
-      for uid in participants:
-        name = lookup.user_name_by_id(uid)
-        response += "\n\t{}".format(name)
-    if amount < 4:
-      response += "\nAt least 4 players are required to create matches."
-  elif command == "join":
-    if user_id not in participants:
-      state.add_participant(user_id)
-      state.save()
-      response = "{}, you've joined today's game!".format(user_name)
-    else:
-      response = "{}, you've _already_ joined today's game!".format(user_name)
-  elif command == "leave":
-    if user_id not in participants:
-      response = "{}, you've _not_ joined today's game!".format(user_name)
-    else:
-      state.remove_participant(user_id)
-      state.save()
-      response = "{}, you've left today's game!".format(user_name)
-  elif command == "score":
-    ephemeral = False
-    channel_id = state.channel_id()
-    teams = state.teams()
-    names = state.team_names()
-    unrecorded_matches = state.unrecorded_matches()
-    if len(teams) == 0:
-      response = "Cannot report scores when no teams have been created!"
-    else:
-      example = "`!score T0 12 T3 16`"
-      m = re.match(SCORE_ARGS_REGEX, cmd.args)
-      if not m:
-        response = "Requires arguments for teams and scores! Like {}".format(example)
-      else:
-        team_a = int(m.group(1)[1:])
-        team_a_score = int(m.group(2))
-        team_a_name = names[team_a]
-        team_b = int(m.group(3)[1:])
-        team_b_score = int(m.group(4))
-        team_b_name = names[team_b]
-        r = range(len(teams))
-        if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
-           (team_a_score % 8 == 0 or team_b_score % 8 == 0):
-          key = [team_a, team_b]
-          key.sort()
-          if key in unrecorded_matches:
-            ids_a = teams[team_a]
-            ids_b = teams[team_b]
-            if user_id in ids_a or user_id in ids_b:
-              unrecorded_matches.remove(key)
-              state.set_unrecorded_matches(unrecorded_matches)
-              state.save()
-              scores = Scores.get()
-              scores.add(ids_a, team_a_score, ids_b, team_b_score)
-              scores.save()
-              response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
-                format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
-              rem = len(unrecorded_matches)
-              if rem == 0:
-                response += "\nNo more matches left to record!"
-                handle_command(Command(user_id, "stats"))
-              else:
-                response += "\n{} matches left to record!".format(rem)
-            else:
-              response = "Only players of a match can report the score!"
-          else:
-            response = "Match has already been recorded or isn't scheduled!"
-        else:
-          response = """
-Invalid arguments!
-Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
-Example: {}
-""".format(example)
-  elif command == "win" or command == "lose":
-    win = command == "win"
-    ephemeral = False
-    channel_id = state.channel_id()
-    teams = state.teams()
-    names = state.team_names()
-    unrecorded_matches = state.unrecorded_matches()
-    if len(teams) == 0:
-      response = "Cannot report scores when no teams have been created!"
-    else:
-      example = "`!{} 12 16`".format(command)
-      m = re.match(WIN_ARGS_REGEX, cmd.args)
-      if not m:
-        response = "Requires arguments for scores! Like {}".format(example)
-      else:
-        scores = list(map((int), m.groups()))
-        winIndex = scores.index(max(scores))
-        loseIndex = scores.index(min(scores))
-        if win:
-          myScore = scores[winIndex]
-          theirScore = scores[loseIndex]
-        else:
-          myScore = scores[loseIndex]
-          theirScore = scores[winIndex]
-        if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
-          myTeams = [x for x in teams if user_id in x]
-          if len(myTeams) == 1:
-            myTeam = myTeams[0]
-            myTeamIndex = teams.index(myTeam)
-            myTeamName = names[myTeamIndex]
-            myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
-            if len(myMatches) == 1:
-              myMatch = myMatches[0]
-              theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
-              theirTeam = teams[theirTeamIndex]
-              theirTeamName = names[theirTeamIndex]
+  # Positive reactions: {}
+  # Negative reactions: {}
+  # """.format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
+  #            " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
+  #   elif command == "list":
+  #     ephemeral = False
+  #     amount = len(participants)
+  #     if amount == 0:
+  #       response = "No players have joined yet!"
+  #     else:
+  #       response = "List of {} players for game of the day:".format(amount)
+  #       for uid in participants:
+  #         name = lookup.user_name_by_id(uid)
+  #         response += "\n\t{}".format(name)
+  #     if amount < 4:
+  #       response += "\nAt least 4 players are required to create matches."
+  #   elif command == "join":
+  #     if user_id not in participants:
+  #       state.add_participant(user_id)
+  #       state.save()
+  #       response = "{}, you've joined today's game!".format(user_name)
+  #     else:
+  #       response = "{}, you've _already_ joined today's game!".format(user_name)
+  #   elif command == "leave":
+  #     if user_id not in participants:
+  #       response = "{}, you've _not_ joined today's game!".format(user_name)
+  #     else:
+  #       state.remove_participant(user_id)
+  #       state.save()
+  #       response = "{}, you've left today's game!".format(user_name)
+  #   elif command == "score":
+  #     ephemeral = False
+  #     channel_id = state.channel_id()
+  #     teams = state.teams()
+  #     names = state.team_names()
+  #     unrecorded_matches = state.unrecorded_matches()
+  #     if len(teams) == 0:
+  #       response = "Cannot report scores when no teams have been created!"
+  #     else:
+  #       example = "`!score T0 12 T3 16`"
+  #       m = re.match(SCORE_ARGS_REGEX, cmd.args)
+  #       if not m:
+  #         response = "Requires arguments for teams and scores! Like {}".format(example)
+  #       else:
+  #         team_a = int(m.group(1)[1:])
+  #         team_a_score = int(m.group(2))
+  #         team_a_name = names[team_a]
+  #         team_b = int(m.group(3)[1:])
+  #         team_b_score = int(m.group(4))
+  #         team_b_name = names[team_b]
+  #         r = range(len(teams))
+  #         if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
+  #            (team_a_score % 8 == 0 or team_b_score % 8 == 0):
+  #           key = [team_a, team_b]
+  #           key.sort()
+  #           if key in unrecorded_matches:
+  #             ids_a = teams[team_a]
+  #             ids_b = teams[team_b]
+  #             if user_id in ids_a or user_id in ids_b:
+  #               unrecorded_matches.remove(key)
+  #               state.set_unrecorded_matches(unrecorded_matches)
+  #               state.save()
+  #               scores = Scores.get()
+  #               scores.add(ids_a, team_a_score, ids_b, team_b_score)
+  #               scores.save()
+  #               response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
+  #                 format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
+  #               rem = len(unrecorded_matches)
+  #               if rem == 0:
+  #                 response += "\nNo more matches left to record!"
+  #                 handle_command(Command(user_id, "stats"))
+  #               else:
+  #                 response += "\n{} matches left to record!".format(rem)
+  #             else:
+  #               response = "Only players of a match can report the score!"
+  #           else:
+  #             response = "Match has already been recorded or isn't scheduled!"
+  #         else:
+  #           response = """
+  # Invalid arguments!
+  # Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
+  # Example: {}
+  # """.format(example)
+  #   elif command == "win" or command == "lose":
+  #     win = command == "win"
+  #     ephemeral = False
+  #     channel_id = state.channel_id()
+  #     teams = state.teams()
+  #     names = state.team_names()
+  #     unrecorded_matches = state.unrecorded_matches()
+  #     if len(teams) == 0:
+  #       response = "Cannot report scores when no teams have been created!"
+  #     else:
+  #       example = "`!{} 12 16`".format(command)
+  #       m = re.match(WIN_ARGS_REGEX, cmd.args)
+  #       if not m:
+  #         response = "Requires arguments for scores! Like {}".format(example)
+  #       else:
+  #         scores = list(map((int), m.groups()))
+  #         winIndex = scores.index(max(scores))
+  #         loseIndex = scores.index(min(scores))
+  #         if win:
+  #           myScore = scores[winIndex]
+  #           theirScore = scores[loseIndex]
+  #         else:
+  #           myScore = scores[loseIndex]
+  #           theirScore = scores[winIndex]
+  #         if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
+  #           myTeams = [x for x in teams if user_id in x]
+  #           if len(myTeams) == 1:
+  #             myTeam = myTeams[0]
+  #             myTeamIndex = teams.index(myTeam)
+  #             myTeamName = names[myTeamIndex]
+  #             myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
+  #             if len(myMatches) == 1:
+  #               myMatch = myMatches[0]
+  #               theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
+  #               theirTeam = teams[theirTeamIndex]
+  #               theirTeamName = names[theirTeamIndex]
 
-              unrecorded_matches.remove(myMatch)
-              state.set_unrecorded_matches(unrecorded_matches)
-              state.save()
-              scores = Scores.get()
-              scores.add(myTeam, myScore, theirTeam, theirScore)
-              scores.save()
-              response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
-                format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
-              rem = len(unrecorded_matches)
-              if rem == 0:
-                response += "\nNo more matches left to record!"
-                handle_command(Command(user_id, "stats"))
-              else:
-                response += "\n{} matches left to record!".format(rem)
-            elif len(myMatches) > 1:
-              response = "You appear in multiple matches. Please use explicit scoring with !score."
-            else:
-              response = "Found no unscored matches with you as a player."
-          else:
-            response = "You do not appear in any teams."
-        else:
-          response = "Scores must be positive and one be divisible by 8."
-  elif command == "stats":
-    ephemeral = False
-    stats = Stats.get()
-    if not stats.generate():
-      response = "There are no recorded matches to generate statistics from!"
-    else:
-      stats.save()
-      response = stats.general_response(lookup)
-  elif command == "mystats":
-    stats = Stats.get()
-    if not stats.generate():
-      response = "There are no recorded matches to generate statistics from!"
-    else:
-      stats.save()
-      response = stats.personal_response(lookup, user_id)
-  elif command == "undoteams":
-    ephemeral = False
+  #               unrecorded_matches.remove(myMatch)
+  #               state.set_unrecorded_matches(unrecorded_matches)
+  #               state.save()
+  #               scores = Scores.get()
+  #               scores.add(myTeam, myScore, theirTeam, theirScore)
+  #               scores.save()
+  #               response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
+  #                 format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
+  #               rem = len(unrecorded_matches)
+  #               if rem == 0:
+  #                 response += "\nNo more matches left to record!"
+  #                 handle_command(Command(user_id, "stats"))
+  #               else:
+  #                 response += "\n{} matches left to record!".format(rem)
+  #             elif len(myMatches) > 1:
+  #               response = "You appear in multiple matches. Please use explicit scoring with !score."
+  #             else:
+  #               response = "Found no unscored matches with you as a player."
+  #           else:
+  #             response = "You do not appear in any teams."
+  #         else:
+  #           response = "Scores must be positive and one be divisible by 8."
+  #   elif command == "stats":
+  #     ephemeral = False
+  #     stats = Stats.get()
+  #     if not stats.generate():
+  #       response = "There are no recorded matches to generate statistics from!"
+  #     else:
+  #       stats.save()
+  #       response = stats.general_response(lookup)
+  #   elif command == "mystats":
+  #     stats = Stats.get()
+  #     if not stats.generate():
+  #       response = "There are no recorded matches to generate statistics from!"
+  #     else:
+  #       stats.save()
+  #       response = stats.personal_response(lookup, user_id)
+  #   elif command == "undoteams":
+  #     ephemeral = False
 
-    if len(state.teams()) == 0:
-      response = "No teams and matches to dissolve!"
-    else:
-      # Flatten teams lists.
-      state.set_participants(list(itertools.chain.from_iterable(state.teams())))
+  #     if len(state.teams()) == 0:
+  #       response = "No teams and matches to dissolve!"
+  #     else:
+  #       # Flatten teams lists.
+  #       state.set_participants(list(itertools.chain.from_iterable(state.teams())))
 
-      state.set_teams([])
-      state.set_team_names([])
-      state.set_unrecorded_matches([])
-      state.set_midday_announce(False)
-      state.save()
-      response = \
-        "Games have been canceled, teams dissolved, and all players are on the market again!"
-  elif command == "generate":
-    create_matches()
-    return
-  elif command == "autoupdate":
-    subprocess.Popen(["/bin/sh", "autoupdate.sh"])
-    exit(0)
+  #       state.set_teams([])
+  #       state.set_team_names([])
+  #       state.set_unrecorded_matches([])
+  #       state.set_midday_announce(False)
+  #       state.save()
+  #       response = \
+  #         "Games have been canceled, teams dissolved, and all players are on the market again!"
+  #   elif command == "generate":
+  #     create_matches()
+  #     return
+  #   elif command == "autoupdate":
+  #     subprocess.Popen(["/bin/sh", "autoupdate.sh"])
+  #     exit(0)
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
