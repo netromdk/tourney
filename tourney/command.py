@@ -12,6 +12,7 @@ class Command(ABC):
     self.__user_id = None
     self.__args = ""
     self.__channel = None
+    self.__ephemeral = True
 
   def name(self):
     """Command name."""
@@ -34,6 +35,12 @@ class Command(ABC):
 
   def set_channel(self, channel):
     self.__channel = channel
+
+  def ephemeral(self):
+    return self.__ephemeral
+
+  def set_ephemeral(self, ephemeral):
+    self.__ephemeral = ephemeral
 
   def allowed(self):
     """Check if user, who wrote command is allowed to execute it."""

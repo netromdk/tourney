@@ -159,7 +159,7 @@ def handle_command(cmd):
   user_id = cmd.user_id()
   user_name = lookup.user_name_by_id(user_id)
   command = cmd.name()
-  ephemeral = True
+  ephemeral = cmd.ephemeral()
   state = State.get()
   channel_id = cmd.channel()
   if not channel_id:
