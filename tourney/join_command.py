@@ -4,7 +4,6 @@ from .state import State
 class JoinCommand(Command):
   def __init__(self):
     super(JoinCommand, self).__init__("join")
-    self.set_ephemeral(False)
 
   def execute(self, lookup=None):
     state = State.get()
