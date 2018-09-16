@@ -11,6 +11,7 @@ from .command import Command
 from .help_command import HelpCommand
 from .list_command import ListCommand
 from .join_command import JoinCommand
+from .leave_command import LeaveCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -114,6 +115,8 @@ def parse_command(event):
     cmd = ListCommand()
   elif command == "join":
     cmd = JoinCommand()
+  elif command == "leave":
+    cmd = LeaveCommand()
 
   if cmd is None:
     return None
@@ -176,13 +179,6 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "leave":
-  #     if user_id not in participants:
-  #       response = "{}, you've _not_ joined today's game!".format(user_name)
-  #     else:
-  #       state.remove_participant(user_id)
-  #       state.save()
-  #       response = "{}, you've left today's game!".format(user_name)
   #   elif command == "score":
   #     ephemeral = False
   #     channel_id = state.channel_id()
