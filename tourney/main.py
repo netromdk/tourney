@@ -6,17 +6,7 @@ from datetime import datetime, date
 from random import shuffle
 from slackclient import SlackClient
 
-from .command import Command
-from .help_command import HelpCommand
-from .list_command import ListCommand
-from .join_command import JoinCommand
-from .leave_command import LeaveCommand
-from .score_command import ScoreCommand
-from .win_command import WinCommand
-from .lose_command import LoseCommand
-from .stats_command import StatsCommand
-from .mystats_command import MyStatsCommand
-from .undoteams_command import UndoTeamsCommand
+from .commands import *
 from .state import State
 from .lookup import Lookup
 from .constants import *

@@ -1,9 +1,10 @@
 import re
 
 from .command import Command
-from .state import State
-from .constants import SCORE_ARGS_REGEX
-from .scores import Scores
+
+from tourney.state import State
+from tourney.constants import SCORE_ARGS_REGEX
+from tourney.scores import Scores
 
 class ScoreCommand(Command):
   def __init__(self):

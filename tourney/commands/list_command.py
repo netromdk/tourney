@@ -1,5 +1,6 @@
 from .command import Command
-from .state import State
+
+from tourney.state import State
 
 class ListCommand(Command):
   def __init__(self):

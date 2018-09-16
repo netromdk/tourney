@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .util import command_allowed
+from tourney.util import command_allowed
 
 class Command(ABC):
   """Command encapsulates a command issued by a user and with optional arguments."""

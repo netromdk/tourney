@@ -1,8 +1,8 @@
 import re
 
-from .state import State
-from .scores import Scores
-from .constants import WIN_ARGS_REGEX
+from tourney.state import State
+from tourney.scores import Scores
+from tourney.constants import WIN_ARGS_REGEX
 
 def handle_win_lose(cmd, lookup):
   """Handles both WinCommand and LoseCommand execution."""

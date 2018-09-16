@@ -1,5 +1,6 @@
 from .command import Command
-from .constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS
+
+from tourney.constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS
 
 class HelpCommand(Command):
   def __init__(self):

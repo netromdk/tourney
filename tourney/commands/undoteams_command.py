@@ -1,7 +1,8 @@
 import itertools
 
 from .command import Command
-from .state import State
+
+from tourney.state import State
 
 class UndoTeamsCommand(Command):
   def __init__(self):
