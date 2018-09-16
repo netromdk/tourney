@@ -92,6 +92,30 @@ def create_matches():
   channel_id = state.channel_id()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
+def parse_command(event):
+  msg = event["text"].strip()
+  user_id = event["user"]
+  channel = event["channel"]
+
+  m = re.match(COMMAND_REGEX, msg)
+  if not m:
+    return None
+
+  command = m.group(1).lower()
+  args = m.group(2).strip()
+
+  cmd = None
+  if command == "help":
+    cmd = HelpCommand()
+
+  if cmd is None:
+    return None
+
+  cmd.set_user_id(user_id)
+  cmd.set_args(args)
+  cmd.set_channel(channel)
+  return cmd
+
 def parse_events(events):
   for event in events:
     event_type = event["type"]
@@ -101,7 +125,8 @@ def parse_events(events):
       msg = event["text"].strip()
       user_id = event["user"]
 
-      cmd = Command.parse(event)
+      # Parse command.
+      cmd = parse_command(event)
       if cmd:
         handle_command(cmd)
         continue
