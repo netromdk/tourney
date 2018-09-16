@@ -9,6 +9,7 @@ from slackclient import SlackClient
 
 from .command import Command
 from .help_command import HelpCommand
+from .list_command import ListCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -108,6 +109,8 @@ def parse_command(event):
   cmd = None
   if command == "help":
     cmd = HelpCommand()
+  elif command == "list":
+    cmd = ListCommand()
 
   if cmd is None:
     return None
