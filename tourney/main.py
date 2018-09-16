@@ -160,6 +160,7 @@ def parse_events(events):
     if event_type == "message" and not "subtype" in event:
       msg = event["text"].strip()
       user_id = event["user"]
+      channel_id = event["channel"]
 
       # Parse command.
       cmd = parse_command(event)
@@ -171,9 +172,9 @@ def parse_events(events):
       if m:
         reaction = m.group(1)
         if reaction in POSITIVE_REACTIONS:
-          handle_command(Command(user_id, "join"))
+          handle_command_direct("!join", user_id, channel_id)
         elif reaction in NEGATIVE_REACTIONS:
-          handle_command(Command(user_id, "leave"))
+          handle_command_direct("!leave", user_id, channel_id)
 
     # Adding a positive reaction to morning or reminder announce message will join game, negative
     # will leave game, and removing reaction will do the opposite action.
@@ -182,12 +183,25 @@ def parse_events(events):
       pos = (event["reaction"] in POSITIVE_REACTIONS)
       neg = (event["reaction"] in NEGATIVE_REACTIONS)
       ts = event["item"]["ts"]
+      channel = event["item"]["channel"]
       state = State.get()
-      if ts == state.morning_announce() or ts == state.reminder_announce():
+      if True: #ts == state.morning_announce() or ts == state.reminder_announce():
         if (added and pos) or (not added and neg):
-          handle_command(Command(event["user"], "join"))
+          handle_command_direct("!join", event["user"], channel)
         elif (added and neg) or (not added and pos):
-          handle_command(Command(event["user"], "leave"))
+          handle_command_direct("!leave", event["user"], channel)
+
+def handle_command_direct(cmd, user_id, channel_id=None):
+  """Handle command in short hand style."""
+  event = {}
+  event["text"] = cmd
+  event["user"] = user_id
+  event["channel"] = State.get().channel_id()
+  if channel_id is not None:
+    event["channel"] = channel_id
+  cmd = parse_command(event)
+  if cmd:
+    handle_command(cmd)
 
 def handle_command(cmd):
   user_id = cmd.user_id()
