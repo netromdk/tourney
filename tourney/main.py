@@ -15,6 +15,7 @@ from .leave_command import LeaveCommand
 from .score_command import ScoreCommand
 from .win_command import WinCommand
 from .lose_command import LoseCommand
+from .stats_command import StatsCommand
 from .state import State
 from .lookup import Lookup
 from .constants import *
@@ -126,6 +127,8 @@ def parse_command(event):
     cmd = WinCommand()
   elif command == "lose":
     cmd = LoseCommand()
+  elif command == "stats":
+    cmd = StatsCommand()
 
   if cmd is None:
     return None
@@ -188,14 +191,6 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
-  #   elif command == "stats":
-  #     ephemeral = False
-  #     stats = Stats.get()
-  #     if not stats.generate():
-  #       response = "There are no recorded matches to generate statistics from!"
-  #     else:
-  #       stats.save()
-  #       response = stats.general_response(lookup)
   #   elif command == "mystats":
   #     stats = Stats.get()
   #     if not stats.generate():
