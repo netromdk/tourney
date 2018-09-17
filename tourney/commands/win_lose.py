@@ -14,7 +14,7 @@ def handle_win_lose(cmd, lookup):
   if len(teams) == 0:
     return "Cannot report scores when no teams have been created!"
 
-  example = "`!{} 12 16`".format(command)
+  example = "`!{} 12 16`".format(cmd.name())
   m = re.match(WIN_ARGS_REGEX, cmd.args)
   if not m:
     return "Requires arguments for scores! Like {}".format(example)
