@@ -117,11 +117,8 @@ def parse_command(event):
   elif command == "score":
     cmd = ScoreCommand()
     channel = state.channel_id() # Always write response in main channel.
-  elif command == "win":
-    cmd = WinCommand()
-    channel = state.channel_id()
-  elif command == "lose":
-    cmd = LoseCommand()
+  elif command == "win" or command == "lose":
+    cmd = WinLoseCommand(command)
     channel = state.channel_id()
   elif command == "stats":
     cmd = StatsCommand()

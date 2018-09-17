@@ -4,8 +4,7 @@ from .list_command import ListCommand
 from .join_command import JoinCommand
 from .leave_command import LeaveCommand
 from .score_command import ScoreCommand
-from .win_command import WinCommand
-from .lose_command import LoseCommand
+from .win_lose_command import WinLoseCommand
 from .stats_command import StatsCommand
 from .mystats_command import MyStatsCommand
 from .undoteams_command import UndoTeamsCommand
@@ -17,8 +16,7 @@ __all__ = [
   "JoinCommand",
   "LeaveCommand",
   "ScoreCommand",
-  "WinCommand",
-  "LoseCommand",
+  "WinLoseCommand",
   "StatsCommand",
   "MyStatsCommand",
   "UndoTeamsCommand"
