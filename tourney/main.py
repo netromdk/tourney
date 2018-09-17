@@ -104,7 +104,7 @@ def parse_command(event):
 
   command = m.group(1).lower()
   args = m.group(2).strip()
-
+  state = State.get()
   cmd = None
   if command == "help":
     cmd = HelpCommand()
@@ -116,10 +116,13 @@ def parse_command(event):
     cmd = LeaveCommand()
   elif command == "score":
     cmd = ScoreCommand()
+    channel = state.channel_id() # Always write response in main channel.
   elif command == "win":
     cmd = WinCommand()
+    channel = state.channel_id()
   elif command == "lose":
     cmd = LoseCommand()
+    channel = state.channel_id()
   elif command == "stats":
     cmd = StatsCommand()
   elif command == "mystats":
