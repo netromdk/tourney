@@ -5,7 +5,6 @@ from tourney.stats import Stats
 class MyStatsCommand(Command):
   def __init__(self):
     super(MyStatsCommand, self).__init__("mystats")
-    self.set_ephemeral(False)
 
   def execute(self, lookup=None):
     stats = Stats.get()
