@@ -21,7 +21,7 @@ class ScoreCommand(Command):
       return "Cannot report scores when no teams have been created!"
 
     example = "`!score T0 12 T3 16`"
-    m = re.match(SCORE_ARGS_REGEX, cmd.args)
+    m = re.match(SCORE_ARGS_REGEX, cmd.args())
     if not m:
       return "Requires arguments for teams and scores! Like {}".format(example)
 

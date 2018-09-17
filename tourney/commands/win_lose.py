@@ -15,7 +15,7 @@ def handle_win_lose(cmd, lookup):
     return "Cannot report scores when no teams have been created!"
 
   example = "`!{} 12 16`".format(cmd.name())
-  m = re.match(WIN_ARGS_REGEX, cmd.args)
+  m = re.match(WIN_ARGS_REGEX, cmd.args())
   if not m:
     return "Requires arguments for scores! Like {}".format(example)
 
@@ -31,7 +31,7 @@ def handle_win_lose(cmd, lookup):
 
   response = ""
   if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
-    myTeams = [x for x in teams if user_id in x]
+    myTeams = [x for x in teams if cmd.user_id() in x]
     if len(myTeams) == 1:
       myTeam = myTeams[0]
       myTeamIndex = teams.index(myTeam)
