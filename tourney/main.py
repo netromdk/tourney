@@ -176,7 +176,7 @@ def parse_events(events):
       ts = event["item"]["ts"]
       channel = event["item"]["channel"]
       state = State.get()
-      if True: #ts == state.morning_announce() or ts == state.reminder_announce():
+      if ts == state.morning_announce() or ts == state.reminder_announce():
         if (added and pos) or (not added and neg):
           handle_command_direct("!join", event["user"], channel)
         elif (added and neg) or (not added and pos):
