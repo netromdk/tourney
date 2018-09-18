@@ -22,3 +22,6 @@ class RtfmAchievement(Achievement):
       self.data[user_id] = True
       return True
     return False
+
+  def achieved(self, user_id):
+    return user_id in self.data and self.data[user_id]

@@ -28,10 +28,13 @@ class Achievements:
   def interact(self, behavior):
     """Interact given specified behavior and update with each achievement accepting it."""
     for achiev in self.__achievements:
-      if achiev.accepts(behavior.kind()):
-        achiev.update(behavior)
-        # TODO: Check if achievement was obtained via the behavior.
+      if achiev.accepts(behavior.kind()) and achiev.update(behavior):
+        self.__broadcast_achievement(behavior.user_id(), achiev)
     self.save()
+
+  def __broadcast_achievement(self, user_id, achiev):
+    # TODO: Post to slack!
+    print("{} achieved: {}".format(user_id, achiev.current_progress(user_id)))
 
   def file_path(self):
     return os.path.expanduser("{}/achievements.json".format(DATA_PATH))

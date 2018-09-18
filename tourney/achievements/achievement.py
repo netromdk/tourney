@@ -36,3 +36,15 @@ class Achievement(ABC):
     """Update achievement progress given behavior.
     Must return True if achievement was obtained, and False otherwise."""
     pass
+
+  @abstractmethod
+  def achieved(self, user_id):
+    """Whether or not user achived the achievement."""
+    pass
+
+  def current_progress(self, user_id):
+    """Returns formatted string of current progress for user."""
+    res = "{}: {}".format(self.name(), self.description())
+    if self.achieved(user_id):
+      res += " :+1:"
+    return res
