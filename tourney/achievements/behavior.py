@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 # Kinds of behaviors.
-WIN_BEHAVIOR = 0 # Win a game.
+INVOKE_BEHAVIOR = 0 # Invoke a command.
+WIN_BEHAVIOR = 1 # Win a game.
 
 class Behavior(ABC):
   """Behavior encapsulates behavior observed from users."""
