@@ -1,6 +1,8 @@
 import os
 import json
 
+from .rtfm_achievement import RtfmAchievement
+
 from tourney.constants import DATA_PATH
 
 class Achievements:
@@ -23,18 +25,29 @@ class Achievements:
       return Achievements()
     return Achievements.__instance
 
+  def interact(self, behavior):
+    """Interact given specified behavior and update with each achievement accepting it."""
+    for achiev in self.__achievements:
+      if achiev.accepts(behavior.kind()):
+        achiev.update(behavior)
+        # TODO: Check if achievement was obtained via the behavior.
+
   def file_path(self):
     return os.path.expanduser("{}/achievements.json".format(DATA_PATH))
 
   def reset(self):
     # Achievement instances.
-    self.__achievements = []
-    # TODO: Lead each kind of achievement as instances.
+    self.__achievements = [
+      RtfmAchievement()
+    ]
 
   def save(self):
-    # TODO: Serialize each achievement instance's data and save as kind -> data.
+    # Serialize each achievement instance's data and save as kind -> data.
+    achiev_data = {}
+    for achiev in self.__achievements:
+      achiev_data[achiev.kind()] = achiev.data()
     data = {
-      "data": {}
+      "data": achiev_data
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
@@ -44,5 +57,8 @@ class Achievements:
     with open(self.file_path(), "r") as fp:
       data = json.load(fp)
       if "data" in data:
-        # TODO: Deserialize each kind -> data for associated achievement instance.
-        pass
+        # Deserialize each kind -> data for associated achievement instance.
+        achiev_data = data["data"]
+        for achiev in self.__achievements:
+          if achiev.kind() in achiev_data:
+            achiev.set_data(achiev_data[achiev.kind()])
