@@ -14,6 +14,7 @@ from .scores import Scores
 from .config import Config
 from .stats import Stats
 from .util import command_allowed
+from .achievements import *
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -294,6 +295,7 @@ def init():
   state = State.get()
   scores = Scores.get()
   stats = Stats.get()
+  achievements = Achievements.get()
 
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")
