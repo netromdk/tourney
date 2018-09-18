@@ -5,16 +5,13 @@ class Achievement(ABC):
 
   def __init__(self, kind):
     self.__kind = kind
-    self.__data = {} # User ID -> achievement data.
+    self.data = {} # User ID -> achievement data.
 
   def kind(self):
     return self.__kind
 
-  def data(self):
-    return self.__data
-
   def set_data(self, data):
-    self.__data = data
+    self.data = data
 
   @abstractmethod
   def name(self):
@@ -36,5 +33,6 @@ class Achievement(ABC):
 
   @abstractmethod
   def update(self, behavior):
-    """Update achievement progress given behavior."""
+    """Update achievement progress given behavior.
+    Must return True if achievement was obtained, and False otherwise."""
     pass

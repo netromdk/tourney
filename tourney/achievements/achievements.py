@@ -46,7 +46,7 @@ class Achievements:
     # Serialize each achievement instance's data and save as kind -> data.
     achiev_data = {}
     for achiev in self.__achievements:
-      achiev_data[achiev.kind()] = achiev.data()
+      achiev_data[achiev.kind()] = achiev.data
     data = {
       "data": achiev_data
     }

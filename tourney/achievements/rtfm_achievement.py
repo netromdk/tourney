@@ -15,5 +15,10 @@ class RtfmAchievement(Achievement):
     return [INVOKE_BEHAVIOR]
 
   def update(self, behavior):
-    # TODO: React to whether the command is "help" or not.
-    pass
+    user_id = behavior.user_id()
+    if not user_id in self.data:
+      self.data[user_id] = False
+    if behavior.command_name() == "help" and not self.data[user_id]:
+      self.data[user_id] = True
+      return True
+    return False
