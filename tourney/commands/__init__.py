@@ -1,4 +1,3 @@
-from . import command
 from .help_command import HelpCommand
 from .list_command import ListCommand
 from .join_command import JoinCommand
@@ -10,7 +9,6 @@ from .mystats_command import MyStatsCommand
 from .undoteams_command import UndoTeamsCommand
 
 __all__ = [
-  "command",
   "HelpCommand",
   "ListCommand",
   "JoinCommand",
