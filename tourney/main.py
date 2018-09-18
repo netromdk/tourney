@@ -205,12 +205,15 @@ def handle_command(cmd):
   if not channel_id:
     channel_id = state.channel_id()
   participants = state.participants()
+  achievements = Achievements.get()
 
   response = None
   if not cmd.allowed():
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
+    # TODO: Should it only accept behavior if command executed without errors?
+    achievements.interact(InvokeBehavior(user_id, command))
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
