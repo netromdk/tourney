@@ -31,6 +31,7 @@ class Achievements:
       if achiev.accepts(behavior.kind()):
         achiev.update(behavior)
         # TODO: Check if achievement was obtained via the behavior.
+    self.save()
 
   def file_path(self):
     return os.path.expanduser("{}/achievements.json".format(DATA_PATH))
