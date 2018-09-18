@@ -1,5 +1,7 @@
 from .command import Command
 
+import re
+
 from tourney.state import State
 from tourney.scores import Scores
 from tourney.constants import WIN_ARGS_REGEX

@@ -16,12 +16,13 @@ class ScoreCommand(Command):
     teams = state.teams()
     names = state.team_names()
     unrecorded_matches = state.unrecorded_matches()
+    user_id = self.user_id()
 
     if len(teams) == 0:
       return "Cannot report scores when no teams have been created!"
 
     example = "`!score T0 12 T3 16`"
-    m = re.match(SCORE_ARGS_REGEX, cmd.args())
+    m = re.match(SCORE_ARGS_REGEX, self.args())
     if not m:
       return "Requires arguments for teams and scores! Like {}".format(example)
 
