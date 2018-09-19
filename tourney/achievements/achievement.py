@@ -39,7 +39,8 @@ class Achievement(ABC):
 
   @abstractmethod
   def achieved(self, user_id):
-    """Whether or not user achived the achievement."""
+    """Whether or not user achived the achievement. For multi-tiered achievements it must always
+    yield True after the first tier is achieved."""
     pass
 
   @abstractmethod
