@@ -30,12 +30,17 @@ class Achievements:
     """Interact given specified behavior and update with each achievement accepting it."""
     for achiev in self.__achievements:
       if achiev.accepts(behavior.kind()) and achiev.update(behavior):
-        self.__broadcast_achievement(behavior.user_id(), achiev)
+        self.__save_for_broadcast(behavior.user_id(), achiev)
     self.save()
 
-  def __broadcast_achievement(self, user_id, achiev):
-    # TODO: Post to slack!
-    print("{} achieved: {}".format(user_id, achiev.current_progress(user_id)))
+  def __save_for_broadcast(self, user_id, achiev):
+    """Saves obtained achievement response for next scheduled action tick."""
+    self.__broadcasts.append((user_id, achiev.current_progress(user_id)))
+
+  def scheduled_broadcasts(self):
+    res = self.__broadcasts
+    self.__broadcasts = []
+    return res
 
   def user_response(self, user_id):
     """Returns formatted response with user progress of all achievements."""
@@ -51,11 +56,13 @@ class Achievements:
     return os.path.expanduser("{}/achievements.json".format(DATA_PATH))
 
   def reset(self):
-    # Achievement instances.
     self.__achievements = [
       RtfmAchievement(),
       CommanderAchievement()
     ]
+
+    # Saved responses of obtained achievements for broadcasting.
+    self.__broadcasts = [] # [(user_id, text), ..]
 
   def save(self):
     # Serialize each achievement instance's data and save as kind -> data.

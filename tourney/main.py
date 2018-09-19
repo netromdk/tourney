@@ -227,14 +227,20 @@ def handle_command(cmd):
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
+  state = State.get()
+  channel_id = state.channel_id()
+
+  # Check if any obtained achievements should be broadcast.
+  achievements = Achievements.get()
+  for (user_id, text) in achievements.scheduled_broadcasts():
+    user_name = lookup.user_name_by_id(user_id)
+    response = "{} obtained achievement: *{}*".format(user_name, text)
+    client.api_call("chat.postMessage", channel=channel_id, text=response)
 
   # Ignore on saturdays and sundays.
   now = datetime.today()
   if now.weekday() >= 5:
     return
-
-  state = State.get()
-  channel_id = state.channel_id()
 
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
