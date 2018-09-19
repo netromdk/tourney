@@ -42,9 +42,36 @@ class Achievement(ABC):
     """Whether or not user achived the achievement."""
     pass
 
+  @abstractmethod
+  def progress(self, user_id):
+    """Achievement progress."""
+    pass
+
+  @abstractmethod
+  def next_tier(self, user_id):
+    """Progress to reach for next achievement tier.
+    Returns None if no next tier is available."""
+    pass
+
+  @abstractmethod
+  def tiered_name(self, user_id):
+    """Name of the highest achieved achievement name if multi-tiered."""
+    pass
+
+  @abstractmethod
+  def tiered_description(self, user_id):
+    """Description of the highest achieved achievement name if multi-tiered."""
+    pass
+
   def current_progress(self, user_id):
     """Returns formatted string of current progress for user."""
-    res = "{}: {}".format(self.name(), self.description())
-    if self.achieved(user_id):
-      res += " :+1:"
+    res = "{}: {}".format(self.tiered_name(user_id), self.tiered_description(user_id))
+    nt = self.next_tier(user_id)
+    if nt is None:
+      if self.achieved(user_id):
+        res += " :+1:"
+      else:
+        res += " :-1:"
+    else:
+      res += " ({}/{})".format(self.progress(user_id), nt)
     return res
