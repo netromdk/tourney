@@ -127,6 +127,8 @@ def parse_command(event):
     cmd = MyStatsCommand()
   elif command == "undoteams":
     cmd = UndoTeamsCommand()
+  elif command == "achievements":
+    cmd = AchievementsCommand()
 
   # Special command handling.
   if command_allowed(command, user_id):

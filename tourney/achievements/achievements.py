@@ -36,6 +36,13 @@ class Achievements:
     # TODO: Post to slack!
     print("{} achieved: {}".format(user_id, achiev.current_progress(user_id)))
 
+  def user_response(self, user_id):
+    """Returns formatted response with user progress of all achievements."""
+    res = []
+    for achiev in self.__achievements:
+      res.append(achiev.current_progress(user_id))
+    return "Achievements progress:\n\t" + "\n\t".join(res)
+
   def file_path(self):
     return os.path.expanduser("{}/achievements.json".format(DATA_PATH))
 
