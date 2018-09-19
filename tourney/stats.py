@@ -189,16 +189,19 @@ Top {} teams (% of rounds won): {}
     rounds = stats["total_rounds"]
     win_perc = stats["total_wins"]
     win_rounds = int(win_perc * rounds / 100.0)
+    lose_perc = 100.0 - win_perc
+    lose_rounds = rounds - win_rounds
     teams = []
     for team in self.__top_teams:
       if user_id in team[0]:
         teams.append(team)
     return """
 You scored {:.2f} goals on average in {} matches ({} rounds),
-and won {:.2f}% ({} rounds)!
+won {:.2f}% ({} rounds),
+and lost {:.2f}% ({} rounds).
 You have been in {} teams: {}
-""".format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, len(teams), \
-           self.__fmt_top_teams(teams, len(teams), lookup))
+""".format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc, \
+           lose_rounds, len(teams), self.__fmt_top_teams(teams, len(teams), lookup))
 
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
