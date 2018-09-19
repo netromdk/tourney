@@ -64,14 +64,10 @@ class Achievement(ABC):
     pass
 
   def current_progress(self, user_id):
-    """Returns formatted string of current progress for user."""
+    """Returns formatted string of current progress for user.
+    Expects the achievement to be achieved or in progress when called."""
     res = "{}: {}".format(self.tiered_name(user_id), self.tiered_description(user_id))
     nt = self.next_tier(user_id)
-    if nt is None:
-      if self.achieved(user_id):
-        res += " :+1:"
-      else:
-        res += " :-1:"
-    else:
+    if nt is not None:
       res += " ({}/{})".format(self.progress(user_id), nt)
     return res

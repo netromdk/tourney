@@ -40,7 +40,8 @@ class Achievements:
     """Returns formatted response with user progress of all achievements."""
     res = []
     for achiev in self.__achievements:
-      res.append(achiev.current_progress(user_id))
+      if achiev.achieved(user_id) or achiev.progress(user_id) > 0:
+        res.append(achiev.current_progress(user_id))
     return "Achievements progress:\n\t" + "\n\t".join(res)
 
   def file_path(self):
