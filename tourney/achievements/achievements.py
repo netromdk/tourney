@@ -2,6 +2,7 @@ import os
 import json
 
 from .rtfm_achievement import RtfmAchievement
+from .commander_achievement import CommanderAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -50,7 +51,8 @@ class Achievements:
   def reset(self):
     # Achievement instances.
     self.__achievements = [
-      RtfmAchievement()
+      RtfmAchievement(),
+      CommanderAchievement()
     ]
 
   def save(self):
