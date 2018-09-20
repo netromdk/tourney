@@ -12,6 +12,7 @@ from .obsessed_achievement import ObsessedAchievement
 from .self_obsessed_achievement import SelfObsessedAchievement
 from .flawless_victory_achievement import FlawlessVictoryAchievement
 from .flawless_defeat_achievement import FlawlessDefeatAchievement
+from .reporter_achievement import ReporterAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -76,7 +77,8 @@ class Achievements:
       ObsessedAchievement(),
       SelfObsessedAchievement(),
       FlawlessVictoryAchievement(),
-      FlawlessDefeatAchievement()
+      FlawlessDefeatAchievement(),
+      ReporterAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
