@@ -14,6 +14,7 @@ from .scores import Scores
 from .config import Config
 from .stats import Stats
 from .util import command_allowed
+from .achievements import *
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -126,6 +127,8 @@ def parse_command(event):
     cmd = MyStatsCommand()
   elif command == "undoteams":
     cmd = UndoTeamsCommand()
+  elif command == "achievements":
+    cmd = AchievementsCommand()
 
   # Special command handling.
   if command_allowed(command, user_id):
@@ -204,12 +207,15 @@ def handle_command(cmd):
   if not channel_id:
     channel_id = state.channel_id()
   participants = state.participants()
+  achievements = Achievements.get()
 
   response = None
   if not cmd.allowed():
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
+    # TODO: Should it only accept behavior if command executed without errors?
+    achievements.interact(InvokeBehavior(user_id, command))
 
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
@@ -221,14 +227,20 @@ def handle_command(cmd):
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
+  state = State.get()
+  channel_id = state.channel_id()
+
+  # Check if any obtained achievements should be broadcast.
+  achievements = Achievements.get()
+  for (user_id, text) in achievements.scheduled_broadcasts():
+    user_name = lookup.user_name_by_id(user_id)
+    response = "{} obtained achievement: *{}*".format(user_name, text)
+    client.api_call("chat.postMessage", channel=channel_id, text=response)
 
   # Ignore on saturdays and sundays.
   now = datetime.today()
   if now.weekday() >= 5:
     return
-
-  state = State.get()
-  channel_id = state.channel_id()
 
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
@@ -294,6 +306,7 @@ def init():
   state = State.get()
   scores = Scores.get()
   stats = Stats.get()
+  achievements = Achievements.get()
 
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")

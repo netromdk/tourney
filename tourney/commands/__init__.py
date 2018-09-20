@@ -1,4 +1,3 @@
-from . import command
 from .help_command import HelpCommand
 from .list_command import ListCommand
 from .join_command import JoinCommand
@@ -8,9 +7,9 @@ from .win_lose_command import WinLoseCommand
 from .stats_command import StatsCommand
 from .mystats_command import MyStatsCommand
 from .undoteams_command import UndoTeamsCommand
+from .achievements_command import AchievementsCommand
 
 __all__ = [
-  "command",
   "HelpCommand",
   "ListCommand",
   "JoinCommand",
@@ -19,5 +18,6 @@ __all__ = [
   "WinLoseCommand",
   "StatsCommand",
   "MyStatsCommand",
-  "UndoTeamsCommand"
+  "UndoTeamsCommand",
+  "AchievementsCommand"
 ]
