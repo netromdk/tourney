@@ -4,8 +4,8 @@ from abc import ABC
 INVOKE_BEHAVIOR = 0 # Invoke a command.
 JOIN_BEHAVIOR   = 1 # Join a game.
 LEAVE_BEHAVIOR  = 2 # Leave a game.
-WIN_BEHAVIOR    = 3 # Win a game.
-LOSE_BEHAVIOR   = 4 # Lose a game.
+WIN_BEHAVIOR    = 3 # Win a match of 1 or 2 rounds.
+LOSE_BEHAVIOR   = 4 # Lose a match of 1 or 2 rounds.
 
 class Behavior(ABC):
   """Behavior encapsulates behavior observed from users."""
