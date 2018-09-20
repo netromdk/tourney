@@ -46,7 +46,10 @@ class CommanderAchievement(Achievement):
   def next_tier(self, user_id):
     self.__check_init(user_id)
     tier = self.data[user_id][1]
-    return TIERS[tier+1][0]
+    nt = tier+1
+    if nt >= len(TIERS):
+      return None
+    return TIERS[nt][0]
 
   def tiered_name(self, user_id):
     self.__check_init(user_id)
