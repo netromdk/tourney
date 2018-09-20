@@ -5,6 +5,7 @@ from .command import Command
 from tourney.state import State
 from tourney.constants import SCORE_ARGS_REGEX
 from tourney.scores import Scores
+from tourney.achievements import Achievements, WinBehavior, LoseBehavior
 
 class ScoreCommand(Command):
   def __init__(self):
@@ -34,6 +35,8 @@ class ScoreCommand(Command):
     team_b_name = names[team_b]
     r = range(len(teams))
 
+    rounds = max([team_a_score, team_b_score]) // 8
+
     response = None
     if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
        (team_a_score % 8 == 0 or team_b_score % 8 == 0):
@@ -46,9 +49,24 @@ class ScoreCommand(Command):
           unrecorded_matches.remove(key)
           state.set_unrecorded_matches(unrecorded_matches)
           state.save()
+
           scores = Scores.get()
           scores.add(ids_a, team_a_score, ids_b, team_b_score)
           scores.save()
+
+          if team_a_score > team_b_score:
+            win_team = team_a
+            lose_team = team_b
+          else:
+            win_team = team_b
+            lose_team = team_a
+
+          achievements = Achievements.get()
+          for member in win_team:
+            achievements.interact(WinBehavior(member, rounds))
+          for member in lose_team:
+            achievements.interact(LoseBehavior(member, rounds))
+
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
           rem = len(unrecorded_matches)

@@ -5,6 +5,7 @@ import re
 from tourney.state import State
 from tourney.scores import Scores
 from tourney.constants import WIN_ARGS_REGEX
+from tourney.achievements import Achievements, WinBehavior, LoseBehavior
 
 class WinLoseCommand(Command):
   def __init__(self, name):
@@ -35,6 +36,8 @@ class WinLoseCommand(Command):
       myScore = scores[loseIndex]
       theirScore = scores[winIndex]
 
+    rounds = max(scores) // 8
+
     response = ""
     if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
       myTeams = [x for x in teams if self.user_id() in x]
@@ -52,9 +55,24 @@ class WinLoseCommand(Command):
           unrecorded_matches.remove(myMatch)
           state.set_unrecorded_matches(unrecorded_matches)
           state.save()
+
           scores = Scores.get()
           scores.add(myTeam, myScore, theirTeam, theirScore)
           scores.save()
+
+          if win:
+            win_team = myTeam
+            lose_team = theirTeam
+          else:
+            win_team = theirTeam
+            lose_team = myTeam
+
+          achievements = Achievements.get()
+          for member in win_team:
+            achievements.interact(WinBehavior(member, rounds))
+          for member in lose_team:
+            achievements.interact(LoseBehavior(member, rounds))
+
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
           rem = len(unrecorded_matches)
