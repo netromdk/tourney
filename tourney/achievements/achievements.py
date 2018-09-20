@@ -4,6 +4,7 @@ import json
 from .rtfm_achievement import RtfmAchievement
 from .commander_achievement import CommanderAchievement
 from .participation_achievement import ParticipationAchievement
+from .winner_achievement import WinnerAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -60,7 +61,8 @@ class Achievements:
     self.__achievements = [
       RtfmAchievement(),
       CommanderAchievement(),
-      ParticipationAchievement()
+      ParticipationAchievement(),
+      WinnerAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
