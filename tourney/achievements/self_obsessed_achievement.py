@@ -1,15 +1,15 @@
 from .achievement import Achievement
 from .behavior import INVOKE_BEHAVIOR
 
-class ObsessedAchievement(Achievement):
+class SelfObsessedAchievement(Achievement):
   def __init__(self):
-    super(ObsessedAchievement, self).__init__("Obsessed")
+    super(SelfObsessedAchievement, self).__init__("SelfObsessed")
 
   def name(self):
-    return "Obsessed"
+    return "Self-Obsessed"
 
   def description(self):
-    return "Checked stats 10 times with !stats."
+    return "Checked own stats 10 times with !mystats."
 
   def accepted_behaviors(self):
     return [INVOKE_BEHAVIOR]
@@ -18,7 +18,7 @@ class ObsessedAchievement(Achievement):
     user_id = behavior.user_id()
     if not user_id in self.data:
       self.data[user_id] = 0
-    if behavior.command_name() == "stats":
+    if behavior.command_name() == "mystats":
       self.data[user_id] += 1
       return self.data[user_id] == 10
     return False

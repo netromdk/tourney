@@ -9,6 +9,7 @@ from .loser_achievement import LoserAchievement
 from .win_golden_goal_achievement import WinGoldenGoalAchievement
 from .lose_golden_goal_achievement import LoseGoldenGoalAchievement
 from .obsessed_achievement import ObsessedAchievement
+from .self_obsessed_achievement import SelfObsessedAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -70,7 +71,8 @@ class Achievements:
       LoserAchievement(),
       WinGoldenGoalAchievement(),
       LoseGoldenGoalAchievement(),
-      ObsessedAchievement()
+      ObsessedAchievement(),
+      SelfObsessedAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
