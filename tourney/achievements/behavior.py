@@ -2,7 +2,10 @@ from abc import ABC
 
 # Kinds of behaviors.
 INVOKE_BEHAVIOR = 0 # Invoke a command.
-WIN_BEHAVIOR = 1 # Win a game.
+JOIN_BEHAVIOR   = 1 # Join a game.
+LEAVE_BEHAVIOR  = 2 # Leave a game.
+WIN_BEHAVIOR    = 3 # Win a game.
+LOSE_BEHAVIOR   = 4 # Lose a game.
 
 class Behavior(ABC):
   """Behavior encapsulates behavior observed from users."""
