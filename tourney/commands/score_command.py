@@ -56,16 +56,20 @@ class ScoreCommand(Command):
 
           if team_a_score > team_b_score:
             win_team = team_a
+            win_score = team_a_score
             lose_team = team_b
+            lose_score = team_b_score
           else:
             win_team = team_b
+            win_score = team_b_score
             lose_team = team_a
+            lose_score = team_a_score
 
           achievements = Achievements.get()
           for member in win_team:
-            achievements.interact(WinBehavior(member, rounds))
+            achievements.interact(WinBehavior(member, rounds, win_score, lose_score))
           for member in lose_team:
-            achievements.interact(LoseBehavior(member, rounds))
+            achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
 
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)

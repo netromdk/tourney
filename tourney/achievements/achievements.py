@@ -6,6 +6,8 @@ from .commander_achievement import CommanderAchievement
 from .participation_achievement import ParticipationAchievement
 from .winner_achievement import WinnerAchievement
 from .loser_achievement import LoserAchievement
+from .win_golden_goal_achievement import WinGoldenGoalAchievement
+from .lose_golden_goal_achievement import LoseGoldenGoalAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -64,7 +66,9 @@ class Achievements:
       CommanderAchievement(),
       ParticipationAchievement(),
       WinnerAchievement(),
-      LoserAchievement()
+      LoserAchievement(),
+      WinGoldenGoalAchievement(),
+      LoseGoldenGoalAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.

@@ -62,16 +62,20 @@ class WinLoseCommand(Command):
 
           if win:
             win_team = myTeam
+            win_score = myScore
             lose_team = theirTeam
+            lose_score = theirScore
           else:
             win_team = theirTeam
+            win_score = theirScore
             lose_team = myTeam
+            lose_score = myScore
 
           achievements = Achievements.get()
           for member in win_team:
-            achievements.interact(WinBehavior(member, rounds))
+            achievements.interact(WinBehavior(member, rounds, win_score, lose_score))
           for member in lose_team:
-            achievements.interact(LoseBehavior(member, rounds))
+            achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
 
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
