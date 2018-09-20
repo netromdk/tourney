@@ -5,7 +5,7 @@ import re
 from tourney.state import State
 from tourney.scores import Scores
 from tourney.constants import WIN_ARGS_REGEX
-from tourney.achievements import Achievements, WinBehavior, LoseBehavior
+from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
 
 class WinLoseCommand(Command):
   def __init__(self, name):
@@ -76,6 +76,8 @@ class WinLoseCommand(Command):
             achievements.interact(WinBehavior(member, rounds, win_score, lose_score))
           for member in lose_team:
             achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
+
+          achievements.interact(ReportScoreBehavior(self.user_id()))
 
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
