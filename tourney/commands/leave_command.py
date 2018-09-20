@@ -1,6 +1,7 @@
 from .command import Command
 
 from tourney.state import State
+from tourney.achievements import Achievements, LeaveBehavior
 
 class LeaveCommand(Command):
   def __init__(self):
@@ -16,4 +17,5 @@ class LeaveCommand(Command):
 
     state.remove_participant(self.user_id())
     state.save()
+    Achievements.get().interact(LeaveBehavior(self.user_id()))
     return "{}, you've left today's game!".format(user_name)
