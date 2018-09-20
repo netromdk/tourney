@@ -5,6 +5,7 @@ from .rtfm_achievement import RtfmAchievement
 from .commander_achievement import CommanderAchievement
 from .participation_achievement import ParticipationAchievement
 from .winner_achievement import WinnerAchievement
+from .loser_achievement import LoserAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -62,7 +63,8 @@ class Achievements:
       RtfmAchievement(),
       CommanderAchievement(),
       ParticipationAchievement(),
-      WinnerAchievement()
+      WinnerAchievement(),
+      LoserAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
