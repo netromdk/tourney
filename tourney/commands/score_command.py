@@ -55,14 +55,14 @@ class ScoreCommand(Command):
           scores.save()
 
           if team_a_score > team_b_score:
-            win_team = team_a
+            win_team = ids_a
             win_score = team_a_score
-            lose_team = team_b
+            lose_team = ids_b
             lose_score = team_b_score
           else:
-            win_team = team_b
+            win_team = ids_b
             win_score = team_b_score
-            lose_team = team_a
+            lose_team = ids_a
             lose_score = team_a_score
 
           achievements = Achievements.get()

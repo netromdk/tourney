@@ -23,7 +23,7 @@ class ReporterAchievement(Achievement):
   def update(self, behavior):
     user_id = behavior.user_id()
     self.__check_init(user_id)
-    self.data[user_id][0] += behavior.rounds()
+    self.data[user_id][0] += 1
     amount = self.data[user_id][0]
     if amount == self.next_tier(user_id):
       self.data[user_id][1] += 1
