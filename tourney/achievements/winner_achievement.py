@@ -25,7 +25,8 @@ class WinnerAchievement(Achievement):
     self.__check_init(user_id)
     self.data[user_id][0] += behavior.rounds()
     amount = self.data[user_id][0]
-    if amount == self.next_tier(user_id):
+    nt = self.next_tier(user_id)
+    if amount == nt or amount == nt+1:
       self.data[user_id][1] += 1
       return True
     return False
