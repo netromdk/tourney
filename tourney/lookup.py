@@ -12,10 +12,17 @@ class Lookup:
     return None
 
   def user_name_by_id(self, user_id):
+    """Returns display name over name if available."""
     self.__init_users()
     if not user_id in self.__all_users:
       return user_id
-    return self.__all_users[user_id]["name"]
+    info = self.__all_users[user_id]
+    if "profile" in info:
+      profile = info["profile"]
+      dn = profile["display_name"]
+      if len(dn) > 0:
+        return dn
+    return info["name"]
 
   def __init_channels(self):
     if self.__all_channels is None:
