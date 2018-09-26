@@ -137,6 +137,8 @@ def parse_command(event):
     elif command == "autoupdate":
       subprocess.Popen(["/bin/sh", "autoupdate.sh"])
       exit(0)
+    elif command == "speak" and len(args) > 0:
+      client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
 
   if cmd is None:
     return None

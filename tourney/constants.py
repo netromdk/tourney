@@ -37,7 +37,7 @@ POSITIVE_REACTIONS = [
 
 NEGATIVE_REACTIONS = ["-1", "middle_finger"]
 
-PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate"]
+PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate", "speak"]
 
 TEAM_NAMES = [
   "Air Farce",
