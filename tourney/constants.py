@@ -32,10 +32,17 @@ POSITIVE_REACTIONS = [
   "ok_hand",
   "fire",
   "tada",
-  "confetti_ball"
+  "confetti_ball",
+  "man-gesturing-ok",
+  "woman-gesturing-ok"
 ]
 
-NEGATIVE_REACTIONS = ["-1", "middle_finger"]
+NEGATIVE_REACTIONS = [
+  "-1",
+  "middle_finger",
+  "man-gesturing-no",
+  "woman-gesturing-no"
+]
 
 PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate", "speak"]
 
