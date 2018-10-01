@@ -2,9 +2,16 @@ from .achievement import Achievement
 from .behavior import REPORT_SCORE_BEHAVIOR
 
 TIERS = (
-  (1,  "Reporter",   "Reported a score."),
-  (10, "Journalist", "Reported 10 scores."),
-  (50, "Anchorman",  "Reported 50 scores."),
+  (1,    "Reporter",           "Reported a score."),
+  (10,   "Journalist",         "Reported 10 scores."),
+  (25,   "Correspondent",      "Reported 25 scores."),
+  (30,   "Jes Dorph Petersen", "Reported 30 scores."),
+  (40,   "Steen Bostrup",      "Reported 40 scores."),
+  (50,   "Anchorman",          "Reported 50 scores."),
+  (75,   "Mette Fugl",         "Reported 75 scores."),
+  (100,  "Ulla Terkelsen",     "Reported 100 scores."),
+  (500,  "Larry King",         "Reported 500 scores."),
+  (1000, "Walter Cronkite",    "Reported 1000 scores."),
 )
 
 class ReporterAchievement(Achievement):
