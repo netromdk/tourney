@@ -172,6 +172,11 @@ def parse_events(events):
         elif reaction in NEGATIVE_REACTIONS:
           handle_command_direct("!leave", user_id, channel_id)
 
+    # Handle leaving channel.
+    if event_type == "member_left_channel":
+      user_id = event["user"]
+      Achievements.get().interact(LeaveChannelBehavior(user_id))
+
     # Adding a positive reaction to morning or reminder announce message will join game, negative
     # will leave game, and removing reaction will do the opposite action.
     elif event_type == "reaction_added" or event_type == "reaction_removed":
