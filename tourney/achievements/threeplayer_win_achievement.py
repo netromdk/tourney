@@ -23,7 +23,7 @@ class ThreePlayerWinAchievement(Achievement):
     user_id = behavior.user_id()
     user_team = behavior.winner_team()
     self.__check_init(user_id)
-    if len(user_team) > 3:
+    if len(user_team) == 3:
       self.data[user_id][0] += 1
       amount = self.data[user_id][0]
       nt = self.next_tier(user_id)
