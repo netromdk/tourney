@@ -67,11 +67,11 @@ class ScoreCommand(Command):
 
           achievements = Achievements.get()
           for member in win_team:
-            achievements.interact(WinBehavior(member, rounds, win_score, lose_score))
+            achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team, lose_team))
           for member in lose_team:
-            achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
+            achievements.interact(LoseBehavior(member, rounds, win_score, lose_score, win_team, lose_team))
 
-          achievements.interact(ReportScoreBehavior(self.user_id()))
+          achievements.interact(ReportScoreBehavior(self.user_id(), win_team, lose_team))
 
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
