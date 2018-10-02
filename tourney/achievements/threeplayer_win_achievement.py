@@ -6,9 +6,9 @@ TIERS = (
   (3,   "Three Musketeers", "Win three matches in three-player teams."),
 )
 
-class 3pWinAchievement(Achievement):
+class ThreePlayerWinAchievement(Achievement):
   def __init__(self):
-    super(3v2WinAchievement, self).__init__("3pWin")
+    super(ThreePlayerWinAchievement, self).__init__("ThreePlayerWin")
 
   def name(self):
     return TIERS[0][1]

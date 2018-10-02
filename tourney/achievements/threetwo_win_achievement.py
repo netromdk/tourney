@@ -1,9 +1,9 @@
 from .achievement import Achievement
 from .behavior import WIN_BEHAVIOR
 
-class 3v2WinAchievement(Achievement):
+class ThreeVTwoWinAchievement(Achievement):
   def __init__(self):
-    super(3v2WinAchievement, self).__init__("3v2Win")
+    super(ThreeVTwoWinAchievement, self).__init__("ThreeVTwoWin")
 
   def name(self):
     return "Strength in Numbers"
