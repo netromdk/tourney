@@ -129,6 +129,8 @@ def parse_command(event):
     cmd = UndoTeamsCommand()
   elif command == "achievements":
     cmd = AchievementsCommand()
+  elif command == "acheivements":
+    achievements.interact(InvokeBehavior(user_id, command))
 
   # Special command handling.
   if command_allowed(command, user_id):
