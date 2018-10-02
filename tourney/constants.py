@@ -1,10 +1,11 @@
+import sys
 from datetime import time, timedelta
 
 # Will print all read events to stdout.
 DEBUG = False
 
 # In demo mode, no connection to slack is made. Everything is local.
-DEMO = False
+DEMO = "--demo" in sys.argv
 
 DATA_PATH = "~/.tourney"
 
