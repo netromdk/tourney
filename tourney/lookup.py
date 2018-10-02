@@ -1,3 +1,5 @@
+from .constants import DEMO
+
 class Lookup:
   def __init__(self, client):
     self.__client = client
@@ -5,6 +7,8 @@ class Lookup:
     self.__all_users = {}
 
   def channel_id_by_name(self, name):
+    if DEMO:
+      return name
     self.__init_channels()
     for channel in self.__all_channels:
       if channel["name"] == name:
@@ -13,6 +17,8 @@ class Lookup:
 
   def user_name_by_id(self, user_id):
     """Returns display name over name if available."""
+    if DEMO:
+      return user_id
     self.__init_users()
     if not user_id in self.__all_users:
       return user_id

@@ -3,6 +3,9 @@ from datetime import time, timedelta
 # Will print all read events to stdout.
 DEBUG = False
 
+# In demo mode, no connection to slack is made. Everything is local.
+DEMO = False
+
 DATA_PATH = "~/.tourney"
 
 CHANNEL_NAME = "foosball"
