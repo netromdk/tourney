@@ -41,7 +41,7 @@ if DEMO:
       "type": "message",
       "text": text,
       "user": "TESTUSER",
-      "channel": "#testchannel"
+      "channel": "#DEMOCHANNEL"
     }
     return [event]
   client.rtm_read = wrap_rtm_read
@@ -343,12 +343,12 @@ def init():
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")
 
-  if state.bot_id() is None:
+  if not DEMO and state.bot_id() is None:
     state.set_bot_id(client.api_call("auth.test")["user_id"])
   print("Tourney bot ID: {}".format(state.bot_id()))
 
   # Find the channel ID of designated channel name.
-  if state.channel_id() is None:
+  if not DEMO and state.channel_id() is None:
     channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
     if channel_id is None:
       print("Could not find ID for channel: {}".format(CHANNEL_NAME))
