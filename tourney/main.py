@@ -13,12 +13,38 @@ from .constants import *
 from .scores import Scores
 from .config import Config
 from .stats import Stats
-from .util import command_allowed
+from .util import command_allowed, unescape_text
 from .achievements import *
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
 lookup = Lookup(client)
+
+# Change functionality in demo mode so that invoking API calls just prints to stdout, and reading
+# events blocks and asks on stdin.
+if DEMO:
+  def wrap_api_call(method, timeout=None, **kwargs):
+    print("{} {}".format(method, unescape_text(str(kwargs))))
+    return {}
+  client.api_call = wrap_api_call
+
+  def wrap_rtm_read():
+    try:
+      text = input("> ")
+    except KeyboardInterrupt:
+      exit(0)
+    except EOFError:
+      exit(0)
+    except:
+      return []
+    event = {
+      "type": "message",
+      "text": text,
+      "user": "TESTUSER",
+      "channel": "#DEMOCHANNEL"
+    }
+    return [event]
+  client.rtm_read = wrap_rtm_read
 
 def create_teams():
   """Create teams and random team names."""
@@ -174,6 +200,11 @@ def parse_events(events):
         elif reaction in NEGATIVE_REACTIONS:
           handle_command_direct("!leave", user_id, channel_id)
 
+    # Handle leaving channel.
+    if event_type == "member_left_channel":
+      user_id = event["user"]
+      Achievements.get().interact(LeaveChannelBehavior(user_id))
+
     # Adding a positive reaction to morning or reminder announce message will join game, negative
     # will leave game, and removing reaction will do the opposite action.
     elif event_type == "reaction_added" or event_type == "reaction_removed":
@@ -314,12 +345,12 @@ def init():
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")
 
-  if state.bot_id() is None:
+  if not DEMO and state.bot_id() is None:
     state.set_bot_id(client.api_call("auth.test")["user_id"])
   print("Tourney bot ID: {}".format(state.bot_id()))
 
   # Find the channel ID of designated channel name.
-  if state.channel_id() is None:
+  if not DEMO and state.channel_id() is None:
     channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
     if channel_id is None:
       print("Could not find ID for channel: {}".format(CHANNEL_NAME))
@@ -340,10 +371,13 @@ def repl():
     sleep(RTM_READ_DELAY)
 
 def start_tourney():
-  if not bot_token:
-    print("TOURNEY_BOT_TOKEN must be defined in environment!")
-    exit(1)
+  if DEMO:
+    print("=== Running in demo mode! ===")
+  else:
+    if not bot_token:
+      print("TOURNEY_BOT_TOKEN must be defined in environment!")
+      exit(1)
+    connect()
 
-  connect()
   init()
   repl()

@@ -43,32 +43,7 @@ class Achievement(ABC):
     yield True after the first tier is achieved."""
     pass
 
-  @abstractmethod
-  def progress(self, user_id):
-    """Achievement progress."""
-    pass
-
-  @abstractmethod
-  def next_tier(self, user_id):
-    """Progress to reach for next achievement tier.
-    Returns None if no next tier is available."""
-    pass
-
-  @abstractmethod
-  def tiered_name(self, user_id):
-    """Name of the highest achieved achievement name if multi-tiered."""
-    pass
-
-  @abstractmethod
-  def tiered_description(self, user_id):
-    """Description of the highest achieved achievement name if multi-tiered."""
-    pass
-
   def current_progress(self, user_id):
     """Returns formatted string of current progress for user.
     Expects the achievement to be achieved or in progress when called."""
-    res = "{}: {}".format(self.tiered_name(user_id), self.tiered_description(user_id))
-    nt = self.next_tier(user_id)
-    if nt is not None:
-      res += " ({}/{})".format(self.progress(user_id), nt)
-    return res
+    return "{}: {}".format(self.name(), self.description())

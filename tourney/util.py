@@ -37,3 +37,6 @@ def command_allowed(cmd, user_id):
   if cmd in PRIVILEGED_COMMANDS:
     return user_id in Config.get().privileged_users()
   return True
+
+def unescape_text(text):
+  return text.replace("\\n", "\n").replace("\\t", "  ")

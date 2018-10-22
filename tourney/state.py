@@ -1,7 +1,7 @@
 import os
 import json
 
-from .constants import DATA_PATH
+from .constants import DATA_PATH, DEMO
 
 class State:
   __instance = None
@@ -27,12 +27,16 @@ class State:
     self.__bot_id = bot_id
 
   def bot_id(self):
+    if DEMO:
+      return "DEMO_BOT_ID"
     return self.__bot_id
 
   def set_channel_id(self, channel_id):
     self.__channel_id = channel_id
 
   def channel_id(self):
+    if DEMO:
+      return "#DEMOCHANNEL"
     return self.__channel_id
 
   def set_participants(self, participants):
@@ -99,15 +103,15 @@ class State:
 
   def save(self):
     data = {
-      "bot_id": self.bot_id(),
-      "channel_id": self.channel_id(),
-      "participants": self.participants(),
-      "morning_announce": self.morning_announce(),
-      "reminder_announce": self.reminder_announce(),
-      "midday_announce": self.midday_announce(),
-      "teams": self.teams(),
-      "team_names": self.team_names(),
-      "unrecorded_matches": self.unrecorded_matches()
+      "bot_id": self.__bot_id,
+      "channel_id": self.__channel_id,
+      "participants": self.__participants,
+      "morning_announce": self.__morning_announce,
+      "reminder_announce": self.__reminder_announce,
+      "midday_announce": self.__midday_announce,
+      "teams": self.__teams,
+      "team_names": self.__team_names,
+      "unrecorded_matches": self.__unrecorded_matches
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
