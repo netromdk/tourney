@@ -17,7 +17,7 @@ class ThreeVTwoWinAchievement(TieredAchievement):
     user_id = behavior.user_id()
     user_team = behavior.winner_team()
     loser_team = behavior.loser_team()
-    self.__check_init(user_id)
+    self.check_init(user_id)
     if len(user_team) == 3 and len(loser_team) == 2:
       self.data[user_id][0] += 1
       amount = self.data[user_id][0]
