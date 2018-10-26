@@ -7,7 +7,7 @@ class ThreePlayerWinAchievement(TieredAchievement):
       (1,   "Three Amigos", "Win a match in a three-player team."),
       (3,   "Three Musketeers", "Win three matches in three-player teams."),
     )
-    super(ThreePlayerWinAchievement, self).__init__("ThreePlayerWin")
+    super(ThreePlayerWinAchievement, self).__init__("ThreePlayerWin", tiers)
 
   def accepted_behaviors(self):
     return [WIN_BEHAVIOR]

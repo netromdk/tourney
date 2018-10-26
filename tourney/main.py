@@ -124,6 +124,7 @@ def parse_command(event):
   msg = event["text"].strip()
   user_id = event["user"]
   channel = event["channel"]
+  achievements = Achievements.get()
 
   m = re.match(COMMAND_REGEX, msg)
   if not m:

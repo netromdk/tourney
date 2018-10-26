@@ -18,7 +18,7 @@ class SpellingAchievement(Achievement):
     user_id = behavior.user_id()
     if not user_id in self.data:
       self.data[user_id] = False
-    if behavior.command_name() == "acheivement" and not self.data[user_id]:
+    if behavior.command_name() == "acheivements" and not self.data[user_id]:
       self.data[user_id] = True
       return True
     return False

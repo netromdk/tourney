@@ -10,7 +10,7 @@ class FirstJoinerAchievement(Achievement):
     return "Early Bird"
 
   def description(self):
-    return "Be the first player to join the game of the day"
+    return "Be the first player to join the game of the day."
 
   def accepted_behaviors(self):
     return [JOIN_BEHAVIOR]
@@ -19,8 +19,10 @@ class FirstJoinerAchievement(Achievement):
     user_id = behavior.user_id()
     state = State.get()
     participants = state.participants()
+    if not user_id in self.data:
+      self.data[user_id] = False
     if len(participants) == 1:
-      self.data[user_id][1] = True
+      self.data[user_id] = True
       return True
     return False
 
