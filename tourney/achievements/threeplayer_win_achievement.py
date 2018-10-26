@@ -6,6 +6,8 @@ class ThreePlayerWinAchievement(TieredAchievement):
     tiers = (
       (1,   "Three Amigos", "Win a match in a three-player team."),
       (3,   "Three Musketeers", "Win three matches in three-player teams."),
+      (33,  "Three Kings", "Win thirty three matches in three-player teams."),
+      (333, "Holy Trinity", "Win three hundred and thirty three matches in three-player teams."),
     )
     super(ThreePlayerWinAchievement, self).__init__("ThreePlayerWin", tiers)
 
