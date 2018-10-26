@@ -14,6 +14,11 @@ from .flawless_victory_achievement import FlawlessVictoryAchievement
 from .flawless_defeat_achievement import FlawlessDefeatAchievement
 from .reporter_achievement import ReporterAchievement
 from .leave_channel_achievement import LeaveChannelAchievement
+from .first_joiner_achievement import FirstJoinerAchievement
+from .snitch_achievement import ReportOtherAchievement
+from .spelling_achievement import SpellingAchievement
+from .threeplayer_win_achievement import ThreePlayerWinAchievement
+from .threetwo_win_achievement import ThreeVTwoWinAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -80,7 +85,12 @@ class Achievements:
       FlawlessVictoryAchievement(),
       FlawlessDefeatAchievement(),
       ReporterAchievement(),
-      LeaveChannelAchievement()
+      LeaveChannelAchievement(),
+      FirstJoinerAchievement(),
+      ReportOtherAchievement(),
+      SpellingAchievement(),
+      ThreePlayerWinAchievement(),
+      ThreeVTwoWinAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.

@@ -124,6 +124,7 @@ def parse_command(event):
   msg = event["text"].strip()
   user_id = event["user"]
   channel = event["channel"]
+  achievements = Achievements.get()
 
   m = re.match(COMMAND_REGEX, msg)
   if not m:
@@ -155,6 +156,8 @@ def parse_command(event):
     cmd = UndoTeamsCommand()
   elif command == "achievements":
     cmd = AchievementsCommand()
+  elif command == "acheivements":
+    achievements.interact(InvokeBehavior(user_id, command))
 
   # Special command handling.
   if command_allowed(command, user_id):
