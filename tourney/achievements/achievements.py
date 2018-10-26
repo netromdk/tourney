@@ -14,7 +14,7 @@ from .flawless_victory_achievement import FlawlessVictoryAchievement
 from .flawless_defeat_achievement import FlawlessDefeatAchievement
 from .reporter_achievement import ReporterAchievement
 from .leave_channel_achievement import LeaveChannelAchievement
-from .firstJoinerAchievement import FirstJoinerAchievement
+from .first_joiner_achievement import FirstJoinerAchievement
 from .snitch_achievement import ReportOtherAchievement
 from .spelling_achievement import SpellingAchievement
 from .threeplayer_win_achievement import ThreePlayerWinAchievement
