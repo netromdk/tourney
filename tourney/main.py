@@ -168,6 +168,9 @@ def parse_command(event):
       exit(0)
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
+  else:
+    response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
+    client.api_call("chat.postEphemeral", channel=channel, text=response, user=user_id)
 
   if cmd is None:
     return None
