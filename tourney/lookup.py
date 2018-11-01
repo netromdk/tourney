@@ -20,7 +20,7 @@ class Lookup:
     if DEMO:
       return user_id
     self.__init_users()
-    if not user_id in self.__all_users:
+    if user_id not in self.__all_users:
       return user_id
     info = self.__all_users[user_id]
     if "profile" in info:

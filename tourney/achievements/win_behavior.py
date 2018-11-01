@@ -8,7 +8,6 @@ class WinBehavior(Behavior):
     self.__loser_score = loser_score
     self.__winner_team = winner_team
     self.__loser_team = loser_team
-    
 
   def rounds(self):
     return self.__rounds

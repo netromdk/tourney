@@ -26,4 +26,3 @@ class ThreeVTwoWinAchievement(TieredAchievement):
         self.data[user_id][1] += 1
         return True
     return False
-

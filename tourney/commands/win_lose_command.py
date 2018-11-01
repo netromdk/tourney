@@ -48,7 +48,7 @@ class WinLoseCommand(Command):
         myMatches = [x for x in unrecorded_matches if myTeamIndex in x]
         if len(myMatches) == 1:
           myMatch = myMatches[0]
-          theirTeamIndex = myMatch[(myMatch.index(myTeamIndex)+1)%2]
+          theirTeamIndex = myMatch[(myMatch.index(myTeamIndex) + 1) % 2]
           theirTeam = teams[theirTeamIndex]
           theirTeamName = names[theirTeamIndex]
 
@@ -73,7 +73,8 @@ class WinLoseCommand(Command):
 
           achievements = Achievements.get()
           for member in win_team:
-            achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team, lose_team))
+            achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team,
+                                              lose_team))
           for member in lose_team:
             achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
 
@@ -85,7 +86,7 @@ class WinLoseCommand(Command):
           if rem == 0:
             response += "\nNo more matches left to record!"
             # TODO: Handle this!
-            #handle_command(Command(user_id, "stats"))
+            # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
         elif len(myMatches) > 1:

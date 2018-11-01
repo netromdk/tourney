@@ -25,7 +25,7 @@ class TieredAchievement(Achievement):
   def next_tier(self, user_id):
     self.check_init(user_id)
     tier = self.data[user_id][1]
-    nt = tier+1
+    nt = tier + 1
     if nt >= len(self.__tiers):
       return None
     return self.__tiers[nt][0]
@@ -54,6 +54,6 @@ class TieredAchievement(Achievement):
   def check_init(self, user_id):
     if user_id not in self.data:
       self.data[user_id] = [
-         0, # Overall progress
-        -1, # Tier
+         0,   # Overall progress
+         -1,  # Tier
       ]

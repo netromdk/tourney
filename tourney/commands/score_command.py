@@ -67,7 +67,8 @@ class ScoreCommand(Command):
 
           achievements = Achievements.get()
           for member in win_team:
-            achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team, lose_team))
+            achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team,
+                                              lose_team))
           for member in lose_team:
             achievements.interact(LoseBehavior(member, rounds, win_score, lose_score))
 

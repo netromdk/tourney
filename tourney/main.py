@@ -1,20 +1,24 @@
 import os
 import re
-import subprocess
+import subprocess  # nosec
 from time import sleep
 from datetime import datetime, date
 from random import shuffle
 from slackclient import SlackClient
 
-from .commands import *
+from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
+  WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand
 from .state import State
 from .lookup import Lookup
-from .constants import *
+from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
+  NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
+  REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
+  DEBUG, RTM_READ_DELAY
 from .scores import Scores
 from .config import Config
 from .stats import Stats
 from .util import command_allowed, unescape_text
-from .achievements import *
+from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -35,8 +39,6 @@ if DEMO:
       exit(0)
     except EOFError:
       exit(0)
-    except:
-      return []
     event = {
       "type": "message",
       "text": text,
@@ -55,7 +57,7 @@ def create_teams():
   lst = participants
   for i in range(3):
     shuffle(lst)
-  teams = [lst[i:i+2] for i in range(0, amount, 2)]
+  teams = [lst[i:i + 2] for i in range(0, amount, 2)]
 
   # Make last team of three persons if not even number.
   if amount % 2 != 0:
@@ -68,7 +70,7 @@ def create_teams():
 
 def pick_pairs(amount):
   """Picks non-overlapping team pairs of 2 rounds."""
-  return [(i,i+1,2) for i in range(0, amount, 2)]
+  return [(i, i + 1, 2) for i in range(0, amount, 2)]
 
 def create_schedule(amount):
   """Takes amount of teams to schedule for."""
@@ -81,7 +83,7 @@ def create_schedule(amount):
       matches = pick_pairs(twoRoundMathces)
     # Add last 3 matches of 1 round each.
     i = twoRoundMathces
-    matches += [(i,i+1,1), (i,i+2,1), (i+1,i+2,1)]
+    matches += [(i, i + 1, 1), (i, i + 2, 1), (i + 1, i + 2, 1)]
   return matches
 
 def create_matches():
@@ -144,7 +146,7 @@ def parse_command(event):
     cmd = LeaveCommand()
   elif command == "score":
     cmd = ScoreCommand()
-    channel = state.channel_id() # Always write response in main channel.
+    channel = state.channel_id()  # Always write response in main channel.
   elif command == "win" or command == "lose":
     cmd = WinLoseCommand(command)
     channel = state.channel_id()
@@ -164,7 +166,7 @@ def parse_command(event):
     if command == "generate":
       create_matches()
     elif command == "autoupdate":
-      subprocess.Popen(["/bin/sh", "autoupdate.sh"])
+      subprocess.Popen(["/bin/sh", "autoupdate.sh"])  # nosec
       exit(0)
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
@@ -185,7 +187,7 @@ def parse_events(events):
     event_type = event["type"]
 
     # Handle commands.
-    if event_type == "message" and not "subtype" in event:
+    if event_type == "message" and "subtype" not in event:
       msg = event["text"].strip()
       user_id = event["user"]
       channel_id = event["channel"]
@@ -238,14 +240,12 @@ def handle_command_direct(cmd, user_id, channel_id=None):
 
 def handle_command(cmd):
   user_id = cmd.user_id()
-  user_name = lookup.user_name_by_id(user_id)
   command = cmd.name()
   ephemeral = cmd.ephemeral()
   state = State.get()
   channel_id = cmd.channel()
   if not channel_id:
     channel_id = state.channel_id()
-  participants = state.participants()
   achievements = Achievements.get()
 
   response = None
@@ -284,9 +284,9 @@ def scheduled_actions():
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + MORNING_ANNOUNCE_DELTA
   if now >= start and now < end and not state.morning_announce():
-    resp = client.api_call("chat.postMessage", channel=channel_id,
-      text="<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: "
-           "reaction to this message!")
+    text = "<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: " \
+      "reaction to this message!"
+    resp = client.api_call("chat.postMessage", channel=channel_id, text=text)
     state.set_morning_announce(resp["ts"])
     state.save()
 
@@ -302,9 +302,9 @@ def scheduled_actions():
       state.set_reminder_announce(1)
     else:
       fmt = ", ".join(["<@{}>".format(uid) for uid in remaining])
-      resp = client.api_call("chat.postMessage", channel=channel_id,
-        text="{} Remember to join today's game before 11:50 by using `!join` or :+1: "
-             "reaction to this message!".format(fmt))
+      text = "{} Remember to join today's game before 11:50 by using `!join` or :+1: " \
+        "reaction to this message!".format(fmt)
+      resp = client.api_call("chat.postMessage", channel=channel_id, text=text)
       state.set_reminder_announce(resp["ts"])
     state.save()
   elif now > end and state.reminder_announce():
@@ -342,9 +342,9 @@ def connect():
 def init():
   config = Config.get()
   state = State.get()
-  scores = Scores.get()
-  stats = Stats.get()
-  achievements = Achievements.get()
+  Scores.get()
+  Stats.get()
+  Achievements.get()
 
   if len(config.privileged_users()) == 0:
     print("No privileged users defined in config!")

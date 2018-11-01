@@ -48,15 +48,15 @@ class Stats:
 
       def player_score_count(team, score):
         for player in team:
-          if not player in player_scores:
+          if player not in player_scores:
             player_scores[player] = 0
           player_scores[player] += score
-          if not player in player_matches:
+          if player not in player_matches:
             player_matches[player] = 0
           player_matches[player] += 1
 
       def team_win_count(team_key, team, win_team, match_rounds):
-        if not team_key in teams:
+        if team_key not in teams:
           teams[team_key] = (0, 0)
         t = teams[team_key]
         teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
@@ -73,11 +73,11 @@ class Stats:
 
         team_a = match[1]
         team_a.sort()
-        team_a_key = ",".join(team_a) # lists/sets aren't hashable so turn into string.
+        team_a_key = ",".join(team_a)  # lists/sets aren't hashable so turn into string.
         score_a = match[2]
         team_b = match[3]
         team_b.sort()
-        team_b_key = ",".join(team_b) # Make hashable.
+        team_b_key = ",".join(team_b)  # Make hashable.
         score_b = match[4]
         total_score += score_a + score_b
         avg_delta += abs(score_a - score_b)
@@ -132,10 +132,10 @@ class Stats:
       # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
       # nudge factor only count a 1/1000th.
       self.__top_scorers = to_list(player_scores)
-      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]]/10000, reverse=True)
+      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]] / 10000, reverse=True)
 
       self.__top_winners = to_list(player_wins)
-      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]]/800, reverse=True)
+      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]] / 800, reverse=True)
 
       def teams_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
@@ -176,14 +176,14 @@ Average delta: {:.2f}
 Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
-""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur, \
-           self.__avg_score, self.__avg_delta, top_amount, \
-           self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount, \
-           self.__fmt_top(self.__top_winners, top_amount, lookup), team_amount, \
+""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur,
+           self.__avg_score, self.__avg_delta, top_amount,
+           self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount,
+           self.__fmt_top(self.__top_winners, top_amount, lookup), team_amount,
            self.__fmt_top_teams(self.__top_teams, team_amount, lookup))
 
   def personal_response(self, lookup, user_id):
-    if not user_id in self.__personal:
+    if user_id not in self.__personal:
       return "No personal statistics recorded yet!"
     stats = self.__personal[user_id]
     rounds = stats["total_rounds"]
@@ -200,7 +200,7 @@ You scored {:.2f} goals on average in {} matches ({} rounds),
 won {:.2f}% ({} rounds),
 and lost {:.2f}% ({} rounds).
 You have been in {} teams: {}
-""".format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc, \
+""".format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
            lose_rounds, len(teams), self.__fmt_top_teams(teams, len(teams), lookup))
 
   def file_path(self):

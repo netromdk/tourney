@@ -9,13 +9,13 @@ def fmt_duration(secs, show_ms=False):
 
   res = []
 
-  months = secs // (30*24*3600)
-  secs &= 30*24*3600
+  months = secs // (30 * 24 * 3600)
+  secs &= 30 * 24 * 3600
   if months > 0:
     res.append("{}mo".format(months))
 
-  days = secs // (24*3600)
-  secs %= 24*3600
+  days = secs // (24 * 3600)
+  secs %= 24 * 3600
   if days > 0:
     res.append("{}d".format(days))
 

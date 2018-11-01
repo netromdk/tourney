@@ -94,7 +94,7 @@ class Achievements:
     ]
 
     # Saved responses of obtained achievements for broadcasting.
-    self.__broadcasts = [] # [(user_id, text), ..]
+    self.__broadcasts = []  # [(user_id, text), ..]
 
   def save(self):
     # Serialize each achievement instance's data and save as kind -> data.

@@ -5,7 +5,7 @@ class Achievement(ABC):
 
   def __init__(self, kind):
     self.__kind = kind
-    self.data = {} # User ID -> achievement data.
+    self.data = {}  # User ID -> achievement data.
 
   def kind(self):
     return self.__kind

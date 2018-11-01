@@ -1,5 +1,3 @@
-import itertools
-
 from .command import Command
 
 from tourney.achievements import Achievements

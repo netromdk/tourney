@@ -16,7 +16,7 @@ class WinGoldenGoalAchievement(Achievement):
 
   def update(self, behavior):
     user_id = behavior.user_id()
-    if not user_id in self.data:
+    if user_id not in self.data:
       self.data[user_id] = False
     if (behavior.winner_score()-1 == behavior.loser_score()) and not self.data[user_id]:
       self.data[user_id] = True
