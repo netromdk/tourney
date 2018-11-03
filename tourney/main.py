@@ -34,7 +34,7 @@ if DEMO:
 
   def wrap_rtm_read():
     try:
-      text = input("> ")
+      text = input("> ")  # nosec
     except KeyboardInterrupt:
       exit(0)
     except EOFError:
