@@ -184,7 +184,10 @@ def parse_command(event):
       autoupdate()
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
-  else:
+
+  # Only send ephemeral message if command hasn't been parsed into a command instance because
+  # `handle_command()` will do it otherwise.
+  elif cmd is None:
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
     client.api_call("chat.postEphemeral", channel=channel, text=response, user=user_id)
 
