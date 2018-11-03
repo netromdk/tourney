@@ -127,6 +127,8 @@ def create_matches():
 # exit with code 0. Note that when running as a service it is extected that the service will respawn
 # the process when it is terminated!
 def autoupdate():
+  client.api_call("chat.postMessage", channel=State.get().channel_id(),
+                  text="Going offline to auto-update and restart..")
   cwd = os.getcwd()
   script = "autoupdate.sh"
   if Config.get().running_as_service():
