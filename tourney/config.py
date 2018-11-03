@@ -32,15 +32,20 @@ class Config:
   def privileged_users(self):
     return self.__privileged_users
 
+  def running_as_service(self):
+    return self.__running_as_service
+
   def file_path(self):
     return os.path.expanduser("{}/config.json".format(DATA_PATH))
 
   def reset(self):
     self.__privileged_users = []
+    self.__running_as_service = False
 
   def save(self):
     data = {
       "privileged_users": self.privileged_users(),
+      "running_as_service": self.running_as_service()
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
@@ -51,3 +56,5 @@ class Config:
       data = json.load(fp)
       if "privileged_users" in data:
         self.__privileged_users = data["privileged_users"]
+      if "running_as_service" in data:
+        self.__running_as_service = data["running_as_service"]

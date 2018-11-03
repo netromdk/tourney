@@ -122,6 +122,18 @@ def create_matches():
   channel_id = state.channel_id()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
 
+# If not running as a service then execute "autoupdate.sh" that will git pull and run tourney.py
+# again. Otherwise, it will run "update.sh" that will git pull only. In both cases this process will
+# exit with code 0. Note that when running as a service it is extected that the service will respawn
+# the process when it is terminated!
+def autoupdate():
+  cwd = os.getcwd()
+  script = "autoupdate.sh"
+  if Config.get().running_as_service():
+    script = "update.sh"
+  subprocess.Popen(["/bin/sh", script], cwd=cwd)  # nosec
+  exit(0)
+
 def parse_command(event):
   msg = event["text"].strip()
   user_id = event["user"]
@@ -166,8 +178,7 @@ def parse_command(event):
     if command == "generate":
       create_matches()
     elif command == "autoupdate":
-      subprocess.Popen(["/bin/sh", "autoupdate.sh"])  # nosec
-      exit(0)
+      autoupdate()
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
   else:

@@ -1,8 +1,7 @@
 #!/bin/sh
 echo "Tourney is auto-updating.."
 
-echo "git pulling.."
-git pull --rebase --autostash
+./update.sh
 
 echo "Starting tourney.py again.."
 ./tourney.py
