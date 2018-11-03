@@ -89,6 +89,8 @@ class WinLoseCommand(Command):
             # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
+            for [t0, t1] in unrecorded_matches:
+              response += "\n\t[T{}] *{}* vs. [T{}] *{}*".format(t0, names[t0], t1, names[t1])
         elif len(myMatches) > 1:
           response = "You appear in multiple matches. Please use explicit scoring with !score."
         else:

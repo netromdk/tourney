@@ -83,6 +83,8 @@ class ScoreCommand(Command):
             # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
+            for [t0, t1] in unrecorded_matches:
+              response += "\n\t[T{}] *{}* vs. [T{}] *{}*".format(t0, names[t0], t1, names[t1])
         else:
           response = "Only players of a match can report the score!"
       else:
