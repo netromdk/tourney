@@ -375,6 +375,11 @@ def init():
 
   state.save()
 
+  # Send ephemeral messages to privileged users that it has been started.
+  for user_id in config.privileged_users():
+    client.api_call("chat.postEphemeral", channel=state.channel_id(),
+                    text="My engines have just been fired up!", user=user_id)
+
 def repl():
   print("Entering REPL..")
   while True:
