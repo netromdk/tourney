@@ -170,6 +170,7 @@ def parse_command(event):
     cmd = MyStatsCommand()
   elif command == "undoteams":
     cmd = UndoTeamsCommand()
+    channel = state.channel_id()
   elif command == "achievements":
     cmd = AchievementsCommand()
   elif command == "acheivements":
