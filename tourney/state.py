@@ -87,6 +87,15 @@ class State:
   def unrecorded_matches(self):
     return self.__unrecorded_matches
 
+  def set_dont_remind_users(self, dont_remind_users):
+    self.__dont_remind_users = dont_remind_users
+
+  def add_dont_remind_user(self, user_id):
+    self.__dont_remind_users.append(user_id)
+
+  def dont_remind_users(self):
+    return self.__dont_remind_users
+
   def file_path(self):
     return os.path.expanduser("{}/state.json".format(DATA_PATH))
 
@@ -100,6 +109,7 @@ class State:
     self.__teams = []
     self.__team_names = []
     self.__unrecorded_matches = []
+    self.__dont_remind_users = []
 
   def save(self):
     data = {
@@ -111,7 +121,8 @@ class State:
       "midday_announce": self.__midday_announce,
       "teams": self.__teams,
       "team_names": self.__team_names,
-      "unrecorded_matches": self.__unrecorded_matches
+      "unrecorded_matches": self.__unrecorded_matches,
+      "dont_remind_users": self.__dont_remind_users
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+") as fp:
@@ -138,3 +149,5 @@ class State:
         self.set_team_names(data["team_names"])
       if "unrecorded_matches" in data:
         self.set_unrecorded_matches(data["unrecorded_matches"])
+      if "dont_remind_users" in data:
+        self.set_dont_remind_users(data["dont_remind_users"])

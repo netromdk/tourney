@@ -111,12 +111,14 @@ def create_matches():
       key.sort()
       unrecorded_matches.append(key)
 
-    # Remember teams and unrecorded matches but clear participants and morning announce.
+    # Remember teams and unrecorded matches but clear participants, morning announce, and users that
+    # didn't want today's reminder.
     state.set_teams(teams)
     state.set_team_names(names)
     state.set_unrecorded_matches(unrecorded_matches)
     state.set_participants([])
     state.set_morning_announce(None)
+    state.set_dont_remind_users([])
     state.save()
 
   channel_id = state.channel_id()
@@ -307,12 +309,13 @@ def scheduled_actions():
     state.set_morning_announce(resp["ts"])
     state.save()
 
-  # Reminder announcement for remaining participants to join game.
+  # Reminder announcement for remaining participants to join game. But don't send to users that
+  # explicitly didn't want to play today's game.
   start = datetime.combine(date.today(), REMINDER_ANNOUNCE)
   end = start + REMINDER_ANNOUNCE_DELTA
   if now >= start and now < end and not state.reminder_announce():
     scores = Scores.get()
-    remaining = scores.recent_users(7) - set(state.participants())
+    remaining = scores.recent_users(7) - set(state.participants()) - set(state.dont_remind_users())
     if len(remaining) == 0:
       print("No one to remind!")
       # Something that won't match timestamp but still isn't None.
