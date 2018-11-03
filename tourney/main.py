@@ -13,7 +13,7 @@ from .lookup import Lookup
 from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
-  DEBUG, RTM_READ_DELAY
+  DEBUG, RTM_READ_DELAY, LOAD_TEST
 from .scores import Scores
 from .config import Config
 from .stats import Stats
@@ -384,4 +384,9 @@ def start_tourney():
     connect()
 
   init()
+
+  if LOAD_TEST:
+    print("Exiting load test.")
+    exit(0)
+
   repl()

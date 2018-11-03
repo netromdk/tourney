@@ -29,3 +29,8 @@ security-check:
 	.venv/bin/bandit -r -s B101 ${MODULES}
 
 check: check-style static-analysis security-check
+
+load-test:
+	.venv/bin/python3 tourney.py --demo --load-test
+
+test: load-test
