@@ -47,6 +47,15 @@ class Scores:
           res.append(player)
     return set(res)
 
+  def today(self):
+    """List of results of today's matches, if any."""
+    now = datetime.utcnow().date()
+    res = []
+    for match in self.matches():
+      if datetime.fromtimestamp(match[0]).date() == now:
+        res.append(match)
+    return res
+
   def file_path(self):
     return os.path.expanduser("{}/scores.json".format(DATA_PATH))
 
