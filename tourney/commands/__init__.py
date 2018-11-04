@@ -8,6 +8,7 @@ from .stats_command import StatsCommand
 from .mystats_command import MyStatsCommand
 from .undoteams_command import UndoTeamsCommand
 from .achievements_command import AchievementsCommand
+from .results_command import ResultsCommand
 
 __all__ = [
   "HelpCommand",
@@ -19,5 +20,6 @@ __all__ = [
   "StatsCommand",
   "MyStatsCommand",
   "UndoTeamsCommand",
-  "AchievementsCommand"
+  "AchievementsCommand",
+  "ResultsCommand"
 ]
