@@ -206,6 +206,9 @@ def parse_command(event):
   return cmd
 
 def parse_events(events):
+  state = State.get()
+  created_teams = len(state.teams()) > 0
+
   for event in events:
     event_type = event["type"]
 
@@ -221,8 +224,9 @@ def parse_events(events):
         handle_command(cmd)
         continue
 
+      # Join/leave game via reaction if not already started.
       m = re.match(REACTION_REGEX, msg)
-      if m:
+      if m and not created_teams:
         reaction = m.group(1)
         if reaction in POSITIVE_REACTIONS:
           handle_command_direct("!join", user_id, channel_id)
@@ -235,14 +239,15 @@ def parse_events(events):
       Achievements.get().interact(LeaveChannelBehavior(user_id))
 
     # Adding a positive reaction to morning or reminder announce message will join game, negative
-    # will leave game, and removing reaction will do the opposite action.
-    elif event_type == "reaction_added" or event_type == "reaction_removed":
+    # will leave game, and removing reaction will do the opposite action. But only if game is not
+    # already started.
+    elif (event_type == "reaction_added" or event_type == "reaction_removed") \
+         and not created_teams:
       added = (event_type == "reaction_added")
       pos = (event["reaction"] in POSITIVE_REACTIONS)
       neg = (event["reaction"] in NEGATIVE_REACTIONS)
       ts = event["item"]["ts"]
       channel = event["item"]["channel"]
-      state = State.get()
       if ts == state.morning_announce() or ts == state.reminder_announce():
         if (added and pos) or (not added and neg):
           handle_command_direct("!join", event["user"], channel)
