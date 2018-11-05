@@ -409,9 +409,13 @@ def init():
   state.save()
 
   # Send ephemeral messages to privileged users that it has been started.
+  git_describe = \
+    subprocess.check_output(["git", "describe", "--all", "--long"], cwd=os.getcwd())  # nosec
+  git_describe = git_describe.strip().decode("utf-8")
+  started_text = "My engines have just been fired up! [{}]".format(git_describe)
   for user_id in config.privileged_users():
-    client.api_call("chat.postEphemeral", channel=state.channel_id(),
-                    text="My engines have just been fired up!", user=user_id)
+    client.api_call("chat.postEphemeral", channel=state.channel_id(), text=started_text,
+                    user=user_id)
 
 def repl():
   print("Entering REPL..")
