@@ -136,7 +136,7 @@ def autoupdate():
   script = "autoupdate.sh"
   if Config.get().running_as_service():
     script = "update.sh"
-  subprocess.Popen(["/bin/sh", script], cwd=cwd)  # nosec
+  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec
   exit(0)
 
 def parse_command(event):
