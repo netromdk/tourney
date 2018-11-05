@@ -21,7 +21,7 @@ class FirstJoinerAchievement(Achievement):
     participants = state.participants()
     if user_id not in self.data:
       self.data[user_id] = False
-    if len(participants) == 1:
+    if len(participants) == 1 and not self.data[user_id]:
       self.data[user_id] = True
       return True
     return False
