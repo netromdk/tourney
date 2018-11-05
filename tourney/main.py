@@ -14,7 +14,7 @@ from .lookup import Lookup
 from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
-  DEBUG, RTM_READ_DELAY, LOAD_TEST
+  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA
 from .scores import Scores
 from .config import Config
 from .stats import Stats
@@ -346,6 +346,21 @@ def scheduled_actions():
   elif now > end and state.midday_announce():
     print("Clearing midday announce")
     state.set_midday_announce(False)
+    state.save()
+
+  # Clear state at night, right before next day begins.
+  start = datetime.combine(date.today(), NIGHT_CLEARING)
+  end = start + NIGHT_CLEARING_DELTA
+  should_clear = (len(state.participants()) > 0 or len(state.teams()) > 0 or
+                  len(state.teams()) > 0 or len(state.team_names()) > 0 or
+                  len(state.dont_remind_users()) > 0)
+  if now >= start and now < end and should_clear:
+    print("Executing nightly cleanup")
+    state.set_teams([])
+    state.set_team_names([])
+    state.set_unrecorded_matches([])
+    state.set_participants([])
+    state.set_dont_remind_users([])
     state.save()
 
 def connect():

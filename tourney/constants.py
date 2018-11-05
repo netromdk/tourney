@@ -30,6 +30,9 @@ REMINDER_ANNOUNCE_DELTA = timedelta(minutes=49)
 MIDDAY_ANNOUNCE = time(11, 50)
 MIDDAY_ANNOUNCE_DELTA = timedelta(minutes=10)
 
+NIGHT_CLEARING = time(23)
+NIGHT_CLEARING_DELTA = timedelta(minutes=59)
+
 POSITIVE_REACTIONS = [
   "+1",
   "the_horns",
