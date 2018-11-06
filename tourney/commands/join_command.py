@@ -1,6 +1,6 @@
 from .command import Command
 from tourney.constants import TEAM_NAME_DECORATIONS
-from random import shuffle, choice
+from random import choice
 
 from tourney.scores import Scores
 from tourney.state import State
