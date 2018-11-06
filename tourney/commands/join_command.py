@@ -28,7 +28,7 @@ class JoinCommand(Command):
           teams_with_matches.append(match[1])
 
       joinable_teams = [teamIdx for teamIdx in teams_with_matches if len(teams[teamIdx]) == 2]
-    
+
       if len(joinable_teams) > 0:
         shuffle(joinable_teams)
         new_team_index = joinable_teams[0]
@@ -40,13 +40,13 @@ class JoinCommand(Command):
 
         teams[new_team_index] = new_team
         teamNames[new_team_index] = new_team_name
-        
+
         state.set_teams(teams)
         state.set_team_names(teamNames)
 
         fmt = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
         formatted_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
-        return  "{}, you've joined existing team {}\n".format(user_name, formatted_team_name)
+        return "{}, you've joined existing team {}\n".format(user_name, formatted_team_name)
       else:
         return "{}, you're too late. No late-joinable teams were found.".format(user_name)
     else:
