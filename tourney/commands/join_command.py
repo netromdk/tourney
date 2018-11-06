@@ -32,13 +32,13 @@ class JoinCommand(Command):
       joinable_teams = [x for x in joinable_teams if x not in scored_teams]
 
       if len(joinable_teams) > 0:
-        new_team = choice(joinable_teams)
+        new_team = choice(joinable_teams) # nosec
         new_team_index = teams.index(new_team)
 
         new_team_name = team_names[new_team_index]
 
         new_team.append(self.user_id())
-        new_team_name = choice(TEAM_NAME_DECORATIONS)(new_team_name)
+        new_team_name = choice(TEAM_NAME_DECORATIONS)(new_team_name) #nosec
 
         teams[new_team_index] = new_team
         team_names[new_team_index] = new_team_name
