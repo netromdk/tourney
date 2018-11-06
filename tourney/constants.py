@@ -83,3 +83,26 @@ TEAM_NAMES = [
   "The Mullet Mafia",
   "Thunderpants",
 ]
+
+TEAM_NAME_DECORATIONS = [
+    lambda x: "{} of Doom".format(x),
+    lambda x: "{} +1".format(x),
+    lambda x: "{} (Handicapped)".format(x),
+    lambda x: "{} in the Membrane".format(x),
+    lambda x: "{} on the Rocks".format(x),
+    lambda x: " {} et al.".format(x),
+    lambda x: "{} With Bells On".format(x),
+    lambda x: "{}, Cherry on Top".format(x),
+    lambda x: "Not {}".format(x),
+    lambda x: "{}²".format(x),
+    lambda x: "Blessed {}".format(x),
+    lambda x: "Cursed {}".format(x),
+    lambda x: "Punished {}".format(x),
+    lambda x: "Shin {}".format(x),
+    lambda x: "{} 2: Son of {}".format(x, x),
+    lambda x: "Bride of {}".format(x),
+    lambda x: "\"{}\"".format(x),
+    lambda x: x.upper(),
+    lambda x: x[::2],
+    lambda x: x[::-1].lower().title(),
+]
