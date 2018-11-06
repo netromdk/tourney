@@ -2,6 +2,7 @@ from .command import Command
 from tourney.constants import TEAM_NAME_DECORATIONS
 from random import shuffle, choice
 
+from tourney.scores import Scores
 from tourney.state import State
 from tourney.achievements import Achievements, JoinBehavior
 
@@ -19,20 +20,21 @@ class JoinCommand(Command):
 
     created_teams = len(teams) > 0
     if created_teams:
-      matches = state.unrecorded_matches()
-      teams_with_matches = []
-      for match in matches:
-        if not match[0] in teams_with_matches:
-          teams_with_matches.append(match[0])
-        if not match[1] in teams_with_matches:
-          teams_with_matches.append(match[1])
+      joinable_teams = [x for x in teams if len(x) == 2]
 
-      joinable_teams = [teamIdx for teamIdx in teams_with_matches if len(teams[teamIdx]) == 2]
+      scored_teams = []
+      for score in Scores.get().today():
+        scored_teams.append(score[1])
+        scored_teams.append(score[3])
+
+      today = Scores.get().today()
+
+      joinable_teams = [x for x in joinable_teams if x not in scored_teams]
 
       if len(joinable_teams) > 0:
-        shuffle(joinable_teams)
-        new_team_index = joinable_teams[0]
-        new_team = teams[new_team_index]
+        new_team = choice(joinable_teams)
+        new_team_index = teams.index(new_team)
+
         new_team_name = team_names[new_team_index]
 
         new_team.append(self.user_id())
