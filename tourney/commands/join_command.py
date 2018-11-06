@@ -15,7 +15,7 @@ class JoinCommand(Command):
     user_name = lookup.user_name_by_id(self.user_id())
 
     teams = state.teams()
-    teamNames = state.team_names()
+    team_names = state.team_names()
 
     created_teams = len(teams) > 0
     if created_teams:
@@ -33,20 +33,20 @@ class JoinCommand(Command):
         shuffle(joinable_teams)
         new_team_index = joinable_teams[0]
         new_team = teams[new_team_index]
-        new_team_name = teamNames[new_team_index]
+        new_team_name = team_names[new_team_index]
 
         new_team.append(self.user_id())
         new_team_name = choice(TEAM_NAME_DECORATIONS)(new_team_name)
 
         teams[new_team_index] = new_team
-        teamNames[new_team_index] = new_team_name
+        team_names[new_team_index] = new_team_name
 
         state.set_teams(teams)
-        state.set_team_names(teamNames)
+        state.set_team_names(team_names)
 
         fmt = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
         formatted_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
-        return "{}, you've joined existing team {}\n".format(user_name, formatted_team_name)
+        return "{}, you've joined existing team {}".format(user_name, formatted_team_name)
       else:
         return "{}, you're too late. No late-joinable teams were found.".format(user_name)
     else:
