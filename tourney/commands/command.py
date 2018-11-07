@@ -11,6 +11,7 @@ class Command(ABC):
     self.__args = ""
     self.__channel = None
     self.__ephemeral = True
+    self.__public = False
 
   def name(self):
     """Command name."""
@@ -43,6 +44,13 @@ class Command(ABC):
   def allowed(self):
     """Check if user, who wrote command is allowed to execute it."""
     return command_allowed(self.name(), self.user_id())
+
+  def public(self):
+    """Whether or not the response must be written to the public channel for this execution only."""
+    return self.__public
+
+  def set_public(self, public):
+    self.__public = public
 
   @abstractmethod
   def execute(self, lookup=None):

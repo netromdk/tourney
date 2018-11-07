@@ -281,6 +281,13 @@ def handle_command(cmd):
     response = "`!{}` is a privileged command and you're not allowed to use it!".format(command)
   else:
     response = cmd.execute(lookup)
+
+    # Check if the response was deemed necessary to be made public, only for this execution.
+    if cmd.public():
+      print("Overriding response to be public")
+      ephemeral = False
+      channel_id = state.channel_id()
+
     # TODO: Should it only accept behavior if command executed without errors?
     achievements.interact(InvokeBehavior(user_id, command))
 
