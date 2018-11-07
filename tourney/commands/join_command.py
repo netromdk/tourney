@@ -43,6 +43,7 @@ class JoinCommand(Command):
 
         state.set_teams(teams)
         state.set_team_names(team_names)
+        state.save()
 
         fmt = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
         formatted_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
