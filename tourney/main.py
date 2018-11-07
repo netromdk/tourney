@@ -91,7 +91,6 @@ def create_matches():
   state = State.get()
   response = "<!channel>\n"
   teams, names = create_teams()
-  unrecorded_matches = []
   if teams is None:
     response += "No games possible! At least 4 players are required!"
   else:
@@ -100,7 +99,10 @@ def create_matches():
       fmt = ", ".join([lookup.user_name_by_id(uid) for uid in teams[i]])
       name = names[i]
       response += "\n\t[T{}] *{}*: {}".format(i, name, fmt)
+
     sched = create_schedule(len(teams))
+    unrecorded_matches = []
+
     response += "\n\nSchedule:"
     for match in sched:
       plural = "s" if match[2] > 1 else ""
@@ -114,6 +116,7 @@ def create_matches():
 
     # Remember teams and unrecorded matches but clear participants, morning announce, and users that
     # didn't want today's reminder.
+    state.set_schedule(sched)
     state.set_teams(teams)
     state.set_team_names(names)
     state.set_unrecorded_matches(unrecorded_matches)
@@ -371,6 +374,7 @@ def scheduled_actions():
                   len(state.dont_remind_users()) > 0)
   if now >= start and now < end and should_clear:
     print("Executing nightly cleanup")
+    state.set_schedule([])
     state.set_teams([])
     state.set_team_names([])
     state.set_unrecorded_matches([])

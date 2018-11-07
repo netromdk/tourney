@@ -69,6 +69,12 @@ class State:
   def midday_announce(self):
     return self.__midday_announce
 
+  def set_schedule(self, schedule):
+    self.__schedule = schedule
+
+  def schedule(self):
+    return self.__schedule
+
   def set_teams(self, teams):
     self.__teams = teams
 
@@ -106,6 +112,7 @@ class State:
     self.__morning_announce = None
     self.__reminder_announce = None
     self.__midday_announce = False
+    self.__schedule = []
     self.__teams = []
     self.__team_names = []
     self.__unrecorded_matches = []
@@ -119,6 +126,7 @@ class State:
       "morning_announce": self.__morning_announce,
       "reminder_announce": self.__reminder_announce,
       "midday_announce": self.__midday_announce,
+      "schedule": self.__schedule,
       "teams": self.__teams,
       "team_names": self.__team_names,
       "unrecorded_matches": self.__unrecorded_matches,
@@ -143,6 +151,8 @@ class State:
         self.set_reminder_announce(data["reminder_announce"])
       if "midday_announce" in data:
         self.set_midday_announce(data["midday_announce"])
+      if "schedule" in data:
+        self.set_schedule(data["schedule"])
       if "teams" in data:
         self.set_teams(data["teams"])
       if "team_names" in data:
