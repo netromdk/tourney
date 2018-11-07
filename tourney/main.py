@@ -8,7 +8,7 @@ from slackclient import SlackClient
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
-  ResultsCommand
+  ResultsCommand, TeamsCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
@@ -180,6 +180,9 @@ def parse_command(event):
     achievements.interact(InvokeBehavior(user_id, command))
   elif command == "results":
     cmd = ResultsCommand()
+    channel = state.channel_id()
+  elif command == "teams":
+    cmd = TeamsCommand()
     channel = state.channel_id()
 
   # Special command handling.
