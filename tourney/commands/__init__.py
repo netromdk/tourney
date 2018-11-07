@@ -10,6 +10,7 @@ from .undoteams_command import UndoTeamsCommand
 from .achievements_command import AchievementsCommand
 from .results_command import ResultsCommand
 from .teams_command import TeamsCommand
+from .schedule_command import ScheduleCommand
 
 __all__ = [
   "HelpCommand",
@@ -23,5 +24,6 @@ __all__ = [
   "UndoTeamsCommand",
   "AchievementsCommand",
   "ResultsCommand",
-  "TeamsCommand"
+  "TeamsCommand",
+  "ScheduleCommand"
 ]
