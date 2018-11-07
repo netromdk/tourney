@@ -47,6 +47,10 @@ class JoinCommand(Command):
 
         fmt = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
         formatted_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
+
+        # This response must be made public because it changes the team for other players!
+        self.set_public(True)
+
         return "{}, you've joined existing team {}".format(user_name, formatted_team_name)
       else:
         return "{}, you're too late. No late-joinable teams were found.".format(user_name)
