@@ -20,6 +20,7 @@ As the foosball bot, I accept the following commands:
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!results` - Prints results of today's matches.
   `!stats` - Prints general statistics of all games.
+  `!allstats` - Prints general statistics of all games.
   `!mystats` - Prints statistics of all games about invoker.
   `!achievements` - Prints achievements progress for invoker.
   `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)

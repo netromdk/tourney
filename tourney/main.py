@@ -8,7 +8,7 @@ from slackclient import SlackClient
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
-  ResultsCommand, TeamsCommand, ScheduleCommand
+  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
@@ -172,6 +172,8 @@ def parse_command(event):
     channel = state.channel_id()
   elif command == "stats":
     cmd = StatsCommand()
+  elif command == "allstats":
+    cmd = AllStatsCommand()
   elif command == "mystats":
     cmd = MyStatsCommand()
   elif command == "undoteams":

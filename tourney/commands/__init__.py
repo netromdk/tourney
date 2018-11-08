@@ -5,6 +5,7 @@ from .leave_command import LeaveCommand
 from .score_command import ScoreCommand
 from .win_lose_command import WinLoseCommand
 from .stats_command import StatsCommand
+from .allstats_command import AllStatsCommand
 from .mystats_command import MyStatsCommand
 from .undoteams_command import UndoTeamsCommand
 from .achievements_command import AchievementsCommand
@@ -20,6 +21,7 @@ __all__ = [
   "ScoreCommand",
   "WinLoseCommand",
   "StatsCommand",
+  "AllStatsCommand",
   "MyStatsCommand",
   "UndoTeamsCommand",
   "AchievementsCommand",
