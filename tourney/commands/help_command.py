@@ -1,6 +1,6 @@
 from .command import Command
 
-from tourney.constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS
+from tourney.constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS, STATS_DAYS_BACK
 
 class HelpCommand(Command):
   def __init__(self):
@@ -19,7 +19,7 @@ As the foosball bot, I accept the following commands:
   `!lose` - Add match scores (irrelevant order) as a member of the losing team. Example: `!lose 8 3`
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!results` - Prints results of today's matches.
-  `!stats` - Prints general statistics of all games.
+  `!stats` - Prints general statistics of games going back {} days.
   `!allstats` - Prints general statistics of all games.
   `!mystats` - Prints statistics of all games about invoker.
   `!achievements` - Prints achievements progress for invoker.
@@ -29,5 +29,5 @@ As the foosball bot, I accept the following commands:
 
 Positive reactions: {}
 Negative reactions: {}
-""".format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
+""".format(STATS_DAYS_BACK, " ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
            " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))

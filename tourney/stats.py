@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 
 from .constants import DATA_PATH
 from .scores import Scores
@@ -26,13 +27,13 @@ class Stats:
       return Stats()
     return Stats.__instance
 
-  def generate(self):
+  def generate(self, time_back_delta=None):
     self.reset()
     scores = Scores.get()
     matches = scores.matches()
     amount = len(matches)
-    self.__matches = amount
-    if amount == 0:
+    self.__matches = 0
+    if len(matches) == 0:
       return False
     else:
       rounds = 0
@@ -61,8 +62,15 @@ class Stats:
         t = teams[team_key]
         teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
 
+      now = datetime.utcnow()
       for match in matches:
         match_time = match[0]
+        if time_back_delta is not None and \
+           (now - time_back_delta) >= datetime.fromtimestamp(match_time):
+          continue
+
+        self.__matches += 1
+
         if oldest_time is None and newest_time is None:
           oldest_time = match_time
           newest_time = match_time
@@ -132,10 +140,23 @@ class Stats:
       # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
       # nudge factor only count a 1/1000th.
       self.__top_scorers = to_list(player_scores)
-      self.__top_scorers.sort(key=lambda pair: pair[1] + player_wins[pair[0]] / 10000, reverse=True)
+
+      def top_scorers_cmp(pair):
+        res = pair[1]
+        if pair[0] in player_wins:
+          res += player_wins[pair[0]] / 10000
+        return res
+      self.__top_scorers.sort(key=top_scorers_cmp, reverse=True)
 
       self.__top_winners = to_list(player_wins)
-      self.__top_winners.sort(key=lambda pair: pair[1] + player_scores[pair[0]] / 800, reverse=True)
+
+      def top_winners_cmp(pair):
+        res = pair[1]
+        if pair[0] in player_scores:
+          res += player_scores[pair[0]] / 800
+        return res
+
+      self.__top_winners.sort(key=top_winners_cmp, reverse=True)
 
       def teams_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
@@ -153,10 +174,10 @@ class Stats:
       # Personal player info.
       for player in player_matches:
         info = {
-          "total_matches": player_matches[player],
-          "total_rounds": player_rounds[player],
-          "total_score": player_scores[player],
-          "total_wins": player_wins[player],
+          "total_matches": player_matches[player] if player in player_matches else 0,
+          "total_rounds": player_rounds[player] if player in player_rounds else 0,
+          "total_score": player_scores[player] if player in player_scores else 0,
+          "total_wins": player_wins[player] if player in player_wins else 0,
         }
         self.__personal[player] = info
     return True
