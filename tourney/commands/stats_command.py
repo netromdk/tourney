@@ -1,6 +1,7 @@
 from .command import Command
 
-from datetime import timedelta
+from datetime import datetime
+import calendar
 
 from tourney.stats import Stats
 from tourney.constants import STATS_DAYS_BACK
@@ -13,8 +14,11 @@ class StatsCommand(Command):
   def execute(self, lookup=None):
     stats = Stats.get()
 
-    if not stats.generate(timedelta(days=STATS_DAYS_BACK)):
+    this_month_filter = lambda x: datetime.fromtimestamp(x).month == datetime.today().month
+
+    if not stats.generate(time_filter=this_month_filter):
       return "There are no recorded matches to generate statistics from!"
 
     stats.save()
-    return "Statistics going back {} days:".format(STATS_DAYS_BACK) + stats.general_response(lookup)
+    month = calendar.month_name[datetime.today().month]
+    return "Statistics for {}:".format(month) + stats.general_response(lookup)

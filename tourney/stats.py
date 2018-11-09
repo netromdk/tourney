@@ -27,7 +27,7 @@ class Stats:
       return Stats()
     return Stats.__instance
 
-  def generate(self, time_back_delta=None):
+  def generate(self, time_back_delta=None, time_filter=None):
     self.reset()
     scores = Scores.get()
     matches = scores.matches()
@@ -67,6 +67,8 @@ class Stats:
         match_time = match[0]
         if time_back_delta is not None and \
            (now - time_back_delta) >= datetime.fromtimestamp(match_time):
+          continue
+        if time_filter is not None and not time_filter(match_time):
           continue
 
         self.__matches += 1
