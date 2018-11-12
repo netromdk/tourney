@@ -331,21 +331,30 @@ def scheduled_actions():
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + MORNING_ANNOUNCE_DELTA
   if now >= start and now < end and not state.morning_announce():
-    text = "<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: " \
-      "reaction to this message!"
+    announce_text = "<!channel> Remember to join today's game before 11:50 by using" \
+      " `!join` or :+1: reaction to this message!"
+
+    resp = client.api_call("chat.postMessage", channel=channel_id, text=announce_text)
 
     # First of the month (or closest monday) announcement for season reset
     month = calendar.month_name[datetime.today().month]
     if now.day == 1 or (now.weekday() == 0 and now.day <= 3):
-      text += "\nNew season starts today, !stats now only shows data from {}. Good luck this month!".format(month)
-      # invoke start of season behaviour (e.g. top scorers 'cheevos for last season etc)
+      # TODO: Invoke start of season behaviour for achievements
+      season_start_text = ":stadium: *{} season starts today!*\n".format(month)
+      season_start_text += ":bar_chart: Stats and leaderboards shown with !stats will only " \
+        "include the current season.\n"
+      season_start_text += ":globe_with_meridians: Use !allstats for full statistics."
+      # TODO: Display fun facts about the season
+      resp = client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)
     if now.day == month_range[1] or (now.weekday() == 4 and (month_range[1] - now.day <= 2)):
-      text += "\nLast day of the {} season! Last chance to affect the season rankings! Good luck out there!".format(month)
+      season_end_text = ":rotating_light: *Last day of the {} season!* "\
+        ":rotating_light:\n".format(month)
+      season_end_text += ":chart_with_upwards_trend: Last chance to affect the season rankings!"
+      resp = client.api_call("chat.postMessage", channel=channel_id, text=season_end_text)
 
-    resp = client.api_call("chat.postMessage", channel=channel_id, text=text)
     state.set_morning_announce(resp["ts"])
     state.save()
 
