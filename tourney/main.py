@@ -5,6 +5,7 @@ from time import sleep
 from datetime import datetime, date
 from random import shuffle
 from slackclient import SlackClient
+import calendar
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
@@ -332,6 +333,18 @@ def scheduled_actions():
   if now >= start and now < end and not state.morning_announce():
     text = "<!channel> Remember to join today's game before 11:50 by using `!join` or :+1: " \
       "reaction to this message!"
+
+    # First of the month (or closest monday) announcement for season reset
+    month = calendar.month_name[datetime.today().month]
+    if now.day == 1 or (now.weekday() == 0 and now.day <= 3):
+      text += "\nNew season starts today, !stats now only shows data from {}. Good luck this month!".format(month)
+      # invoke start of season behaviour (e.g. top scorers 'cheevos for last season etc)
+
+    # Last of the month (or closest friday) warning for season reset
+    month_range = calendar.monthrange(now.year, now.month)
+    if now.day == month_range[1] or (now.weekday() == 4 and (month_range[1] - now.day <= 2)):
+      text += "\nLast day of the {} season! Last chance to affect the season rankings! Good luck out there!".format(month)
+
     resp = client.api_call("chat.postMessage", channel=channel_id, text=text)
     state.set_morning_announce(resp["ts"])
     state.save()
