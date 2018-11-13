@@ -341,9 +341,9 @@ def scheduled_actions():
     if now.day == 1 or (now.weekday() == 0 and now.day <= 3):
       season_start_text = ":stadium: *{} season starts today!*\n".format(month)
       season_start_text += ":trophy: Previous season achievements have been calculated.\n"
-      season_start_text += ":bar_chart: Stats and leaderboards shown with !stats will only " \
+      season_start_text += ":bar_chart: Stats and leaderboards shown with `!stats` will only " \
         "include the current season.\n"
-      season_start_text += ":globe_with_meridians: Use !allstats for full statistics.\n"
+      season_start_text += ":globe_with_meridians: Use `!allstats` for full statistics.\n"
       # TODO: Display fun facts about the season
 
       stats = Stats.get()

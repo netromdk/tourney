@@ -1,17 +1,17 @@
 from .tiered_achievement import TieredAchievement
 from .behavior import SEASON_START_BEHAVIOR
-from datetime import date, datetime
+from datetime import date
 from tourney.stats import Stats
 from tourney.util import last_season_filter
 
 class SeasonTopFiveAchievement(TieredAchievement):
   def __init__(self):
     tiers = (
-      (1,  "Fairest of the Season",      "End a season in the top five by wins " \
+      (1,  "Fairest of the Season",      "End a season in the top five by wins "
          "while participating in at least a third of all matches."),
-      (4,  "Vivaldi",    "End four seasons in the top five by wins " \
+      (4,  "Vivaldi",    "End four seasons in the top five by wins "
          "while participating in at least a third of all matches."),
-      (12, "A Very Good Year", "End twelve seasons in the top five by wins " \
+      (12, "A Very Good Year", "End twelve seasons in the top five by wins "
          "while participating in at least a third of all matches."),
     )
     super(SeasonTopFiveAchievement, self).__init__("SeasonTopFive", tiers)
@@ -37,13 +37,13 @@ class SeasonTopFiveAchievement(TieredAchievement):
 
     today = date.today()
     if today.month == 1:
-      last_season = (today.year-1, 12)
+      last_season = (today.year - 1, 12)
     else:
-      last_season = (today.year, today.month-1)
+      last_season = (today.year, today.month - 1)
 
     self.check_init(user_id)
 
-    if not last_season in self.data[user_id][0] \
+    if last_season not in self.data[user_id][0] \
           and personals[user_id]["total_matches"] >= most_matches/4:
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])

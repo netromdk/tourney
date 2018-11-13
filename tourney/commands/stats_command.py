@@ -21,5 +21,5 @@ class StatsCommand(Command):
 
     stats.save()
     month = calendar.month_name[datetime.today().month]
-    
+
     return "Statistics for {}:".format(month) + stats.general_response(lookup)

@@ -46,6 +46,6 @@ def last_season_filter(match_stamp):
   today = date.today()
   match = datetime.fromtimestamp(match_stamp)
   if today.month == 1:
-    return match.month == 12 and match.year == today.year-1
+    return match.month == 12 and match.year == today.year - 1
   else:
-    return match.month == today.month-1 and match.year == today.year
+    return match.month == today.month - 1 and match.year == today.year
