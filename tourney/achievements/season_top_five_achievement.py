@@ -44,7 +44,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
     self.check_init(user_id)
 
     if last_season not in self.data[user_id][0] \
-          and personals[user_id]["total_matches"] >= most_matches/4:
+          and personals[user_id]["total_matches"] >= most_matches / 4:
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])
       nt = self.next_tier(user_id)
