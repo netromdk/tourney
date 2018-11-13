@@ -19,6 +19,7 @@ from .snitch_achievement import ReportOtherAchievement
 from .spelling_achievement import SpellingAchievement
 from .threeplayer_win_achievement import ThreePlayerWinAchievement
 from .threetwo_win_achievement import ThreeVTwoWinAchievement
+from .season_top_five_achievement import SeasonTopFiveAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -90,7 +91,8 @@ class Achievements:
       ReportOtherAchievement(),
       SpellingAchievement(),
       ThreePlayerWinAchievement(),
-      ThreeVTwoWinAchievement()
+      ThreeVTwoWinAchievement(),
+      SeasonTopFiveAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.

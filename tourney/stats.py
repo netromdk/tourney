@@ -325,3 +325,9 @@ You have been in {} teams: {}
       res += "\n\t{}{}: {} ({} rounds)".format(medal, names, win_ratio, rounds)
       i += 1
     return res
+
+  def get_personals(self):
+    return self.__personal
+
+  def get_top_winners(self):
+    return self.__top_winners

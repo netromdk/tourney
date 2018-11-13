@@ -19,8 +19,8 @@ from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE
 from .scores import Scores
 from .config import Config
 from .stats import Stats
-from .util import command_allowed, unescape_text
-from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior
+from .util import command_allowed, unescape_text, last_season_filter
+from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -339,12 +339,21 @@ def scheduled_actions():
     # First of the month (or closest monday) announcement for season reset
     month = calendar.month_name[datetime.today().month]
     if now.day == 1 or (now.weekday() == 0 and now.day <= 3):
-      # TODO: Invoke start of season behaviour for achievements
       season_start_text = ":stadium: *{} season starts today!*\n".format(month)
+      season_start_text += ":trophy: Previous season achievements have been calculated.\n"
       season_start_text += ":bar_chart: Stats and leaderboards shown with !stats will only " \
         "include the current season.\n"
-      season_start_text += ":globe_with_meridians: Use !allstats for full statistics."
+      season_start_text += ":globe_with_meridians: Use !allstats for full statistics.\n"
       # TODO: Display fun facts about the season
+
+      stats = Stats.get()
+      stats.generate(time_filter=last_season_filter)
+
+      top_five = stats.get_top_winners()[:5]
+
+      for winner in top_five:
+        achievements.interact(SeasonStartBehavior(winner[0]))
+
       resp = client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
 
     # Last of the month (or closest friday) warning for season reset
@@ -352,7 +361,8 @@ def scheduled_actions():
     if now.day == month_range[1] or (now.weekday() == 4 and (month_range[1] - now.day <= 2)):
       season_end_text = ":rotating_light: *Last day of the {} season!* "\
         ":rotating_light:\n".format(month)
-      season_end_text += ":chart_with_upwards_trend: Last chance to affect the season rankings!"
+      season_end_text += ":chart_with_upwards_trend: Last chance to affect the season " \
+          "rankings and gain achievements!"
       resp = client.api_call("chat.postMessage", channel=channel_id, text=season_end_text)
 
     state.set_morning_announce(resp["ts"])

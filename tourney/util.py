@@ -1,5 +1,6 @@
 from .constants import PRIVILEGED_COMMANDS
 from .config import Config
+from datetime import date, datetime
 
 def fmt_duration(secs, show_ms=False):
   ms = 0
@@ -40,3 +41,11 @@ def command_allowed(cmd, user_id):
 
 def unescape_text(text):
   return text.replace("\\n", "\n").replace("\\t", "  ")
+
+def last_season_filter(match_stamp):
+  today = date.today()
+  match = datetime.fromtimestamp(match_stamp)
+  if today.month == 1:
+    return match.month == 12 and match.year == today.year-1
+  else:
+    return match.month == today.month-1 and match.year == today.year
