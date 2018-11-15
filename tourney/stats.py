@@ -226,6 +226,28 @@ You have been in {} teams: {}
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
            lose_rounds, len(teams), self.__fmt_top_teams(teams, len(teams), lookup))
 
+  def local_top_list(self, user_id, delta):
+    response = ""
+    top = self.__top_winners
+    top_enum = enumerate(top)
+    try:
+      placement = next(i for i, v in top_enum if v[0] == user_id)
+    except StopIteration:
+      placement = None
+    if placement != None:
+      local_start_index = max(0, placement - delta)
+      local_end_index = min(placement + delta, len(top) - 1)
+      local_top_range = range(local_start_index, local_end_index + 1)
+      response += "\nYour current position in the monthly rankings:\n"
+      if local_start_index > 0:
+        response += "  ... \n"
+      for top_index in local_top_range:
+        player = top[top_index]
+        response += "  {}: {} (win percentage: {})\n".format(top_index + 1, player[0], player[1])
+      if local_end_index < len(top):
+        response += "  ... \n"
+    return response
+
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
 

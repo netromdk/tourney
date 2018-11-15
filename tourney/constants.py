@@ -22,6 +22,7 @@ SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
 WIN_ARGS_REGEX = "(\\d+)\\s+(\\d+)"
 
 STATS_DAYS_BACK = 60
+STATS_PLACEMENT_DELTA = 1
 
 MORNING_ANNOUNCE = time(9)
 MORNING_ANNOUNCE_DELTA = timedelta(hours=1)

@@ -365,7 +365,7 @@ def scheduled_actions():
           "rankings and gain achievements!"
       resp = client.api_call("chat.postMessage", channel=channel_id, text=season_end_text)
 
-    state.set_morning_announce(resp["ts"])
+      state.set_morning_announce(resp["ts"])
     state.save()
 
   # Reminder announcement for remaining participants to join game. But don't send to users that

@@ -42,6 +42,11 @@ def command_allowed(cmd, user_id):
 def unescape_text(text):
   return text.replace("\\n", "\n").replace("\\t", "  ")
 
+def this_season_filter(match_stamp):
+  today = date.today()
+  match = datetime.fromtimestamp(match_stamp)
+  return match.month == today.month and match.year == today.year
+
 def last_season_filter(match_stamp):
   today = date.today()
   match = datetime.fromtimestamp(match_stamp)

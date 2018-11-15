@@ -3,6 +3,8 @@ from .command import Command
 from datetime import datetime
 import calendar
 
+from tourney.util import this_season_filter
+
 from tourney.stats import Stats
 
 class StatsCommand(Command):
@@ -13,10 +15,7 @@ class StatsCommand(Command):
   def execute(self, lookup=None):
     stats = Stats.get()
 
-    def this_month_filter(time_stamp):
-      return datetime.fromtimestamp(time_stamp).month == datetime.today().month
-
-    if not stats.generate(time_filter=this_month_filter):
+    if not stats.generate(time_filter=this_season_filter):
       return "There are no recorded matches to generate statistics from!"
 
     stats.save()
