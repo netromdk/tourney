@@ -8,11 +8,11 @@ class SeasonTopFiveAchievement(TieredAchievement):
   def __init__(self):
     tiers = (
       (1,  "Fairest of the Season",      "End a season in the top five by wins "
-         "while participating in at least a third of all matches."),
+         "while participating in a significant number of matches."),
       (4,  "Vivaldi",    "End four seasons in the top five by wins "
-         "while participating in at least a third of all matches."),
+         "while participating in a significant number of matches."),
       (12, "A Very Good Year", "End twelve seasons in the top five by wins "
-         "while participating in at least a third of all matches."),
+         "while participating in a significant number of matches."),
     )
     super(SeasonTopFiveAchievement, self).__init__("SeasonTopFive", tiers)
 
