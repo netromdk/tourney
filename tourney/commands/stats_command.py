@@ -2,7 +2,6 @@ from .command import Command
 
 from datetime import datetime
 import calendar
-
 from tourney.util import this_season_filter
 
 from tourney.stats import Stats
@@ -21,4 +20,4 @@ class StatsCommand(Command):
     stats.save()
     month = calendar.month_name[datetime.today().month]
 
-    return "Statistics for {}:".format(month) + stats.general_response(lookup)
+    return "Statistics for the {} season:\n".format(month) + stats.general_response(lookup)

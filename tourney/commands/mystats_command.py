@@ -23,6 +23,6 @@ class MyStatsCommand(Command):
     # Generate a local top 5 around this users position in the ranking
     if stats.generate(time_filter=this_season_filter):
       stats.save()
-      response += stats.local_top_list(user_id, STATS_PLACEMENT_DELTA)
+      response += stats.local_top_list(user_id, STATS_PLACEMENT_DELTA, lookup)
 
     return response

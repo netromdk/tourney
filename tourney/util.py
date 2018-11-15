@@ -54,3 +54,13 @@ def last_season_filter(match_stamp):
     return match.month == 12 and match.year == today.year - 1
   else:
     return match.month == today.month - 1 and match.year == today.year
+
+def to_ordinal(number):
+  suffixes = ['{}th', '{}st', '{}nd', '{}rd']
+  if number >= 10 and number <= 20:
+    suffix = '{}th'
+  elif number % 10 in range(1,4):
+    suffix = suffixes[number % 10]
+  else:
+    suffix = '{}th'
+  return suffix.format(number)
