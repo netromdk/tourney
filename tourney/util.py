@@ -59,7 +59,7 @@ def to_ordinal(number):
   suffixes = ['{}th', '{}st', '{}nd', '{}rd']
   if number >= 10 and number <= 20:
     suffix = '{}th'
-  elif number % 10 in range(1,4):
+  elif number % 10 in range(1, 4):
     suffix = suffixes[number % 10]
   else:
     suffix = '{}th'

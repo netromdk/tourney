@@ -1,8 +1,6 @@
 from .command import Command
 from tourney.constants import STATS_PLACEMENT_DELTA
 
-from datetime import datetime
-import calendar
 from tourney.util import this_season_filter
 
 from tourney.stats import Stats

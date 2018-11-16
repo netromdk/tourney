@@ -235,7 +235,7 @@ You have been in {} teams: {}\
       placement = next(i for i, v in top_enum if v[0] == user_id)
     except StopIteration:
       placement = None
-    if placement != None:
+    if placement is not None:
       local_start_index = max(0, placement - delta)
       local_end_index = min(placement + delta, len(top))
       local_top_range = range(local_start_index, local_end_index + 1)
@@ -243,7 +243,7 @@ You have been in {} teams: {}\
       response += "\nYour current position in the ongoing season:"
       if local_start_index > 0:
         response += "\n\t..."
-      response+=self.__fmt_top(self.__top_winners, local_top_range, lookup)
+      response += self.__fmt_top(self.__top_winners, local_top_range, lookup)
       if local_end_index < len(top) - 1:
         response += "\n\t..."
     return response
@@ -327,7 +327,7 @@ You have been in {} teams: {}\
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
       rounds = self.__personal[player[0]]["total_rounds"]
-      placement_str = "{} ".format(to_ordinal(index+1))
+      placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       res += "\n\t{}{}: {} ({} rounds)".format(placement_str, name, num, rounds)
@@ -342,7 +342,7 @@ You have been in {} teams: {}\
       names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
       win_ratio = self.__fmt_num(team[1][0] * 100.0)
       rounds = team[1][1]
-      placement_str = "{} ".format(to_ordinal(index+1))
+      placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
