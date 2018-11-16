@@ -189,7 +189,7 @@ class Stats:
     team_amount = 10
     team_range = range(team_amount)
     total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
-    return """\
+    return """
 Total matches: {}
 Total rounds: {}
 Total teams: {}
@@ -199,7 +199,7 @@ Average score: {:.2f}
 Average delta: {:.2f}
 Top {} players (avg score / round): {}
 Top {} players (% of rounds won): {}
-Top {} teams (% of rounds won): {}\
+Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur,
            self.__avg_score, self.__avg_delta, top_amount,
            self.__fmt_top(self.__top_scorers, top_range, lookup), top_amount,
@@ -219,11 +219,11 @@ Top {} teams (% of rounds won): {}\
     for team in self.__top_teams:
       if user_id in team[0]:
         teams.append(team)
-    return """\
+    return """
 You scored {:.2f} goals on average in {} matches ({} rounds),
 won {:.2f}% ({} rounds),
 and lost {:.2f}% ({} rounds).
-You have been in {} teams: {}\
+You have been in {} teams: {}
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
            lose_rounds, len(teams), self.__fmt_top_teams(teams, range(len(teams)), lookup))
 
@@ -240,7 +240,7 @@ You have been in {} teams: {}\
       local_end_index = min(placement + delta, len(top))
       local_top_range = range(local_start_index, local_end_index + 1)
       print("top range: {}".format(local_top_range))
-      response += "\nYour current position in the ongoing season:"
+      response += "Your current position in the ongoing season:"
       if local_start_index > 0:
         response += "\n\t..."
       response += self.__fmt_top(self.__top_winners, local_top_range, lookup)
