@@ -20,6 +20,7 @@ from .spelling_achievement import SpellingAchievement
 from .threeplayer_win_achievement import ThreePlayerWinAchievement
 from .threetwo_win_achievement import ThreeVTwoWinAchievement
 from .season_top_five_achievement import SeasonTopFiveAchievement
+from .improvement_achievement import SelfImprovementAchievement
 
 from tourney.constants import DATA_PATH
 
@@ -92,7 +93,8 @@ class Achievements:
       SpellingAchievement(),
       ThreePlayerWinAchievement(),
       ThreeVTwoWinAchievement(),
-      SeasonTopFiveAchievement()
+      SeasonTopFiveAchievement(),
+      SelfImprovementAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
