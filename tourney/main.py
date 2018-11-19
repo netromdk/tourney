@@ -79,11 +79,11 @@ def create_schedule(amount):
   if amount % 2 == 0:
     matches = pick_pairs(amount)
   else:
-    twoRoundMathces = amount - 3
-    if twoRoundMathces > 0:
-      matches = pick_pairs(twoRoundMathces)
+    twoRoundMatches = amount - 3
+    if twoRoundMatches > 0:
+      matches = pick_pairs(twoRoundMatches)
     # Add last 3 matches of 1 round each.
-    i = twoRoundMathces
+    i = twoRoundMatches
     matches += [(i, i + 1, 1), (i, i + 2, 1), (i + 1, i + 2, 1)]
   return matches
 
