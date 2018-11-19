@@ -12,7 +12,7 @@ class SelfImprovementAchievement(TieredAchievement):
       (6,  "Faster",   "Improve your end-of-season ranking six times."),
       (12, "Stronger", "Improve your end-of-season ranking twelve times."),
     )
-    super(SelfImprovementAchievement, self).__init__("SelvImprovement", tiers)
+    super(SelfImprovementAchievement, self).__init__("SelfImprovement", tiers)
 
   def accepted_behaviors(self):
     return [SEASON_START_BEHAVIOR]
