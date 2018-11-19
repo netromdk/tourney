@@ -59,13 +59,13 @@ class JoinCommand(Command):
         # Found no joinable teams - go solo!
         new_team = [user_id]
         potential_team_names = [x for x in TEAM_NAMES if x not in team_names]
-        new_team_name = choice(potential_team_names)
+        new_team_name = choice(potential_team_names)  # nosec
 
         teams.append(new_team)
         team_names.append(new_team_name)
 
         named_teams = list(zip(teams, team_names))
-        shuffle(named_teams)
+        shuffle(named_teams)  # nosec
 
         teams = [nt[0] for nt in named_teams]
         team_names = [nt[1] for nt in named_teams]
