@@ -64,29 +64,49 @@ class JoinCommand(Command):
         teams.append(new_team)
         team_names.append(new_team_name)
 
+        named_teams = list(zip(teams, team_names))
+        shuffle(named_teams)
+
+        teams = [nt[0] for nt in named_teams]
+        team_names = [nt[1] for nt in named_teams]
         state.set_teams(teams)
         state.set_team_names(team_names)
         state.set_unrecorded_matches([])
-        state.save()
 
-        shuffle(teams)
+        response = "No late-joinable teams found. {} has *GONE SOLO* on team *{}*!\n"\
+            .format(user_name, new_team_name)
+
+        # Remake schedule with the new team
         matches = []
+        unrecorded_matches = []
         if len(teams) % 2 == 0:
-          matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+          matches = [(i, i + 1, 2) for i in range(0, len(named_teams), 2)]
         else:
-          twoRoundMatches = len(teams) - 3
+          twoRoundMatches = len(named_teams) - 3
           if twoRoundMatches > 0:
-            matches = [(i, i + 1, 2) for i in range(0, len(teams) - 3, 2)]
+            matches = [(i, i + 1, 2) for i in range(0, len(named_teams) - 3, 2)]
           # Add last 3 matches of 1 round each.
           i = twoRoundMatches
         matches += [(i, i + 1, 1), (i, i + 2, 1), (i + 1, i + 2, 1)]
+        response += "\nNew schedule:"
+        for match in matches:
+          plural = "s" if match[2] > 1 else ""
+          name_a = named_teams[match[0]][1]
+          name_b = named_teams[match[1]][1]
+          response += "\n\t[T{}] *{}* vs. [T{}] *{}* ({} round{})".\
+              format(match[0], name_a, match[1], name_b, match[2], plural)
+          key = [match[0], match[1]]
+          key.sort()
+          unrecorded_matches.append(key)
+
+        state.set_schedule(matches)
+        state.set_unrecorded_matches(unrecorded_matches)
+        state.save()
 
         # This response must be made public because it changes the schedule!
         self.set_public(True)
 
-        # TODO trigger display of scheduled matches somehow
-        return "No late-joinable teams found. {} has *GONE SOLO* on team *{}*!\n"\
-            .format(user_name, new_team_name)
+        return response
     else:
       if user_id not in participants:
         state.add_participant(user_id)
