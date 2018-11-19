@@ -1,6 +1,6 @@
 from .tiered_achievement import TieredAchievement
 from .behavior import SEASON_START_BEHAVIOR
-from datetime import date
+from datetime import date, datetime
 from tourney.stats import Stats
 from tourney.util import last_season_filter
 
@@ -20,7 +20,6 @@ class SelfImprovementAchievement(TieredAchievement):
   def update(self, behavior):
     user_id = behavior.user_id()
     self.check_init(user_id)
-
     if not self.data[user_id][0]:
       stats = Stats.get()
 
@@ -46,7 +45,6 @@ class SelfImprovementAchievement(TieredAchievement):
 
       wins_prev = personals_prev[user_id]["total_wins"]
       wins = personals[user_id]["total_wins"]
-
       if wins_prev > wins:
         self.data[user_id][0] += 1
         amount = self.data[user_id][0]
