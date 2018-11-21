@@ -25,6 +25,8 @@ class SeasonTopFiveAchievement(TieredAchievement):
 
     stats.generate(time_filter=last_season_filter)
 
+    top_five = stats.get_top_winners()[:5]
+
     # The description is slightly misleading. You need to appear in 1/4 as
     # many matches as the person with the most matches, not the total amount.
     # This way if there's a weird season where a new set of people play each
@@ -44,7 +46,8 @@ class SeasonTopFiveAchievement(TieredAchievement):
     self.check_init(user_id)
 
     if last_season not in self.data[user_id][0] \
-          and personals[user_id]["total_matches"] >= most_matches / 4:
+          and personals[user_id]["total_matches"] >= most_matches / 4\
+          and user_id in top_five:
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])
       nt = self.next_tier(user_id)

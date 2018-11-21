@@ -349,10 +349,10 @@ def scheduled_actions():
       stats = Stats.get()
       stats.generate(time_filter=last_season_filter)
 
-      top_five = stats.get_top_winners()[:5]
+      players = stats.get_personals()
 
-      for winner in top_five:
-        achievements.interact(SeasonStartBehavior(winner[0]))
+      for p in players:
+        achievements.interact(SeasonStartBehavior(p))
 
       resp = client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
 
