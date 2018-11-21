@@ -318,7 +318,7 @@ def scheduled_actions():
   # Check if any obtained achievements should be broadcast.
   achievements = Achievements.get()
   for (user_id, text) in achievements.scheduled_broadcasts():
-    response = "<@{}> obtained achievement: *{}*".format(user_id, text)
+    response = ":bell: <@{}> obtained achievement: *{}*".format(user_id, text)
     client.api_call("chat.postMessage", channel=channel_id, text=response)
 
   # Ignore on saturdays and sundays.
