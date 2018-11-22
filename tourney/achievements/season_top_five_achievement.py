@@ -2,7 +2,7 @@ from .tiered_achievement import TieredAchievement
 from .behavior import SEASON_START_BEHAVIOR
 from datetime import date
 from tourney.stats import Stats
-from tourney.util import last_season_filter
+from tourney.util import nth_last_season_filter
 
 class SeasonTopFiveAchievement(TieredAchievement):
   def __init__(self):
@@ -23,7 +23,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
     user_id = behavior.user_id()
     stats = Stats.get()
 
-    stats.generate(time_filter=last_season_filter)
+    stats.generate(time_filter=nth_last_season_filter(1))
 
     top_five = stats.get_top_winners()[:5]
 

@@ -19,7 +19,7 @@ from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE
 from .scores import Scores
 from .config import Config
 from .stats import Stats
-from .util import command_allowed, unescape_text, last_season_filter
+from .util import command_allowed, unescape_text
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
@@ -335,6 +335,7 @@ def scheduled_actions():
       " `!join` or :+1: reaction to this message!"
 
     resp = client.api_call("chat.postMessage", channel=channel_id, text=announce_text)
+    state.set_morning_announce(resp["ts"])
 
     # First of the month (or closest monday) announcement for season reset
     month = calendar.month_name[datetime.today().month]
@@ -347,14 +348,12 @@ def scheduled_actions():
       # TODO: Display fun facts about the season
 
       stats = Stats.get()
-      stats.generate(time_filter=last_season_filter)
-
+      stats.generate()
       players = stats.get_personals()
-
       for p in players:
         achievements.interact(SeasonStartBehavior(p))
 
-      resp = client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
+      client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)
@@ -363,9 +362,8 @@ def scheduled_actions():
         ":rotating_light:\n".format(month)
       season_end_text += ":chart_with_upwards_trend: Last chance to affect the season " \
           "rankings and gain achievements!"
-      resp = client.api_call("chat.postMessage", channel=channel_id, text=season_end_text)
+      client.api_call("chat.postMessage", channel=channel_id, text=season_end_text)
 
-      state.set_morning_announce(resp["ts"])
     state.save()
 
   # Reminder announcement for remaining participants to join game. But don't send to users that

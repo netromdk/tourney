@@ -47,13 +47,20 @@ def this_season_filter(match_stamp):
   match = datetime.fromtimestamp(match_stamp)
   return match.month == today.month and match.year == today.year
 
-def last_season_filter(match_stamp):
-  today = date.today()
-  match = datetime.fromtimestamp(match_stamp)
-  if today.month == 1:
-    return match.month == 12 and match.year == today.year - 1
-  else:
-    return match.month == today.month - 1 and match.year == today.year
+def nth_last_season_filter(n):
+  def season_filter(match_stamp):
+    today = date.today()
+    year = today.year
+    month = today.month
+
+    while today.month <= n:
+      year = year - 1
+      month = month + 12
+    month = month - n
+
+    match_time = datetime.fromtimestamp(match_stamp)
+    return match_time.month == month and match_time.year == year
+  return season_filter
 
 def to_ordinal(number):
   suffixes = ['{}th', '{}st', '{}nd', '{}rd']
