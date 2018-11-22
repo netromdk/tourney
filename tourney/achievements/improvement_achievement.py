@@ -1,6 +1,5 @@
 from .tiered_achievement import TieredAchievement
 from .behavior import SEASON_START_BEHAVIOR
-from datetime import date, datetime
 from tourney.stats import Stats
 from tourney.util import nth_last_season_filter
 
