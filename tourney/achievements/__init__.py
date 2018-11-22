@@ -7,6 +7,7 @@ from .win_behavior import WinBehavior
 from .lose_behavior import LoseBehavior
 from .report_score_behavior import ReportScoreBehavior
 from .leave_channel_behavior import LeaveChannelBehavior
+from .season_start_behavior import SeasonStartBehavior
 
 __all__ = [
   # General.
@@ -19,5 +20,6 @@ __all__ = [
   "WinBehavior",
   "LoseBehavior",
   "ReportScoreBehavior",
-  "LeaveChannelBehavior"
+  "LeaveChannelBehavior",
+  "SeasonStartBehavior"
 ]

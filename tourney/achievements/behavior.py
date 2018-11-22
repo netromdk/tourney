@@ -8,6 +8,7 @@ WIN_BEHAVIOR           = 3  # Win a match of 1 or 2 rounds.
 LOSE_BEHAVIOR          = 4  # Lose a match of 1 or 2 rounds.
 REPORT_SCORE_BEHAVIOR  = 5  # Report score of a match.
 LEAVE_CHANNEL_BEHAVIOR = 6  # Leave dedicated channel.
+SEASON_START_BEHAVIOR  = 7  # New season starts (old season ends)
 
 class Behavior(ABC):
   """Behavior encapsulates behavior observed from users."""

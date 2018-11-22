@@ -1,5 +1,6 @@
 from .constants import PRIVILEGED_COMMANDS
 from .config import Config
+from datetime import date, datetime
 
 def fmt_duration(secs, show_ms=False):
   ms = 0
@@ -40,3 +41,33 @@ def command_allowed(cmd, user_id):
 
 def unescape_text(text):
   return text.replace("\\n", "\n").replace("\\t", "  ")
+
+def this_season_filter(match_stamp):
+  today = date.today()
+  match = datetime.fromtimestamp(match_stamp)
+  return match.month == today.month and match.year == today.year
+
+def nth_last_season_filter(n):
+  def season_filter(match_stamp):
+    today = date.today()
+    year = today.year
+    month = today.month
+
+    while today.month <= n:
+      year = year - 1
+      month = month + 12
+    month = month - n
+
+    match_time = datetime.fromtimestamp(match_stamp)
+    return match_time.month == month and match_time.year == year
+  return season_filter
+
+def to_ordinal(number):
+  suffixes = ['{}th', '{}st', '{}nd', '{}rd']
+  if number >= 10 and number <= 20:
+    suffix = '{}th'
+  elif number % 10 in range(1, 4):
+    suffix = suffixes[number % 10]
+  else:
+    suffix = '{}th'
+  return suffix.format(number)

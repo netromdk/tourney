@@ -2,9 +2,9 @@ import os
 import json
 from datetime import datetime
 
-from .constants import DATA_PATH
+from .constants import DATA_PATH, MEDAL_LIST
 from .scores import Scores
-from .util import fmt_duration
+from .util import fmt_duration, to_ordinal
 
 class Stats:
   __instance = None
@@ -27,7 +27,7 @@ class Stats:
       return Stats()
     return Stats.__instance
 
-  def generate(self, time_back_delta=None):
+  def generate(self, time_back_delta=None, time_filter=None):
     self.reset()
     scores = Scores.get()
     matches = scores.matches()
@@ -67,6 +67,8 @@ class Stats:
         match_time = match[0]
         if time_back_delta is not None and \
            (now - time_back_delta) >= datetime.fromtimestamp(match_time):
+          continue
+        if time_filter is not None and not time_filter(match_time):
           continue
 
         self.__matches += 1
@@ -147,7 +149,6 @@ class Stats:
           res += player_wins[pair[0]] / 10000
         return res
       self.__top_scorers.sort(key=top_scorers_cmp, reverse=True)
-
       self.__top_winners = to_list(player_wins)
 
       def top_winners_cmp(pair):
@@ -184,7 +185,9 @@ class Stats:
 
   def general_response(self, lookup):
     top_amount = 5
+    top_range = range(top_amount)
     team_amount = 10
+    team_range = range(team_amount)
     total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
     return """
 Total matches: {}
@@ -199,9 +202,9 @@ Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur,
            self.__avg_score, self.__avg_delta, top_amount,
-           self.__fmt_top(self.__top_scorers, top_amount, lookup), top_amount,
-           self.__fmt_top(self.__top_winners, top_amount, lookup), team_amount,
-           self.__fmt_top_teams(self.__top_teams, team_amount, lookup))
+           self.__fmt_top(self.__top_scorers, top_range, lookup), top_amount,
+           self.__fmt_top(self.__top_winners, top_range, lookup), team_amount,
+           self.__fmt_top_teams(self.__top_teams, team_range, lookup))
 
   def personal_response(self, lookup, user_id):
     if user_id not in self.__personal:
@@ -222,7 +225,28 @@ won {:.2f}% ({} rounds),
 and lost {:.2f}% ({} rounds).
 You have been in {} teams: {}
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
-           lose_rounds, len(teams), self.__fmt_top_teams(teams, len(teams), lookup))
+           lose_rounds, len(teams), self.__fmt_top_teams(teams, range(len(teams)), lookup))
+
+  def local_top_list(self, user_id, delta, lookup):
+    response = ""
+    top = self.__top_winners
+    top_enum = enumerate(top)
+    try:
+      placement = next(i for i, v in top_enum if v[0] == user_id)
+    except StopIteration:
+      placement = None
+    if placement is not None:
+      local_start_index = max(0, placement - delta)
+      local_end_index = min(placement + delta, len(top))
+      local_top_range = range(local_start_index, local_end_index + 1)
+      print("top range: {}".format(local_top_range))
+      response += "Your current position in the ongoing season:"
+      if local_start_index > 0:
+        response += "\n\t..."
+      response += self.__fmt_top(self.__top_winners, local_top_range, lookup)
+      if local_end_index < len(top) - 1:
+        response += "\n\t..."
+    return response
 
   def file_path(self):
     return os.path.expanduser("{}/stats.json".format(DATA_PATH))
@@ -293,33 +317,39 @@ You have been in {} teams: {}
       return "{:.2f}".format(num)
     return "{}".format(num)
 
-  def __fmt_top(self, lst, amount, lookup):
+  def __fmt_top(self, lst, top_range, lookup):
     """Expects that `self.__personal` has already been filled!"""
     res = ""
-    i = 0
-    medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
-    for player in lst[0:amount]:
+    for index in top_range:
+      if index >= len(lst):
+        break
+      player = lst[index]
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
       rounds = self.__personal[player[0]]["total_rounds"]
-      medal = ""
-      if i < 3:
-        medal = ":{}: ".format(medals[i])
-      res += "\n\t{}{}: {} ({} rounds)".format(medal, name, num, rounds)
-      i += 1
+      placement_str = "{} ".format(to_ordinal(index + 1))
+      if index < 3:
+        placement_str = ":{}: ".format(MEDAL_LIST[index])
+      res += "\n\t{}{}: {} ({} rounds)".format(placement_str, name, num, rounds)
     return res
 
-  def __fmt_top_teams(self, lst, amount, lookup):
+  def __fmt_top_teams(self, lst, team_range, lookup):
     res = ""
-    i = 0
-    medals = ["first_place_medal", "second_place_medal", "third_place_medal"]
-    for team in lst[0:amount]:
+    for index in team_range:
+      if index >= len(lst):
+        break
+      team = lst[index]
       names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
       win_ratio = self.__fmt_num(team[1][0] * 100.0)
       rounds = team[1][1]
-      medal = ""
-      if i < 3:
-        medal = ":{}: ".format(medals[i])
-      res += "\n\t{}{}: {} ({} rounds)".format(medal, names, win_ratio, rounds)
-      i += 1
+      placement_str = "{} ".format(to_ordinal(index + 1))
+      if index < 3:
+        placement_str = ":{}: ".format(MEDAL_LIST[index])
+      res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
     return res
+
+  def get_personals(self):
+    return self.__personal
+
+  def get_top_winners(self):
+    return self.__top_winners
