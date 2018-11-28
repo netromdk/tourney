@@ -35,16 +35,16 @@ class Teams:
   def get_teams_for_players(self, current_players):
     # Add any new players to data and generate their pairings
     self.__set_players(current_players)
-    
+
     # Get teams for the current player
     valid_2p_teams = []
     valid_3p_teams = []
     # Find all teams valid for the current lineup
-    valid_2p_teams = [t for t in self.__get_teams_2p() if \
+    valid_2p_teams = [t for t in self.__get_teams_2p() if
                               all(p in current_players for p in t)]
-    valid_3p_teams = [t for t in self.__get_teams_3p() if \
+    valid_3p_teams = [t for t in self.__get_teams_3p() if
                               all(p in current_players for p in t)]
-    
+
     teams = []
 
     while current_players:
@@ -54,14 +54,14 @@ class Teams:
       valid_2p_teams_for_player = [t for t in valid_2p_teams if user_id in t]
       if not valid_2p_teams_for_player:
         teams_2p_for_player = self.__generate_2p_teams_for_player(user_id)
-        valid_2p_teams_for_player = [t for t in teams_2p_for_player if \
+        valid_2p_teams_for_player = [t for t in teams_2p_for_player if
                                          all(p in current_players for p in t)]
         valid_2p_teams += valid_2p_teams_for_player
       # 3p teams
       valid_3p_teams_for_player = [t for t in valid_3p_teams if user_id in t]
       if not valid_3p_teams_for_player:
         teams_3p_for_player = self.__generate_3p_teams_for_player(user_id)
-        valid_3p_teams_for_player = [t for t in teams_2p_for_player if \
+        valid_3p_teams_for_player = [t for t in teams_2p_for_player if
                                          all(p in current_players for p in t)]
         valid_3p_teams += valid_3p_teams_for_player
 
@@ -78,7 +78,7 @@ class Teams:
         self.__teams_2p.remove(team)
       for p in team:
         current_players.remove(p)
-      
+
       valid_2p_teams = [t for t in valid_2p_teams if not any(p in t for p in team)]
       valid_3p_teams = [t for t in valid_3p_teams if not any(p in t for p in team)]
 
@@ -135,7 +135,7 @@ class Teams:
 
   def save(self):
     data = {
-      "players" : list(self.__players),
+      "players": list(self.__players),
       "teams_2p": list(self.__get_teams_2p()),
       "teams_3p": list(self.__get_teams_3p())
     }
