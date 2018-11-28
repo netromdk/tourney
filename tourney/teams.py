@@ -149,6 +149,8 @@ class Teams:
       if "players" in data:
         self.__players = set(data["players"])
       if "teams_2p" in data:
-        self.__teams_2p = set(data["teams_2p"])
+        teams_2p = data["teams_2p"]
+        self.__teams_2p = set(map(tuple,teams_2p))
       if "teams_3p" in data:
-        self.__teams_3p = set(data["teams_3p"])
+        teams_3p = data["teams_3p"]
+        self.__teams_3p = set(map(tuple,teams_3p))
