@@ -78,7 +78,6 @@ class Teams:
                                          all(p in current_players for p in t)]
         valid_3p_teams += valid_3p_teams_for_player
 
-      user_id = current_players[0]
       if len(current_players) == 3:
         teams_for_player = [t for t in valid_3p_teams if user_id in t]
         team = choice(teams_for_player)  # nosec
