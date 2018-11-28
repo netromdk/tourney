@@ -82,7 +82,7 @@ class Teams:
       valid_2p_teams = [t for t in valid_2p_teams if not any(p in t for p in team)]
       valid_3p_teams = [t for t in valid_3p_teams if not any(p in t for p in team)]
 
-      teams.append(team)
+      teams.append(list(team))
 
     self.save()
 
@@ -129,9 +129,9 @@ class Teams:
     return os.path.expanduser("{}/teams.json".format(DATA_PATH))
 
   def reset(self):
-    self.__teams_2p = {}
-    self.__teams_3p = {}
-    self.__players = {}
+    self.__teams_2p = set()
+    self.__teams_3p = set()
+    self.__players = []
 
   def save(self):
     data = {

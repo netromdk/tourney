@@ -19,6 +19,7 @@ from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE
 from .scores import Scores
 from .config import Config
 from .stats import Stats
+from .teams import Teams
 from .util import command_allowed, unescape_text
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
