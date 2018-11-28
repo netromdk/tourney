@@ -57,7 +57,7 @@ def create_teams():
 
   teams = Teams.get().get_teams_for_players(participants)
 
-  if not teams
+  if not teams:
     return None, None
 
   names = TEAM_NAMES
