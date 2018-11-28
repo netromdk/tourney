@@ -41,7 +41,7 @@ class Teams:
     elif len(current_players) == 2:
       return [[current_players[0]], [current_players[1]]]
     elif len(current_players) == 3:
-      player_one = choice(current_players) # nosec
+      player_one = choice(current_players)  # nosec
       team_one = [player_one]
       team_two = (x for x in current_players if x != player_one)
       if team_two in self.__teams_2p:
