@@ -61,7 +61,7 @@ class Teams:
       valid_3p_teams_for_player = [t for t in valid_3p_teams if user_id in t]
       if not valid_3p_teams_for_player:
         teams_3p_for_player = self.__generate_3p_teams_for_player(user_id)
-        valid_3p_teams_for_player = [t for t in teams_2p_for_player if
+        valid_3p_teams_for_player = [t for t in teams_3p_for_player if
                                          all(p in current_players for p in t)]
         valid_3p_teams += valid_3p_teams_for_player
 
@@ -150,7 +150,7 @@ class Teams:
         self.__players = set(data["players"])
       if "teams_2p" in data:
         teams_2p = data["teams_2p"]
-        self.__teams_2p = set(map(tuple,teams_2p))
+        self.__teams_2p = set(map(tuple, teams_2p))
       if "teams_3p" in data:
         teams_3p = data["teams_3p"]
-        self.__teams_3p = set(map(tuple,teams_3p))
+        self.__teams_3p = set(map(tuple, teams_3p))
