@@ -36,6 +36,19 @@ class Teams:
     # Add any new players to data and generate their pairings
     self.__set_players(current_players)
 
+    if len(current_players) == 1:
+      return None
+    elif len(current_players) == 2:
+      return [[current_players[0]], [current_players[1]]]
+    elif len(current_players) == 3:
+      player_one = choice(current_players) # nosec
+      team_one = [player_one]
+      team_two = (x for x in current_players if x != player_one)
+      if team_two in self.__teams_2p:
+        self.__teams_2p.remove(team_two)
+      teams = [team_one, team_two]
+      return teams
+
     # Get teams for the current player
     valid_2p_teams = []
     valid_3p_teams = []

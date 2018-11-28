@@ -57,6 +57,9 @@ def create_teams():
 
   teams = Teams.get().get_teams_for_players(participants)
 
+  if not teams
+    return None, None
+
   names = TEAM_NAMES
   shuffle(names)
   return teams, names[0:len(teams)]
