@@ -68,12 +68,12 @@ class Teams:
       user_id = current_players[0]
       if len(current_players) == 3:
         teams_for_player = [t for t in valid_3p_teams if user_id in t]
-        team = choice(teams_for_player)
+        team = choice(teams_for_player)  # nosec
         valid_3p_teams.remove(team)
         self.__teams_3p.remove(team)
       else:
         teams_for_player = [t for t in valid_2p_teams if user_id in t]
-        team = choice(teams_for_player)
+        team = choice(teams_for_player)  # nosec
         valid_2p_teams.remove(team)
         self.__teams_2p.remove(team)
       for p in team:
