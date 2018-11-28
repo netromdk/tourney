@@ -53,18 +53,8 @@ if DEMO:
 def create_teams():
   """Create teams and random team names."""
   participants = State.get().participants()
-  amount = len(participants)
-  if amount < 4:
-    return None, None
-  lst = participants
-  for i in range(3):
-    shuffle(lst)
-  teams = [lst[i:i + 2] for i in range(0, amount, 2)]
 
-  # Make last team of three persons if not even number.
-  if amount % 2 != 0:
-    teams[-2].append(teams[-1][0])
-    del(teams[-1])
+  teams = Teams.get().get_teams_for_players(participants)
 
   names = TEAM_NAMES
   shuffle(names)
