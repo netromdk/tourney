@@ -188,7 +188,10 @@ class Stats:
     top_range = range(top_amount)
     team_amount = 10
     team_range = range(team_amount)
-    total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
+    if self.__newest_score_time is not None and self.__oldest_score_time is not None:
+      total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
+    else:
+      total_dur = 0
     return """
 Total matches: {}
 Total rounds: {}
