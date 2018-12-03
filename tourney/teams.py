@@ -125,7 +125,7 @@ class Teams:
     for new_player in new_players:
       self.__generate_2p_teams_for_player(new_player)
       self.__generate_3p_teams_for_player(new_player)
-      self.__players.append(new_player)
+      self.__players.add(new_player)
 
   def __get_teams_2p(self):
     if not self.__teams_2p:
