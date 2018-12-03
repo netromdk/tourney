@@ -39,7 +39,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
       if "total_matches" in personal:
         most_matches = max(most_matches, personals[uid]["total_matches"])
 
-    if most_matches == 0
+    if most_matches == 0:
       return False
 
     today = date.today()
