@@ -35,7 +35,12 @@ class SeasonTopFiveAchievement(TieredAchievement):
     personals = stats.get_personals()
     for uid in personals:
       self.check_init(uid)
-      most_matches = max(most_matches, personals[uid]["total_matches"])
+      personal = uid
+      if "total_matches" in personal:
+        most_matches = max(most_matches, personals[uid]["total_matches"])
+
+    if most_matches == 0
+      return False
 
     today = date.today()
     if today.month == 1:
