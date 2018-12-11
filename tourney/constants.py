@@ -29,9 +29,9 @@ MORNING_ANNOUNCE = time(9)
 MORNING_ANNOUNCE_DELTA = timedelta(hours=1)
 
 REMINDER_ANNOUNCE = time(11)
-REMINDER_ANNOUNCE_DELTA = timedelta(minutes=49)
+REMINDER_ANNOUNCE_DELTA = timedelta(minutes=59)
 
-MIDDAY_ANNOUNCE = time(11, 50)
+MIDDAY_ANNOUNCE = time(12, 10)
 MIDDAY_ANNOUNCE_DELTA = timedelta(minutes=10)
 
 NIGHT_CLEARING = time(23)
