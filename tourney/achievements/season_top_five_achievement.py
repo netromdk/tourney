@@ -24,7 +24,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
     stats = Stats.get()
 
     stats.generate(time_filter=nth_last_season_filter(1))
-    
+
     # Get user ids
     top_five = list(map(lambda x: x[0], stats.get_top_winners()[:5]))
 
