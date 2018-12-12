@@ -2,7 +2,7 @@ import os
 import json
 
 import itertools
-from random import choice
+from random import choice, sample
 
 from .constants import DATA_PATH
 
@@ -36,16 +36,32 @@ class Teams:
     # Add any new players to data and generate their pairings
     self.__set_players(current_players)
 
-    if len(current_players) == 1:
+    player_amount = len(current_players)
+    if player_amount == 1:
       return None
-    elif len(current_players) == 2:
+
+    # 2 players: 1v1
+    elif player_amount == 2:
       return [[current_players[0]], [current_players[1]]]
-    elif len(current_players) == 3:
+
+    # 3 players: 1v2
+    elif player_amount == 3:
       player_one = choice(current_players)  # nosec
       team_one = [player_one]
       team_two = (x for x in current_players if x != player_one)
       if team_two in self.__teams_2p:
         self.__teams_2p.remove(team_two)
+      teams = [team_one, team_two]
+      return teams
+
+    # 3v3 when 6 players (2 rounds). Instead of 3x1 round 2v2 matches.
+    elif player_amount == 6:
+      team_one = set(sample(current_players, 3))
+      team_two = set(current_players) - team_one
+      if team_one in self.__teams_3p:
+        self.__teams_3p.remove(team_one)
+      if team_two in self.__teams_3p:
+        self.__teams_3p.remove(team_two)
       teams = [team_one, team_two]
       return teams
 
