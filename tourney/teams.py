@@ -44,15 +44,9 @@ class Teams:
     elif player_amount == 2:
       return [[current_players[0]], [current_players[1]]]
 
-    # 3 players: 1v2
+    # 3 players: 1v1 x3
     elif player_amount == 3:
-      player_one = choice(current_players)  # nosec
-      team_one = [player_one]
-      team_two = (x for x in current_players if x != player_one)
-      if team_two in self.__teams_2p:
-        self.__teams_2p.remove(team_two)
-      teams = [team_one, team_two]
-      return teams
+      return [[current_players[0]], [current_players[1]], [current_players[2]]]
 
     # 3v3 when 6 players (2 rounds). Instead of 3x1 round 2v2 matches.
     elif player_amount == 6:
