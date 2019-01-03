@@ -53,7 +53,7 @@ def nth_last_season_filter(n):
     year = today.year
     month = today.month
 
-    while today.month <= n:
+    while month <= n:
       year = year - 1
       month = month + 12
     month = month - n
