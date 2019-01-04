@@ -4,9 +4,12 @@ from .behavior import WIN_BEHAVIOR
 class WinnerAchievement(TieredAchievement):
   def __init__(self):
     tiers = (
-      (1,   "Bronze Winner", "Win 1 round."),
-      (10,  "Silver Winner", "Win 10 rounds."),
-      (100, "Gold Winner",   "Win 100 rounds."),
+      (1,    "Bronze Winner",     "Win 1 round."),
+      (10,   "Silver Winner",     "Win 10 rounds."),
+      (100,  "Gold Winner",       "Win 100 rounds."),
+      (250,  "Platinum Winner",   "Win 250 rounds."),
+      (500,  "Adamantium Winner", "Win 500 rounds."),
+      (1000, "Unobtanium Winner", "Win 1000 rounds."),
     )
     super(WinnerAchievement, self).__init__("Winner", tiers)
 
