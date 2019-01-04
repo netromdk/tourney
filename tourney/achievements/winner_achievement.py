@@ -19,7 +19,7 @@ class WinnerAchievement(TieredAchievement):
     self.data[user_id][0] += behavior.rounds()
     amount = self.data[user_id][0]
     nt = self.next_tier(user_id)
-    if amount == nt or amount == nt + 1:
+    if nt is not None and (amount == nt or amount == nt + 1):
       self.data[user_id][1] += 1
       return True
     return False
