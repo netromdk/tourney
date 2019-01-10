@@ -32,70 +32,21 @@ class Teams:
       return Teams()
     return Teams.__instance
 
-  def pick_pairs(self, n):
-    return [2 for x in range(0, n - 1, 2)]
-
-  def place_single(self, teams):
-    try:
-      idx2 = teams.index(2)
-      duo = teams.pop(idx2)
-      duo = duo + 1
-      teams.append(duo)
-    except ValueError:
-      pass
-
-  def split_to_singles(self, teams):
-    team = teams.pop(0)
-    for i in range(team):
-      teams.append(1)
-
-  def even_teams(self, teams):
-    # Get a 2-person team:
-    team = None
-    try:
-      idx = teams.index(2)
-      team = teams.pop(idx)
-    except ValueError:
-      pass
-
-    # Find two other 2-player teams to split onto:
-    if team:
-      open_teams = []
-      try:
-        for i in range(team):
-          idx = teams.index(2)
-          open_teams.append(teams.pop(idx))
-
-        # Put each player of the team on 2-person teams
-        for open_team in open_teams:
-          open_team = open_team + 1
-          teams.append(open_team)
-      except ValueError:
-        # No 2-person teams found, put all teams back where we found them
-        for open_team in open_teams:
-          teams.append(open_team)
-        open_teams.clear()
-        teams.append(team)
-
   def split_teams(self, n):
-    teams = []
-
-    # First make as many 2-person teams as possible
-    teams = self.pick_pairs(n)
-
-    # If there's a player left over, stick him on a 2-person team
-    if n % 2 == 1:
-      self.place_single(teams)
-
-    if len(teams) == 1:
-      # If that just gives the one team, split it into singles
-      self.split_to_singles(teams)
-
-    # If this gives an odd number of teams, try splitting a two man team across two 2-person teams
-    if len(teams) % 2 != 0:
-      self.even_teams(teams)
-
-    return teams
+    if n == 1 or n == 0:
+      return []
+    elif n == 2:
+      return [1, 1]
+    elif n == 3:
+      return [1, 1, 1]
+    elif n == 7:
+      return [2, 2, 3]
+    else:
+      remainder = n % 4
+      num_teams = (n - remainder) // 2
+      duos = [2] * (num_teams - remainder)
+      trios = [3] * remainder
+      return duos + trios
 
   def get_teams_for_players(self, current_players):
     # Add any new players to data and generate their pairings
