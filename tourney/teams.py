@@ -2,7 +2,7 @@ import os
 import json
 
 import itertools
-from random import choice, sample
+from random import choice
 
 from .constants import DATA_PATH
 
@@ -32,6 +32,71 @@ class Teams:
       return Teams()
     return Teams.__instance
 
+  def pick_pairs(self, n):
+    return [2 for x in range(0, n - 1, 2)]
+
+  def place_single(self, teams):
+    try:
+      idx2 = teams.index(2)
+      duo = teams.pop(idx2)
+      duo = duo + 1
+      teams.append(duo)
+    except ValueError:
+      pass
+
+  def split_to_singles(self, teams):
+    team = teams.pop(0)
+    for i in range(team):
+      teams.append(1)
+
+  def even_teams(self, teams):
+    # Get a 2-person team:
+    team = None
+    try:
+      idx = teams.index(2)
+      team = teams.pop(idx)
+    except ValueError:
+      pass
+
+    # Find two other 2-player teams to split onto:
+    if team:
+      open_teams = []
+      try:
+        for i in range(team):
+          idx = teams.index(2)
+          open_teams.append(teams.pop(idx))
+
+        # Put each player of the team on 2-person teams
+        for open_team in open_teams:
+          open_team = open_team + 1
+          teams.append(open_team)
+      except ValueError:
+        # No 2-person teams found, put all teams back where we found them
+        for open_team in open_teams:
+          teams.append(open_team)
+        open_teams.clear()
+        teams.append(team)
+
+  def split_teams(self, n):
+    teams = []
+
+    # First make as many 2-person teams as possible
+    teams = self.pick_pairs(n)
+
+    # If there's a player left over, stick him on a 2-person team
+    if n % 2 == 1:
+      self.place_single(teams)
+
+    if len(teams) == 1:
+      # If that just gives the one team, split it into singles
+      self.split_to_singles(teams)
+
+    # If this gives an odd number of teams, try splitting a two man team across two 2-person teams
+    if len(teams) % 2 != 0:
+      self.even_teams(teams)
+
+    return teams
+
   def get_teams_for_players(self, current_players):
     # Add any new players to data and generate their pairings
     self.__set_players(current_players)
@@ -40,69 +105,45 @@ class Teams:
     if player_amount == 1:
       return None
 
-    # 2 players: 1v1
-    elif player_amount == 2:
-      return [[current_players[0]], [current_players[1]]]
-
-    # 3 players: 1v1 x3
-    elif player_amount == 3:
-      return [[current_players[0]], [current_players[1]], [current_players[2]]]
-
-    # 3v3 when 6 players (2 rounds). Instead of 3x1 round 2v2 matches.
-    elif player_amount == 6:
-      team_one = set(sample(current_players, 3))
-      team_two = set(current_players) - team_one
-      if team_one in self.__teams_3p:
-        self.__teams_3p.remove(team_one)
-      if team_two in self.__teams_3p:
-        self.__teams_3p.remove(team_two)
-      teams = [team_one, team_two]
-      return teams
-
-    # Get teams for the current player
-    valid_2p_teams = []
-    valid_3p_teams = []
-    # Find all teams valid for the current lineup
-    valid_2p_teams = [t for t in self.__get_teams_2p() if
-                              all(p in current_players for p in t)]
-    valid_3p_teams = [t for t in self.__get_teams_3p() if
-                              all(p in current_players for p in t)]
+    # Get valid teams
+    valid_teams = {}
+    valid_teams[2] = [t for t in self.__get_teams_2p() if
+                      all(p in current_players for p in t)]
+    valid_teams[3] = [t for t in self.__get_teams_3p() if
+                      all(p in current_players for p in t)]
 
     teams = []
 
-    while current_players:
-      user_id = current_players[0]
-      # If a player is in no valid teams, generate new teams for them
-      # 2p teams
-      valid_2p_teams_for_player = [t for t in valid_2p_teams if user_id in t]
-      if not valid_2p_teams_for_player:
-        teams_2p_for_player = self.__generate_2p_teams_for_player(user_id)
-        valid_2p_teams_for_player = [t for t in teams_2p_for_player if
-                                         all(p in current_players for p in t)]
-        valid_2p_teams += valid_2p_teams_for_player
-      # 3p teams
-      valid_3p_teams_for_player = [t for t in valid_3p_teams if user_id in t]
-      if not valid_3p_teams_for_player:
-        teams_3p_for_player = self.__generate_3p_teams_for_player(user_id)
-        valid_3p_teams_for_player = [t for t in teams_3p_for_player if
-                                         all(p in current_players for p in t)]
-        valid_3p_teams += valid_3p_teams_for_player
-
-      if len(current_players) == 3:
-        teams_for_player = [t for t in valid_3p_teams if user_id in t]
-        team = choice(teams_for_player)  # nosec
-        valid_3p_teams.remove(team)
-        self.__teams_3p.remove(team)
+    team_player_numbers = self.split_teams(player_amount)
+    for team_player_number in team_player_numbers:
+      team = []
+      if team_player_number == 1:
+        p1 = choice(current_players)  # nosec
+        team = [p1]
+        current_players.remove(p1)
       else:
-        teams_for_player = [t for t in valid_2p_teams if user_id in t]
-        team = choice(teams_for_player)  # nosec
-        valid_2p_teams.remove(team)
-        self.__teams_2p.remove(team)
-      for p in team:
-        current_players.remove(p)
+        valid_teams_for_count = valid_teams[team_player_number]
 
-      valid_2p_teams = [t for t in valid_2p_teams if not any(p in t for p in team)]
-      valid_3p_teams = [t for t in valid_3p_teams if not any(p in t for p in team)]
+        if len(valid_teams_for_count) == 0:
+          # Ran out of teams, generate for the remaining players
+          for user_id in current_players:
+            if team_player_number == 2:
+              self.__generate_2p_teams_for_player(user_id)
+              valid_teams[2] = [t for t in self.__get_teams_2p() if
+                                all(p in current_players for p in t)]
+            else:
+              self.__generate_3p_teams_for_player(user_id)
+              valid_teams[3] = [t for t in self.__get_teams_3p() if
+                                all(p in current_players for p in t)]
+          valid_teams_for_count = valid_teams[team_player_number]
+
+        team = choice(valid_teams_for_count)  # nosec
+
+        for user_id in team:
+          # Remove other teams with players
+          valid_teams[2] = [t for t in valid_teams[2] if user_id not in t]
+          valid_teams[3] = [t for t in valid_teams[3] if user_id not in t]
+          current_players.remove(user_id)
 
       teams.append(list(team))
 
