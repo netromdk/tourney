@@ -98,7 +98,7 @@ class Teams:
 
       teams.append(list(team))
 
-    shuffle(teams)
+    shuffle(teams)  # nosec
 
     self.save()
 
