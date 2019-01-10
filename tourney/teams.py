@@ -2,7 +2,7 @@ import os
 import json
 
 import itertools
-from random import choice
+from random import choice, shuffle
 
 from .constants import DATA_PATH
 
@@ -97,6 +97,8 @@ class Teams:
           current_players.remove(user_id)
 
       teams.append(list(team))
+
+    shuffle(teams)
 
     self.save()
 
