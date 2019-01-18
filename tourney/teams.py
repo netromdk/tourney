@@ -90,6 +90,11 @@ class Teams:
 
         team = choice(valid_teams_for_count)  # nosec
 
+        if team_player_number == 2:
+          self.__teams_2p.remove(team)
+        else:
+          self.__teams_3p.remove(team)
+
         for user_id in team:
           # Remove other teams with players
           valid_teams[2] = [t for t in valid_teams[2] if user_id not in t]
@@ -147,7 +152,7 @@ class Teams:
   def reset(self):
     self.__teams_2p = set()
     self.__teams_3p = set()
-    self.__players = []
+    self.__players = set()
 
   def save(self):
     data = {
