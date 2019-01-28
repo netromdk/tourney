@@ -31,7 +31,6 @@ class Stats:
     self.reset()
     scores = Scores.get()
     matches = scores.matches()
-    amount = len(matches)
     self.__matches = 0
     if len(matches) == 0:
       return False
@@ -119,8 +118,8 @@ class Stats:
       self.__rounds = rounds
       self.__team_amount = len(teams)
       self.__total_score = total_score
-      self.__avg_score = total_score / amount
-      self.__avg_delta = avg_delta / amount
+      self.__avg_score = total_score / self.__matches
+      self.__avg_delta = avg_delta / self.__matches
       self.__oldest_score_time = oldest_time
       self.__newest_score_time = newest_time
 
