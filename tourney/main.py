@@ -351,7 +351,6 @@ def scheduled_actions():
       season_start_text += ":bar_chart: Stats and leaderboards shown with `!stats` will only " \
         "include the current season.\n"
       season_start_text += ":globe_with_meridians: Use `!allstats` for full statistics.\n"
-      # TODO: Display fun facts about the season
 
       stats = Stats.get()
       stats.generate()
@@ -360,6 +359,16 @@ def scheduled_actions():
         achievements.interact(SeasonStartBehavior(p))
 
       client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
+      # TODO: Display fun facts about the season
+      scores = Scores.get()
+      winrate_plot = scores.get_season_winrate_plot()
+      with open(winrate_plot) as file_content:
+        client.api_call(
+          "files.upload",
+          channels=[channel_id],
+          file=file_content,
+          title="Season win progression"
+        )
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)

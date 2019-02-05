@@ -2,6 +2,8 @@ import os
 import json
 from datetime import datetime, timedelta
 
+import matplotlib.pyplot as plt
+
 from .constants import DATA_PATH
 
 class Scores:
@@ -75,3 +77,54 @@ class Scores:
       data = json.load(fp)
       if "scores" in data:
         self.__scores = data["scores"]
+
+  def get_season_winrate_plot(self):
+    pwins = {}
+
+    monthscores = [x for x in self.__scores if
+                   datetime.fromtimestamp(x[0]).month == datetime.now().month]
+    monthscores.sort(key=lambda x: x[0])
+
+    # Collect playername -> [(date, wins)]
+    for score in monthscores:
+      date = datetime.fromtimestamp(score[0])
+      if score[2] > score[4]:
+        winteam = score[1]
+        loseteam = score[3]
+      else:
+        winteam = score[3]
+        loseteam = score[1]
+      for p in winteam:
+        if p not in pwins:
+          pwins[p] = [(date, 1)]
+        else:
+          wins = pwins[p][-1][1]
+          pwins[p].append((date, wins + 1))
+      for p in loseteam:
+        if p not in pwins:
+          pwins[p] = [(date, 0)]
+        else:
+          wins = pwins[p][-1][1]
+          pwins[p].append((date, wins))
+
+    fig, ax = plt.subplots()
+
+    # Calc wins/matches for each player
+    for p in pwins:
+      dates = []
+      pwinrate = []
+      for i in range(len(pwins[p])):
+        result = pwins[p][i]
+        dates.append(result[0])
+        pwinrate.append(result[1] / (i + 1))
+      ax.plot(dates, pwinrate, label=p)
+
+    ax.legend()
+
+    plt.ylabel('Win percentage')
+    plt.xlabel('Date')
+    plt.gcf().autofmt_xdate()
+
+    figure_filename = os.path.expanduser("{}/wingraph.png".format(DATA_PATH))
+    plt.savefig(figure_filename)
+    return figure_filename
