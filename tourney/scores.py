@@ -3,10 +3,16 @@ import json
 from calendar import monthrange
 from datetime import datetime, timedelta
 
+<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.dates import date2num
 from matplotlib.ticker import FuncFormatter
+=======
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+>>>>>>> Added scorigami command and output on score commands
 
 from .constants import DATA_PATH
 
@@ -181,5 +187,98 @@ class Scores:
     plt.gcf().autofmt_xdate()
 
     figure_filename = os.path.expanduser("{}/wingraph.png".format(DATA_PATH))
+
+    plt.savefig(figure_filename)
+    return figure_filename
+
+
+  def get_scorigami_array(self):
+    scoreCounts = [[0] * 16, [0] * 16]
+
+    for score in self.__scores:
+      goals1 = score[2]
+      goals2 = score[4]
+      if goals1 == 16:
+        scoreCounts[1][goals2] += 1
+      elif goals2 == 16:
+        scoreCounts[1][goals1] += 1
+      elif goals1 == 8:
+        scoreCounts[0][goals2] += 1
+      elif goals2 == 8:
+        scoreCounts[0][goals1] += 1
+
+    return scoreCounts
+
+  def __heatmap(self, data, row_labels, col_labels, ax=None):
+    if not ax:
+      ax = plt.gca()
+
+    # Plot the heatmap
+    im = ax.imshow(data, cmap="Greens")
+
+    # We want to show all ticks...
+    ax.set_xticks(np.arange(data.shape[1]))
+    ax.set_yticks(np.arange(data.shape[0]))
+    # ... and label them with the respective list entries.
+    ax.set_xticklabels(col_labels)
+    ax.set_yticklabels(row_labels)
+
+    # Let the horizontal axes labeling appear on bottom.
+    ax.tick_params(top=False, bottom=True,
+                   labeltop=False, labelbottom=True)
+
+    # Turn spines off and create white grid.
+    # for edge, spine in ax.spines.items():
+    #   spine.set_visible(False)
+
+    ax.set_xticks(np.arange(data.shape[1] + 1) - .5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0] + 1) - .5, minor=True)
+    # ax.grid(which="minor", color="b", linestyle='-', linewidth=1)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    return im
+
+  def __annotate_heatmap(self, im):
+    data = im.get_array()
+
+    threshold = im.norm(data.max()) / 2.
+    textcolors = ["black", "white"]
+
+    # Set default alignment to center
+    kw = dict(horizontalalignment="center", verticalalignment="center", size=7)
+
+    # Format as string to have "-" entries
+    valfmt = matplotlib.ticker.StrMethodFormatter("{x:s}")
+
+    # Loop over the data and create a `Text` for each "pixel".
+    # Change the text's color depending on the data.
+    texts = []
+    for i in range(data.shape[0]):
+      for j in range(data.shape[1]):
+        kw.update(color=textcolors[im.norm(data[i, j]) > threshold])
+        if i == 0 and j >= 8:
+          label = "-"
+        else:
+          label = "{}".format(data[i, j])
+        text = im.axes.text(j, i, valfmt(label, None), **kw)
+        texts.append(text)
+
+    return texts
+
+  def get_scorigami_plot(self):
+    roundLabels = ["One round", "Two rounds"]
+    goalLabels = list(range(0, 16))
+    scorigami_array = self.get_scorigami_array()
+
+    fig, ax = plt.subplots()
+    ax.set_title("Scorigami")
+    np_scorigami_array = np.array(scorigami_array, dtype=int)
+    im = self.__heatmap(np_scorigami_array, roundLabels, goalLabels, ax=ax)
+    self.__annotate_heatmap(im)
+
+    fig.tight_layout()
+
+    figure_filename = os.path.expanduser("{}/scorigami.png".format(DATA_PATH))
+
     plt.savefig(figure_filename)
     return figure_filename

@@ -321,6 +321,16 @@ def parse_command(event):
         response = "Could not open generated winchart"
         client.api_call("chat.postMessage", channel=channel, text=response)
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
+  elif command == "scorigami":
+    scores = Scores.get()
+    scorigami_plot = scores.get_scorigami_plot()
+    with open(scorigami_plot) as file_content:
+      client.api_call(
+        "files.upload",
+        channels=[channel],
+        file=file_content,
+        title="Scorigami"
+      )
 
   # Special command handling.
   if command_allowed(command, user_id):

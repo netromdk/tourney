@@ -82,6 +82,19 @@ class ScoreCommand(Command):
 
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
+
+          scorigami_array = scores.get_scorigami_array()
+          if win_score == 16:
+            win_index = 1
+          else:
+            win_index = 0
+          score_count = scorigami_array[win_index][lose_score]
+          if score_count == 1:
+            response += "\n:rotating_light:That's Scorigami!:rotating_light:"
+          else:
+            response += "\nNo Scorigami. That score has happened {} times before.".\
+                format(score_count - 1)
+
           rem = len(unrecorded_matches)
           if rem == 0:
             response += "\nNo more matches left to record!"
