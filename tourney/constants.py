@@ -65,9 +65,12 @@ TEAM_NAMES = [
   "Cereal Killers",
   "Dangerous Dynamos",
   "Designated Drinkers",
+  "Fantastic Four",
   "Fire Breaking Rubber Duckies",
   "Game of Throw-ins",
+  "Glorious Bastards",
   "Injured Reserve",
+  "Monkey Python",
   "One Hit Wonders",
   "Our Uniforms Match",
   "Pique Blinders",
@@ -85,7 +88,7 @@ TEAM_NAMES = [
   "The League of Ordinary Gentlemen",
   "The Meme Team",
   "The Mullet Mafia",
-  "Thunderpants",
+  "Thunderpants"
 ]
 
 TEAM_NAME_DECORATIONS = [
