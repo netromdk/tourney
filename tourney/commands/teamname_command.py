@@ -2,6 +2,7 @@ from .command import Command
 
 from tourney.teamnames import Teamnames
 from tourney.state import State
+from tourney.scores import Scores
 
 class TeamnameCommand(Command):
   def __init__(self):
@@ -14,13 +15,22 @@ class TeamnameCommand(Command):
     current_teams = state.teams()
     current_teamnames = state.team_names()
 
-    my_teams = [x for x in current_teams if self.user_id() in x]
+    my_teams = []
+    if len(current_teams) == 0:
+      scores = Scores.get()
+      matches_today = scores.today()
+      for m in matches_today:
+        if self.user_id() in m[1]:
+          my_teams.append(m[1])
+        if self.user_id() in m[3]:
+          my_teams.append(m[3])
+    else:
+      my_teams = [x for x in current_teams if self.user_id() in x]
 
     response = ""
-    print(my_teams)
 
     if len(my_teams) == 0:
-      response = "No team found."
+      response = "You can't claim a team name if you aren't on a team!"
       return response
 
     if len(my_teams) > 1:
@@ -34,12 +44,12 @@ class TeamnameCommand(Command):
       return response
 
     my_team = my_teams[0]
-    old_teamname_idx = current_teams.index(my_team)
+    team_idx = current_teams.index(my_team)
 
     teamnames.add(my_team, teamname)
     teamnames.save()
 
-    current_teamnames[old_teamname_idx] = teamname
+    current_teamnames[team_idx] = teamname
     state.set_team_names(current_teamnames)
     state.save()
 
