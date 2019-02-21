@@ -61,9 +61,7 @@ def create_teams():
     return None, None
 
   teamnames = Teamnames.get()
-  names = []
-  for team in teams:
-    teamname = teamnames.teamname(team)
+  names = [teamnames.teamname(t) for t in teams]
 
   return teams, names
 

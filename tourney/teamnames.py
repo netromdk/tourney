@@ -26,12 +26,17 @@ class Teamnames:
 
   def add(self, team, teamname):
     """Add a teamname for a given team."""
-    self.__teamnames = [x for x in self.__teamnames if x[0] != team]
+    team_set = set(team)
+    # Remove old teamname
+    self.__teamnames = [x for x in self.__teamnames if set(x[0]) != team_set]
+    # Add the new one
     self.__teamnames.append([team, teamname])
 
-  def teamname(team):
-    if team in self.__teamnames:
-      return self.__teamnames[team]
+  def teamname(self, team):
+    team_set = set(team)
+    teamnames = [x[1] for x in self.__teamnames if set(x[0]) == team_set]
+    if teamnames:
+      return teamnames[0]
     else:
       return choice(TEAM_NAMES)  # nosec
 
