@@ -3,16 +3,16 @@ import re
 import subprocess  # nosec
 from time import sleep
 from datetime import datetime, date
-from random import shuffle
 from slackclient import SlackClient
 import calendar
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
-  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand
+  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand
 from .state import State
+from .teamnames import Teamnames
 from .lookup import Lookup
-from .constants import DEMO, TEAM_NAMES, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
+from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
   DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA
@@ -60,9 +60,12 @@ def create_teams():
   if not teams:
     return None, None
 
-  names = TEAM_NAMES
-  shuffle(names)
-  return teams, names[0:len(teams)]
+  teamnames = Teamnames.get()
+  names = []
+  for team in teams:
+    teamname = teamnames.teamname(team)
+
+  return teams, names
 
 def pick_pairs(amount):
   """Picks non-overlapping team pairs of 2 rounds."""
@@ -186,6 +189,9 @@ def parse_command(event):
     channel = state.channel_id()
   elif command == "schedule":
     cmd = ScheduleCommand()
+    channel = state.channel_id()
+  elif command == "teamname":
+    cmd = TeamnameCommand()
     channel = state.channel_id()
 
   # Special command handling.
