@@ -34,13 +34,13 @@ class TeamnameCommand(Command):
       return response
 
     if len(my_teams) > 1:
-      response = "Cannot assign teamname when player appears in multiple teams."
+      response = "Cannot assign team name when player appears in multiple teams."
       return response
 
     teamname = self.args()
 
     if len(teamname) == 0:
-      response = "Please provide a new teamname, e.g. \"!teamname Example Teamname\""
+      response = "Please provide a new team name, e.g. \"!teamname Example Team Name\""
       return response
 
     my_team = my_teams[0]
@@ -53,23 +53,17 @@ class TeamnameCommand(Command):
     state.set_team_names(current_teamnames)
     state.save()
 
-    if len(my_team) == 1:
-      user_name = lookup.user_name_by_id(my_team[0])
-      response += user_name
-    elif len(my_team) == 2:
-      user_name1 = lookup.user_name_by_id(my_team[0])
-      user_name2 = lookup.user_name_by_id(my_team[1])
-      response += "{} and {}".format(user_name1, user_name2)
-    elif len(my_team) == 3:
-      user_name1 = lookup.user_name_by_id(my_team[0])
-      user_name2 = lookup.user_name_by_id(my_team[1])
-      user_name3 = lookup.user_name_by_id(my_team[2])
-      response += "{}, {} and {}".format(user_name1, user_name2, user_name3)
-    else:
-      response += "[{}".format(lookup.user_name_by_id(my_team[0]))
-      for id in my_team[1:]:
-        response += ", {}".format(lookup.user_name_by_id(id))
-      response += "]"
+    # Prepend ", " or " and " before all non-first entries
+    amount = len(my_team)
+    for idx in range(amount):
+      if idx > 0:
+        if idx == amount - 1:
+          if amount > 2:
+            response += ","
+          response += " and "
+        else:
+          response += ", "
+      response += lookup.user_name_by_id(my_team[idx])
 
     response += " will henceforth be known as {}".format(teamname)
     return response
