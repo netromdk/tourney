@@ -1,8 +1,7 @@
 import os
 import json
-from random import choice
 
-from .constants import DATA_PATH, TEAM_NAMES
+from .constants import DATA_PATH
 
 class Teamnames:
   __instance = None
@@ -38,7 +37,7 @@ class Teamnames:
     if teamnames:
       return teamnames[0]
     else:
-      return choice(TEAM_NAMES)  # nosec
+      return None
 
   def file_path(self):
     return os.path.expanduser("{}/teamnames.json".format(DATA_PATH))
