@@ -4,6 +4,7 @@ import subprocess  # nosec
 from time import sleep
 from datetime import datetime, date
 from slackclient import SlackClient
+from random import sample
 import calendar
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
@@ -12,7 +13,7 @@ from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, Score
 from .state import State
 from .teamnames import Teamnames
 from .lookup import Lookup
-from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, POSITIVE_REACTIONS, \
+from .constants import DEMO, COMMAND_REGEX, TEAM_NAMES, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
   DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA
@@ -61,7 +62,11 @@ def create_teams():
     return None, None
 
   teamnames = Teamnames.get()
-  names = [teamnames.teamname(t) for t in teams]
+  names = sample(TEAM_NAMES, len(teams))
+  for i in range(len(teams)):
+    name = teamnames.teamname(teams[i])
+    if name:
+      names[i] = name
 
   return teams, names
 
