@@ -19,10 +19,11 @@ As the foosball bot, I accept the following commands:
   `!lose` - Add match scores (irrelevant order) as a member of the losing team. Example: `!lose 8 3`
   `!score` - Add match scores of two teams. Example: `!score T0 12 T3 16`
   `!results` - Prints results of today's matches.
-  `!stats` - Prints general statistics of games going back {} days.
+  `!stats` - Prints general statistics for the current season.
   `!allstats` - Prints general statistics of all games.
   `!mystats` - Prints statistics of all games about invoker.
   `!achievements` - Prints achievements progress for invoker.
+  `!teamname!` - Set a teamname for the team you are in today. Example: `!teamname Example Team Name`
   `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
   `!generate` - Generate teams and matches from players joined. (*privileged!*)
   `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
