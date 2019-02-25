@@ -8,6 +8,7 @@ class TeamnameCommand(Command):
   def __init__(self):
     super(TeamnameCommand, self).__init__("teamname")
     self.set_public(True)
+    self.set_ephemeral(False)
 
   def execute(self, lookup=None):
     state = State.get()
