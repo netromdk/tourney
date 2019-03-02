@@ -9,7 +9,7 @@ mccabe==0.6.1
 pbr==5.1.0
 pycodestyle==2.4.0
 pyflakes==2.0.0
-PyYAML==3.13
+PyYAML==4.2b1
 requests==2.20.0
 six==1.11.0
 slackclient==1.2.1
