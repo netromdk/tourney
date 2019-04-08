@@ -28,17 +28,17 @@ class WinLoseCommand(Command):
     if not m:
       return "Requires arguments for scores! Like {}".format(example)
 
-    scores = list(map((int), m.groups()))
-    winIndex = scores.index(max(scores))
-    loseIndex = scores.index(min(scores))
+    scores_arg = list(map((int), m.groups()))
+    winIndex = scores_arg.index(max(scores_arg))
+    loseIndex = scores_arg.index(min(scores_arg))
     if win:
-      myScore = scores[winIndex]
-      theirScore = scores[loseIndex]
+      myScore = scores_arg[winIndex]
+      theirScore = scores_arg[loseIndex]
     else:
-      myScore = scores[loseIndex]
-      theirScore = scores[winIndex]
+      myScore = scores_arg[loseIndex]
+      theirScore = scores_arg[winIndex]
 
-    rounds = max(scores) // 8
+    rounds = max(scores_arg) // 8
 
     response = ""
     if (myScore >= 0 and theirScore >= 0) and (myScore % 8 == 0 or theirScore % 8 == 0):
@@ -58,10 +58,6 @@ class WinLoseCommand(Command):
           state.set_unrecorded_matches(unrecorded_matches)
           state.save()
 
-          scores = Scores.get()
-          scores.add(myTeam, myScore, theirTeam, theirScore)
-          scores.save()
-
           if win:
             win_team = myTeam
             win_score = myScore
@@ -77,6 +73,13 @@ class WinLoseCommand(Command):
           player_skill.rate_match(win_team, lose_team)
           player_skill.save()
 
+          scores = Scores.get()
+
+          scorigami = scores.get_scorigami(win_score, lose_score)
+
+          scores.add(myTeam, myScore, theirTeam, theirScore)
+          scores.save()
+
           achievements = Achievements.get()
           for member in win_team:
             achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team,
@@ -89,17 +92,12 @@ class WinLoseCommand(Command):
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(myTeamIndex, myTeamName, myScore, theirTeamIndex, theirTeamName, theirScore)
 
-          scorigami_array = scores.get_scorigami_array()
-          if win_score == 16:
-            win_index = 1
-          else:
-            win_index = 0
-          score_count = scorigami_array[win_index][lose_score]
-          if score_count == 1:
+          if scorigami[0] == 0:
             response += "\n:rotating_light:That's Scorigami!:rotating_light:"
           else:
-            response += "\nNo Scorigami. That score has happened {} times before.".\
-                format(score_count - 1)
+            response += "\nNo Scorigami. That score has happened {} times before, "\
+              "last time on {}/{}/{}".\
+              format(scorigami[0], scorigami[1].day, scorigami[1].month, scorigami[1].year)
 
           rem = len(unrecorded_matches)
           if rem == 0:

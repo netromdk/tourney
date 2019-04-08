@@ -52,10 +52,6 @@ class ScoreCommand(Command):
           state.set_unrecorded_matches(unrecorded_matches)
           state.save()
 
-          scores = Scores.get()
-          scores.add(ids_a, team_a_score, ids_b, team_b_score)
-          scores.save()
-
           if team_a_score > team_b_score:
             win_team = ids_a
             win_score = team_a_score
@@ -71,6 +67,13 @@ class ScoreCommand(Command):
           player_skill.rate_match(win_team, lose_team)
           player_skill.save()
 
+          scores = Scores.get()
+
+          scorigami = scores.get_scorigami(win_score, lose_score)
+
+          scores.add(ids_a, team_a_score, ids_b, team_b_score)
+          scores.save()
+
           achievements = Achievements.get()
           for member in win_team:
             achievements.interact(WinBehavior(member, rounds, win_score, lose_score, win_team,
@@ -83,17 +86,12 @@ class ScoreCommand(Command):
           response = "Added scores for [T{}] *{}* ({} pts) v [T{}] *{}* ({} pts)!".\
             format(team_a, team_a_name, team_a_score, team_b, team_b_name, team_b_score)
 
-          scorigami_array = scores.get_scorigami_array()
-          if win_score == 16:
-            win_index = 1
-          else:
-            win_index = 0
-          score_count = scorigami_array[win_index][lose_score]
-          if score_count == 1:
+          if scorigami[0] == 0:
             response += "\n:rotating_light:That's Scorigami!:rotating_light:"
           else:
-            response += "\nNo Scorigami. That score has happened {} times before.".\
-                format(score_count - 1)
+            response += "\nNo Scorigami. That score has happened {} times before, "\
+              "last time on {}/{}/{}".\
+              format(scorigami[0], scorigami[1].day, scorigami[1].month, scorigami[1].year)
 
           rem = len(unrecorded_matches)
           if rem == 0:

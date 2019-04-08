@@ -3,16 +3,11 @@ import json
 from calendar import monthrange
 from datetime import datetime, timedelta
 
-<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.dates import date2num
 from matplotlib.ticker import FuncFormatter
-=======
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
->>>>>>> Added scorigami command and output on score commands
 
 from .constants import DATA_PATH
 
@@ -191,23 +186,29 @@ class Scores:
     plt.savefig(figure_filename)
     return figure_filename
 
-
-  def get_scorigami_array(self):
-    scoreCounts = [[0] * 16, [0] * 16]
+  def __get_scorigami_array(self):
+    """Get number of times scored and last score date for each score.
+       First array has one-rounders, second has two-rounders"""
+    score_counts = [[(0, None) for i in range(16)], [(0, None) for i in range(16)]]
 
     for score in self.__scores:
-      goals1 = score[2]
-      goals2 = score[4]
-      if goals1 == 16:
-        scoreCounts[1][goals2] += 1
-      elif goals2 == 16:
-        scoreCounts[1][goals1] += 1
-      elif goals1 == 8:
-        scoreCounts[0][goals2] += 1
-      elif goals2 == 8:
-        scoreCounts[0][goals1] += 1
+      win_score = max(score[2], score[4])
+      lose_score = min(score[2], score[4])
+      if win_score == 16:
+        win_index = 1
+      else:
+        win_index = 0
 
-    return scoreCounts
+      score_date = datetime.fromtimestamp(score[0])
+
+      (prev_count, prev_date) = score_counts[win_index][lose_score]
+
+      if not prev_date or score_date > prev_date:
+        score_counts[win_index][lose_score] = (prev_count + 1, score_date)
+      else:
+        score_counts[win_index][lose_score] = (prev_count + 1, prev_date)
+
+    return score_counts
 
   def __heatmap(self, data, row_labels, col_labels, ax=None):
     if not ax:
@@ -268,11 +269,15 @@ class Scores:
   def get_scorigami_plot(self):
     roundLabels = ["One round", "Two rounds"]
     goalLabels = list(range(0, 16))
-    scorigami_array = self.get_scorigami_array()
+    scorigami_array = self.__get_scorigami_array()
+
+    scorigami_count_array = [[x[0] for x in scorigami_array[0]],
+                             [x[0] for x in scorigami_array[1]]]
+    np_scorigami_array = np.array(scorigami_count_array, dtype=int)
 
     fig, ax = plt.subplots()
     ax.set_title("Scorigami")
-    np_scorigami_array = np.array(scorigami_array, dtype=int)
+
     im = self.__heatmap(np_scorigami_array, roundLabels, goalLabels, ax=ax)
     self.__annotate_heatmap(im)
 
@@ -282,3 +287,13 @@ class Scores:
 
     plt.savefig(figure_filename)
     return figure_filename
+
+  def get_scorigami(self, win_score, lose_score):
+    scorigami_array = self.__get_scorigami_array()
+    if win_score == 16:
+      win_index = 1
+    else:
+      win_index = 0
+    scorigami = scorigami_array[win_index][lose_score]
+
+    return scorigami
