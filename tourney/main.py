@@ -196,6 +196,16 @@ def parse_command(event):
   elif command == "teamname":
     cmd = TeamnameCommand()
     channel = state.channel_id()
+  elif command == "winchart":
+    scores = Scores.get()
+    winrate_plot = scores.get_season_winrate_plot()
+    with open(winrate_plot) as file_content:
+      client.api_call(
+        "files.upload",
+        channels=[state.channel_id()],
+        file=file_content,
+        title="Season win progression"
+      )
 
   # Special command handling.
   if command_allowed(command, user_id):
