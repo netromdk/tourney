@@ -1,6 +1,6 @@
 from .command import Command
 
-from tourney.constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS, STATS_DAYS_BACK
+from tourney.constants import POSITIVE_REACTIONS, NEGATIVE_REACTIONS
 
 class HelpCommand(Command):
   def __init__(self):
@@ -30,5 +30,5 @@ As the foosball bot, I accept the following commands:
 
 Positive reactions: {}
 Negative reactions: {}
-""".format(STATS_DAYS_BACK, " ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
+""".format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
            " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
