@@ -119,7 +119,7 @@ class Scores:
         pwinrate.append(result[1] / (i + 1))
       ax.plot(dates, pwinrate, label=p)
 
-    ax.legend()
+    #ax.legend()
 
     plt.ylabel('Win percentage')
     plt.xlabel('Date')
