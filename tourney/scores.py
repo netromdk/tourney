@@ -1,8 +1,11 @@
 import os
 import json
+from calendar import monthrange
 from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.dates import date2num
 
 from .constants import DATA_PATH
 
@@ -115,11 +118,17 @@ class Scores:
       pwinrate = []
       for i in range(len(pwins[p])):
         result = pwins[p][i]
-        dates.append(result[0])
+        dates.append(date2num(result[0]))
         pwinrate.append(result[1] / (i + 1))
       ax.plot(dates, pwinrate, label=p)
 
-    #ax.legend()
+    # round to nearest day
+    now = datetime.now()
+    datemin = now.replace(day=1)
+    datemax = now.replace(day=monthrange(now.year, now.month)[1])
+    ax.set_xlim(datemin, datemax)
+
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 
     plt.ylabel('Win percentage')
     plt.xlabel('Date')
