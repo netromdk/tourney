@@ -81,7 +81,7 @@ class Scores:
       if "scores" in data:
         self.__scores = data["scores"]
 
-  def get_season_winrate_plot(self):
+  def get_season_winrate_plot(self, player=None):
     pwins = {}
 
     monthscores = [x for x in self.__scores if
@@ -120,7 +120,15 @@ class Scores:
         result = pwins[p][i]
         dates.append(date2num(result[0]))
         pwinrate.append(result[1] / (i + 1))
-      ax.plot(dates, pwinrate, label=p)
+      if p == player:
+        ax.plot(dates, pwinrate, label="You", linewidth=3, color="red")
+      elif player:
+        ax.plot(dates, pwinrate, linewidth=1, linestyle="dashed")
+      else:
+        ax.plot(dates, pwinrate, label=p)
+
+    if player:
+      ax.legend()
 
     # round to nearest day
     now = datetime.now()

@@ -198,6 +198,7 @@ def parse_command(event):
     channel = state.channel_id()
   elif command == "winchart":
     scores = Scores.get()
+    # TODO: DM personalized wincharts
     winrate_plot = scores.get_season_winrate_plot()
     with open(winrate_plot) as file_content:
       client.api_call(
