@@ -330,12 +330,15 @@ def scheduled_actions():
   if now.weekday() >= 5:
     return
 
+  midday_announce = datetime.combine(date.today(), MIDDAY_ANNOUNCE)
+  midday_hhmm = midday_announce.strftime("%H:%M")
+
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + MORNING_ANNOUNCE_DELTA
   if now >= start and now < end and not state.morning_announce():
-    announce_text = "<!channel> Remember to join today's game before 12:10 by using" \
-      " `!join` or :+1: reaction to this message!"
+    announce_text = "<!channel> Remember to join today's game before {} by using" \
+      " `!join` or :+1: reaction to this message!".format(midday_hhmm)
 
     resp = client.api_call("chat.postMessage", channel=channel_id, text=announce_text)
     state.set_morning_announce(resp["ts"])
@@ -382,8 +385,8 @@ def scheduled_actions():
       state.set_reminder_announce(1)
     else:
       fmt = ", ".join(["<@{}>".format(uid) for uid in remaining])
-      text = "{} Remember to join today's game before 12:10 by using `!join` or :+1: " \
-        "reaction to this message!".format(fmt)
+      text = "{} Remember to join today's game before {} by using `!join` or :+1: " \
+        "reaction to this message!".format(fmt, midday_hhmm)
       resp = client.api_call("chat.postMessage", channel=channel_id, text=text)
       state.set_reminder_announce(resp["ts"])
     state.save()
@@ -393,7 +396,7 @@ def scheduled_actions():
     state.save()
 
   # Midday announcement of game.
-  start = datetime.combine(date.today(), MIDDAY_ANNOUNCE)
+  start = midday_announce
   end = start + MIDDAY_ANNOUNCE_DELTA
   if now >= start and now < end and not state.midday_announce():
     state.set_midday_announce(True)
