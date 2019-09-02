@@ -232,6 +232,15 @@ You have been in {} teams: {}
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
            lose_rounds, len(teams), self.__fmt_top_teams(teams, range(len(teams)), lookup))
 
+  def local_placement(self, user_id):
+    top = self.__top_winners
+    top_enum = enumerate(top)
+    try:
+      placement = next(i for i, v in top_enum if v[0] == user_id)
+    except StopIteration:
+      placement = None
+    return placement
+
   def local_top_list(self, user_id, delta, lookup):
     response = ""
     top = self.__top_winners

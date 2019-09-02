@@ -23,18 +23,17 @@ class SelfImprovementAchievement(TieredAchievement):
       stats = Stats.get()
 
       stats.generate(time_filter=nth_last_season_filter(1))
-      personals = stats.get_personals()
-      if user_id not in personals:
+      placement = stats.local_placement(user_id)
+      if placement is None:
         return False
 
       stats.generate(time_filter=nth_last_season_filter(2))
-      personals_prev = stats.get_personals()
-      if user_id not in personals_prev:
+      placement_prev = stats.local_placement(user_id)
+      if placement_prev is None:
         return False
 
-      wins_prev = personals_prev[user_id]["total_wins"]
-      wins = personals[user_id]["total_wins"]
-      if wins > wins_prev:
+      # Check if placement is better (smaller).
+      if placement < placement_prev:
         self.data[user_id][0] += 1
         amount = self.data[user_id][0]
         nt = self.next_tier(user_id)
