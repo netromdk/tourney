@@ -1,7 +1,7 @@
 import os
 import re
 import subprocess  # nosec
-from time import sleep
+from time import sleep, time
 from datetime import datetime, date
 from slackclient import SlackClient
 from random import sample
@@ -33,7 +33,7 @@ lookup = Lookup(client)
 if DEMO:
   def wrap_api_call(method, timeout=None, **kwargs):
     print("{} {}".format(method, unescape_text(str(kwargs))))
-    return {}
+    return {'ts': time()}
   client.api_call = wrap_api_call
 
   def wrap_rtm_read():
