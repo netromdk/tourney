@@ -21,7 +21,7 @@ from .scores import Scores
 from .config import Config
 from .stats import Stats
 from .teams import Teams
-from .util import command_allowed, unescape_text
+from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
@@ -199,7 +199,7 @@ def parse_command(event):
   elif command == "winchart":
     scores = Scores.get()
     # TODO: DM personalized wincharts
-    winrate_plot = scores.get_season_winrate_plot()
+    winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter)
     with open(winrate_plot) as file_content:
       client.api_call(
         "files.upload",
@@ -372,7 +372,7 @@ def scheduled_actions():
       client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
       # TODO: Display fun facts about the season
       scores = Scores.get()
-      winrate_plot = scores.get_season_winrate_plot()
+      winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1))
       with open(winrate_plot) as file_content:
         client.api_call(
           "files.upload",

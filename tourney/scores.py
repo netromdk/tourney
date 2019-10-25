@@ -81,11 +81,15 @@ class Scores:
       if "scores" in data:
         self.__scores = data["scores"]
 
-  def get_season_winrate_plot(self, player=None):
+  def get_season_winrate_plot(self, player=None, time_filter=None):
     pwins = {}
 
-    monthscores = [x for x in self.__scores if
-                   datetime.fromtimestamp(x[0]).month == datetime.now().month]
+    if time_filter:
+      monthscores = [x for x in self.__scores if time_filter(x[0])]
+    else:
+      monthscores = [x for x in self.__scores if
+                     datetime.fromtimestamp(x[0]).month == datetime.now().month]
+
     monthscores.sort(key=lambda x: x[0])
 
     # Collect playername -> [(date, wins)]
@@ -112,28 +116,36 @@ class Scores:
 
     fig, ax = plt.subplots()
 
-    # Calc wins/matches for each player
+    # Get playername -> [(sortable datestamps, win percentages)] for plotting
+    p_winrates = {}
     for p in pwins:
       dates = []
-      pwinrate = []
+      winrates = []
       for i in range(len(pwins[p])):
         result = pwins[p][i]
         dates.append(date2num(result[0]))
-        pwinrate.append(result[1] / (i + 1))
-      if p == player:
-        ax.plot(dates, pwinrate, label="You", linewidth=3, color="red")
-      elif player:
-        ax.plot(dates, pwinrate, linewidth=1, linestyle="dashed")
+        winrates.append(result[1] / (i + 1))
+      p_winrates[p] = (dates, winrates)
+
+    # Sort by final win percentage to mark the top 5
+    p_sorted = sorted(p_winrates.keys(), key=lambda p: p_winrates[p][1][-1])
+    p_sorted.reverse()
+
+    for i in range(len(p_sorted)):
+      p = p_sorted[i]
+      (dates, winrates) = p_winrates[p]
+      if i < 5:
+        ax.plot(dates, winrates, label=p, linewidth=3)
       else:
-        ax.plot(dates, pwinrate, label=p)
+        ax.plot(dates, winrates, linewidth=1, linestyle="dashed", label='_nolegend_')
 
-    if player:
-      ax.legend()
+    # add legend lower right
+    ax.legend(loc=4)
 
-    # round to nearest day
-    now = datetime.now()
-    datemin = now.replace(day=1)
-    datemax = now.replace(day=monthrange(now.year, now.month)[1])
+    # show whole month
+    example_date = datetime.fromtimestamp(monthscores[0][0])
+    datemin = example_date.replace(day=1)
+    datemax = example_date.replace(day=monthrange(example_date.year, example_date.month)[1])
     ax.set_xlim(datemin, datemax)
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
