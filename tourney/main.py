@@ -205,6 +205,7 @@ def parse_command(event):
         "files.upload",
         channels=[state.channel_id()],
         file=file_content,
+        initial_comment="Win percentage progression for the current season",
         title="Season win progression"
       )
 
@@ -378,6 +379,7 @@ def scheduled_actions():
           "files.upload",
           channels=[channel_id],
           file=file_content,
+          initial_comment="Win percentage progression for the previous season",
           title="Season win progression"
         )
 
