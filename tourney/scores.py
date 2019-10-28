@@ -131,6 +131,12 @@ class Scores:
     p_sorted = sorted(p_winrates.keys(), key=lambda p: p_winrates[p][1][-1])
     p_sorted.reverse()
 
+    # Add top 5 cutoff line
+    p5 = p_sorted[4]
+    p5_rate = p_winrates[p5][1][-1]
+
+    ax.axhline(p5_rate, color='gold', lw=2)
+
     for i in range(len(p_sorted)):
       p = p_sorted[i]
       (dates, winrates) = p_winrates[p]
