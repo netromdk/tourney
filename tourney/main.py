@@ -203,7 +203,7 @@ def parse_command(event):
     with open(winrate_plot) as file_content:
       client.api_call(
         "files.upload",
-        channels=[state.channel_id()],
+        channels=channel,
         file=file_content,
         initial_comment="Win percentage progression for the current season",
         title="Season win progression"
