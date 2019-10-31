@@ -383,7 +383,7 @@ def scheduled_actions():
         with open(winrate_plot) as file_content:
           client.api_call(
             "files.upload",
-            channels=[channel_id],
+            channels=channel_id,
             file=file_content,
             initial_comment="Win percentage progression for the previous season",
             title="Season win progression"
