@@ -201,7 +201,7 @@ def parse_command(event):
     # TODO: DM personalized wincharts
     winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter)
     try:
-      with open(winrate_plot) as file_content:
+      with open(winrate_plot, mode="rb") as file_content:
         client.api_call(
           "files.upload",
           channels=channel,
@@ -380,7 +380,7 @@ def scheduled_actions():
       scores = Scores.get()
       winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1))
       try:
-        with open(winrate_plot) as file_content:
+        with open(winrate_plot, mode="rb") as file_content:
           client.api_call(
             "files.upload",
             channels=channel_id,
