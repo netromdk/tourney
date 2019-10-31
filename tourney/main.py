@@ -21,7 +21,7 @@ from .scores import Scores
 from .config import Config
 from .stats import Stats
 from .teams import Teams
-from .util import command_allowed, unescape_text
+from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
@@ -196,6 +196,23 @@ def parse_command(event):
   elif command == "teamname":
     cmd = TeamnameCommand()
     channel = state.channel_id()
+  elif command == "winchart":
+    scores = Scores.get()
+    # TODO: DM personalized wincharts
+    winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter)
+    try:
+      with open(winrate_plot) as file_content:
+        client.api_call(
+          "files.upload",
+          channels=channel,
+          file=file_content,
+          initial_comment="Win percentage progression for the current season",
+          title="Season win progression"
+        )
+    except IOError as e:
+      response = "Could not open generated winchart"
+      client.api_call("chat.postMessage", channel=channel, text=response)
+      print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
   # Special command handling.
   if command_allowed(command, user_id):
@@ -351,7 +368,6 @@ def scheduled_actions():
       season_start_text += ":bar_chart: Stats and leaderboards shown with `!stats` will only " \
         "include the current season.\n"
       season_start_text += ":globe_with_meridians: Use `!allstats` for full statistics.\n"
-      # TODO: Display fun facts about the season
 
       stats = Stats.get()
       stats.generate()
@@ -360,6 +376,22 @@ def scheduled_actions():
         achievements.interact(SeasonStartBehavior(p))
 
       client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
+      # TODO: Display fun facts about the season
+      scores = Scores.get()
+      winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1))
+      try:
+        with open(winrate_plot) as file_content:
+          client.api_call(
+            "files.upload",
+            channels=channel_id,
+            file=file_content,
+            initial_comment="Win percentage progression for the previous season",
+            title="Season win progression"
+          )
+      except IOError as e:
+        response = "Could not open generated winchart"
+        client.api_call("chat.postMessage", channel=[channel_id], text=response)
+        print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)
