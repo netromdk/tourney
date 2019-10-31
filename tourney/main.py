@@ -390,7 +390,7 @@ def scheduled_actions():
           )
       except IOError as e:
         response = "Could not open generated winchart"
-        client.api_call("chat.postMessage", channel=channel, text=response)
+        client.api_call("chat.postMessage", channel=[channel_id], text=response)
         print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     # Last of the month (or closest friday) warning for season reset
