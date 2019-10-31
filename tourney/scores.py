@@ -81,7 +81,7 @@ class Scores:
       if "scores" in data:
         self.__scores = data["scores"]
 
-  def get_season_winrate_plot(self, player=None, time_filter=None):
+  def get_season_winrate_plot(self, lookup, time_filter=None):
     pwins = {}
 
     if time_filter:
@@ -141,7 +141,8 @@ class Scores:
       p = p_sorted[i]
       (dates, winrates) = p_winrates[p]
       if i < 5:
-        ax.plot(dates, winrates, label=p, linewidth=3)
+        pname = lookup.user_name_by_id(p)
+        ax.plot(dates, winrates, label=pname, linewidth=3)
       else:
         ax.plot(dates, winrates, linewidth=1, linestyle="dashed", label='_nolegend_')
 
