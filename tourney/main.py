@@ -200,14 +200,19 @@ def parse_command(event):
     scores = Scores.get()
     # TODO: DM personalized wincharts
     winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter)
-    with open(winrate_plot) as file_content:
-      client.api_call(
-        "files.upload",
-        channels=channel,
-        file=file_content,
-        initial_comment="Win percentage progression for the current season",
-        title="Season win progression"
-      )
+    try:
+      with open(winrate_plot) as file_content:
+        client.api_call(
+          "files.upload",
+          channels=channel,
+          file=file_content,
+          initial_comment="Win percentage progression for the current season",
+          title="Season win progression"
+        )
+    except IOError as e:
+      response = "Could not open generated winchart"
+      client.api_call("chat.postMessage", channel=channel, text=response)
+      print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
   # Special command handling.
   if command_allowed(command, user_id):
@@ -374,14 +379,19 @@ def scheduled_actions():
       # TODO: Display fun facts about the season
       scores = Scores.get()
       winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1))
-      with open(winrate_plot) as file_content:
-        client.api_call(
-          "files.upload",
-          channels=[channel_id],
-          file=file_content,
-          initial_comment="Win percentage progression for the previous season",
-          title="Season win progression"
-        )
+      try:
+        with open(winrate_plot) as file_content:
+          client.api_call(
+            "files.upload",
+            channels=[channel_id],
+            file=file_content,
+            initial_comment="Win percentage progression for the previous season",
+            title="Season win progression"
+          )
+      except IOError as e:
+        response = "Could not open generated winchart"
+        client.api_call("chat.postMessage", channel=channel, text=response)
+        print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)
