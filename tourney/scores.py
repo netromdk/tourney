@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.dates import date2num
+from matplotlib.ticker import FuncFormatter
 
 from .constants import DATA_PATH
 
@@ -156,6 +157,7 @@ class Scores:
     ax.set_xlim(datemin, datemax)
 
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y)))
 
     plt.ylabel('Win percentage')
     plt.xlabel('Date')
