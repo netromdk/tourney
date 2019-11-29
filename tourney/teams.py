@@ -32,6 +32,9 @@ class Teams:
       return Teams()
     return Teams.__instance
 
+  def get_regenerated_users(self):
+    return (self.__regenerated_2p_users, self.__regenerated_3p_users)
+
   def split_teams(self, n):
     if n == 1 or n == 0:
       return []
@@ -49,6 +52,8 @@ class Teams:
       return duos + trios
 
   def get_teams_for_players(self, current_players):
+    self.__regenerated_2p_users = []
+    self.__regenerated_3p_users = []
     # Add any new players to data and generate their pairings
     self.__set_players(current_players)
 
@@ -110,6 +115,10 @@ class Teams:
     return teams
 
   def __generate_2p_teams_for_player(self, user_id):
+    self.__regenerated_2p_users.append(user_id)
+
+    self.__teams_2p = {t for t in self.__teams_2p if user_id not in t}
+
     teams = []
     others = [p for p in self.__players if p != user_id]
     for player in others:
@@ -119,6 +128,10 @@ class Teams:
     return teams
 
   def __generate_3p_teams_for_player(self, user_id):
+    self.__regenerated_3p_users.append(user_id)
+
+    self.__teams_3p = {t for t in self.__teams_3p if user_id not in t}
+
     teams = []
     others = [p for p in self.__players if p != user_id]
     all_2p_teams = itertools.combinations(others, 2)

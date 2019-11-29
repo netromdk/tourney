@@ -101,6 +101,14 @@ def create_matches():
       name = names[i]
       response += "\n\t[T{}] *{}*: {}".format(i, name, fmt)
 
+    tteams = Teams.get()
+    (gen2p, gen3p) = tteams.get_regenerated_users()
+    regen_set = set(gen2p + gen3p)
+    if len(regen_set) > 0:
+      response += "\n:recycle: Regenerated teams for:\n"
+      for p in regen_set:
+        response += "  {}\n".format(lookup.user_name_by_id(p))
+
     sched = create_schedule(len(teams))
     unrecorded_matches = []
 
