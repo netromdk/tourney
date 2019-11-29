@@ -116,6 +116,9 @@ class Teams:
 
   def __generate_2p_teams_for_player(self, user_id):
     self.__regenerated_2p_users.append(user_id)
+
+    self.__teams_2p = {t for t in self.__teams_2p if user_id not in t}
+
     teams = []
     others = [p for p in self.__players if p != user_id]
     for player in others:
@@ -126,6 +129,9 @@ class Teams:
 
   def __generate_3p_teams_for_player(self, user_id):
     self.__regenerated_3p_users.append(user_id)
+
+    self.__teams_3p = {t for t in self.__teams_3p if user_id not in t}
+
     teams = []
     others = [p for p in self.__players if p != user_id]
     all_2p_teams = itertools.combinations(others, 2)
