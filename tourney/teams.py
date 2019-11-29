@@ -122,7 +122,7 @@ class Teams:
     teams = []
     others = [p for p in self.__players if p != user_id]
     for player in others:
-      new_team = (user_id, player)
+      new_team = tuple(sorted((user_id, player)))
       self.__teams_2p.add(new_team)
       teams.append(new_team)
     return teams
@@ -136,7 +136,7 @@ class Teams:
     others = [p for p in self.__players if p != user_id]
     all_2p_teams = itertools.combinations(others, 2)
     for t2p in all_2p_teams:
-      new_team = (user_id, t2p[0], t2p[1])
+      new_team = tuple(sorted((user_id, t2p[0], t2p[1])))
       self.__teams_3p.add(new_team)
       teams.append(new_team)
     return teams
@@ -151,12 +151,14 @@ class Teams:
 
   def __get_teams_2p(self):
     if not self.__teams_2p:
-      self.__teams_2p = set(itertools.combinations(self.__players, 2))
+      for p in self.__players:
+        self.__generate_2p_teams_for_player(p)
     return self.__teams_2p
 
   def __get_teams_3p(self):
     if not self.__teams_3p:
-      self.__teams_3p = set(itertools.combinations(self.__players, 3))
+      for p in self.__players:
+        self.__generate_3p_teams_for_player(p)
     return self.__teams_3p
 
   def file_path(self):
@@ -184,7 +186,9 @@ class Teams:
         self.__players = set(data["players"])
       if "teams_2p" in data:
         teams_2p = data["teams_2p"]
-        self.__teams_2p = set(map(tuple, teams_2p))
+        for t in teams_2p:
+          self.__teams_2p.add(tuple(sorted(t)))
       if "teams_3p" in data:
         teams_3p = data["teams_3p"]
-        self.__teams_3p = set(map(tuple, teams_3p))
+        for t in teams_3p:
+          self.__teams_3p.add(tuple(sorted(t)))
