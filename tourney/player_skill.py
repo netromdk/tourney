@@ -2,6 +2,7 @@ import json
 import os
 from trueskill import Rating, quality_1vs1, rate_1vs1, rate
 from .constants import DATA_PATH
+from .scores import Scores
 
 class PlayerSkill:
   __instance = None
@@ -12,6 +13,8 @@ class PlayerSkill:
 
       try:
         self.load()
+        if len(self.__player_skills) == 0:
+          self.calc_player_skills()
       except Exception as ex:
         print("PlayerSkill file could not load: {}".format(self.file_path()))
         print(ex)
@@ -30,7 +33,7 @@ class PlayerSkill:
   def load(self):
     with open(self.file_path(), "r") as fp:
       data = json.load(fp)
-      if "player_kills" in data:
+      if "player_skills" in data:
         player_skills = data["player_skills"]
         for pskill in player_skills:
             self.__player_skills[pskill[0]] = Rating(pskill[1], pskill[2])
@@ -110,6 +113,18 @@ class PlayerSkill:
         return self.rate_even_match(win_team, lose_team)
     else:
         return self.rate_uneven_match(win_team, lose_team)
+
+  def calc_player_skills(self):
+    scores = Scores.get()
+    for score in scores:
+      if score[2] > score[4]:
+        winteam = score[1]
+        loseteam = score[3]
+      else:
+        winteam = score[3]
+        loseteam = score[1]
+      self.rate_match(winteam, loseteam)
+    self.save()
 
   def test(self):
     self.__player_skills["TESTUSER1"] = Rating(15)
