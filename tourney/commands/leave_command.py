@@ -33,18 +33,23 @@ class LeaveCommand(Command):
         if user_id in team:
           team_index = teams.index(team)
           team_name = team_names[team_index]
-          new_team_name = choice(TEAM_NAME_DECORATIONS)(team_name)  # nosec
-          team_names[team_index] = new_team_name
-          new_team = [p for p in team if p != user_id]
-          new_teams.append(new_team)
+          if len(team) > 1:
+            new_team_name = choice(TEAM_NAME_DECORATIONS)(team_name)  # nosec
+            team_names[team_index] = new_team_name
+            new_team = [p for p in team if p != user_id]
+            new_teams.append(new_team)
 
-          user_list = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
-          formatted_team_name = "[T{}] *{}*".format(team_index, team_name)
-          formatted_new_team_name = "[T{}] *{}* ({})".\
-            format(team_index, new_team_name, user_list)
+            user_list = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
+            formatted_team_name = "[T{}] *{}*".format(team_index, team_name)
+            formatted_new_team_name = "[T{}] *{}* ({})".\
+              format(team_index, new_team_name, user_list)
 
-          response += "{}, you have left team\n{}\nwhich becomes\n{}\n".\
-            format(user_name, formatted_team_name, formatted_new_team_name)
+            response += "{}, you have left team\n{}\nwhich becomes\n{}\n".\
+              format(user_name, formatted_team_name, formatted_new_team_name)
+          elif len(team) == 1:
+            response += "{}, you cannot leave team *{}* as its only player\n".\
+              format(user_name, team_name)
+            response += "Pressure someone else into joining first, then bail.\n"
         else:
           new_teams.append(team)
       response += "Check `!schedule` for overview."
