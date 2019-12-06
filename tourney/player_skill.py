@@ -67,10 +67,21 @@ class PlayerSkill:
     team_skill = Rating(mu=avg_mu, sigma=avg_sigma)
     return team_skill
 
-  def get_match_quality(self, team_a, team_b):
-    skill_a = self.get_team_skill(team_a)
-    skill_b = self.get_team_skill(team_b)
-    return quality_1vs1(skill_a, skill_b)
+  def get_match_quality(self, match):
+    if len(match) == 3:
+      # Two teams in one match
+      skill_a = self.get_team_skill(match[0])
+      skill_b = self.get_team_skill(match[1])
+      return quality_1vs1(skill_a, skill_b)
+    elif len(match) == 4:
+      # Three teams in three matches
+      skill_a = self.get_team_skill(match[0])
+      skill_b = self.get_team_skill(match[1])
+      skill_c = self.get_team_skill(match[2])
+      quality_ab = quality_1vs1(skill_a, skill_b)
+      quality_ac = quality_1vs1(skill_a, skill_c)
+      quality_bc = quality_1vs1(skill_b, skill_c)
+      return min(quality_ab, quality_ac, quality_bc)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
