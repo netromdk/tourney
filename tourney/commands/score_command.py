@@ -5,6 +5,7 @@ from .command import Command
 from tourney.state import State
 from tourney.constants import SCORE_ARGS_REGEX
 from tourney.scores import Scores
+from tourney.player_skill import PlayerSkill
 from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
 
 class ScoreCommand(Command):
@@ -64,6 +65,10 @@ class ScoreCommand(Command):
             win_score = team_b_score
             lose_team = ids_a
             lose_score = team_a_score
+
+          player_skill = PlayerSkill.get()
+          player_skill.rate_match(win_team, lose_team)
+          player_skill.save()
 
           achievements = Achievements.get()
           for member in win_team:
