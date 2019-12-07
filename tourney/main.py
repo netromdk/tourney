@@ -109,16 +109,15 @@ def create_schedule(teams):
   all_combinations = list(all_team_combinations(list(range(len(teams)))))
   qualities = []
   for c in all_combinations:
-    quality = 0
+    quality = 1.0
     for m in c:
-      quality += player_skill.get_match_quality([teams[t] for t in m])
+      quality = min(quality,
+                    player_skill.get_match_quality([teams[t] for t in m]))
     qualities.append(quality)
 
   best_index = qualities.index(max(qualities))
   best_combination = all_combinations[best_index]
-  for i in range(len(all_combinations)):
-    print("{} - {}".format(qualities[i], all_combinations[i]))
-  print(best_combination)
+
   return best_combination
 
 def create_matches():
