@@ -77,9 +77,10 @@ def all_team_combinations(teams):
     yield []
     return
   elif len(teams) == 3:
-    yield (teams[0], teams[1], 1)
-    yield (teams[1], teams[2], 1)
-    yield (teams[0], teams[2], 1)
+    # Only one combination possible here
+    yield [(teams[0], teams[1], 1),
+           (teams[1], teams[2], 1),
+           (teams[0], teams[2], 1)]
     return
   elif len(teams) % 2 == 1:
     # Handle odd length list. Make one XvXvX and (n-3)/2 pairs.
