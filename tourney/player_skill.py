@@ -1,6 +1,7 @@
+
 import json
 import os
-from trueskill import Rating, quality_1vs1, rate_1vs1, rate
+from trueskill import Rating, quality, rate, quality_1vs1, rate_1vs1
 from .constants import DATA_PATH
 from .scores import Scores
 
@@ -68,20 +69,18 @@ class PlayerSkill:
     return team_skill
 
   def get_match_quality(self, match):
-    if len(match) == 3:
-      # Two teams in one match
-      skill_a = self.get_team_skill(match[0])
-      skill_b = self.get_team_skill(match[1])
-      return quality_1vs1(skill_a, skill_b)
-    elif len(match) == 4:
-      # Three teams in three matches
-      skill_a = self.get_team_skill(match[0])
-      skill_b = self.get_team_skill(match[1])
-      skill_c = self.get_team_skill(match[2])
-      quality_ab = quality_1vs1(skill_a, skill_b)
-      quality_ac = quality_1vs1(skill_a, skill_c)
-      quality_bc = quality_1vs1(skill_b, skill_c)
-      return min(quality_ab, quality_ac, quality_bc)
+    team_a, team_b = match[0], match[1]
+    # Two teams in one match, number of rounds ignored
+    if len(match[0]) == len(match[1]):
+      team_a_skills = [self.get_player_skill(p) for p in team_a]
+      team_b_skills = [self.get_player_skill(p) for p in team_b]
+      return quality([team_a_skills, team_b_skills])
+    else:
+      # Unmatched teams, aggregate team skill and rate as 1vs1
+      skill_team_a = self.get_team_skill(team_a)
+      skill_team_b = self.get_team_skill(team_b)
+      print(skill_team_a, skill_team_b)
+      return quality_1vs1(skill_team_a, skill_team_b)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
@@ -138,17 +137,32 @@ class PlayerSkill:
     self.save()
 
   def test(self):
+    old_skills = self.__player_skills
+    self.__player_skills = {}
     self.__player_skills["TESTUSER1"] = Rating(15)
-    self.__player_skills["TESTUSER2"] = Rating(50)
-    self.__player_skills["TESTUSER3"] = Rating(25)
-    self.__player_skills["TESTUSER4"] = Rating(35)
-    self.__player_skills["TESTUSER6"] = Rating(45)
-    team_a = ("TESTUSER1", "TESTUSER2", "TESTUSER6")
-    team_b = ("TESTUSER3", "TESTUSER4")
-    print("Teams: {} vs {}".format(team_a, team_b))
-    quality = self.get_match_quality(team_a, team_b)
-    print("Match quality: {}".format(quality))
+    self.__player_skills["TESTUSER2"] = Rating(25)
+    self.__player_skills["TESTUSER3"] = Rating(35)
+    self.__player_skills["TESTUSER4"] = Rating(25)
+    self.__player_skills["TESTUSER5"] = Rating(25)
+    self.__player_skills["TESTUSER6"] = Rating(25)
+    team_a = ("TESTUSER1", "TESTUSER2", "TESTUSER3")
+    team_b = ("TESTUSER4", "TESTUSER5")
+    team_c = ("TESTUSER6")
+
+    mquality = self.get_match_quality((team_a, team_a, 2))
+    print("Mirror match quality: {}".format(mquality))
+
+    mquality = self.get_match_quality((team_a, team_b, 2))
+    print("3v2 even? match quality: {}".format(mquality))
     self.rate_match(team_a, team_b)
-    quality = self.get_match_quality(team_a, team_b)
-    print(self.get_player_skill("TESTUSER1"))
-    print(quality)
+    mquality = self.get_match_quality((team_a, team_b, 2))
+    print("3v2 match quality after unlikely win: {}".format(mquality))
+    mquality = self.get_match_quality((team_a, team_c, 2))
+    print("2v1 even? match quality: {}".format(mquality))
+    self.rate_match(team_a, team_c)
+    print("2v1 match quality after win: {}".format(mquality))
+
+    mquality = self.get_match_quality((team_a, team_a, 2))
+    print("Mirror match quality: {}".format(mquality))
+
+    self.__player_skills = old_skills
