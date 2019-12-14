@@ -79,7 +79,6 @@ class PlayerSkill:
       # Unmatched teams, aggregate team skill and rate as 1vs1
       skill_team_a = self.get_team_skill(team_a)
       skill_team_b = self.get_team_skill(team_b)
-      print(skill_team_a, skill_team_b)
       return quality_1vs1(skill_team_a, skill_team_b)
 
   def rate_uneven_match(self, win_team, lose_team):
@@ -92,31 +91,39 @@ class PlayerSkill:
     lose_team_skill = self.get_team_skill(lose_team)
     new_win_team = []
     new_lose_team = []
-    new_win_team_skill, new_lose_team_skill =\
+    try:
+      new_win_team_skill, new_lose_team_skill =\
         rate_1vs1(win_team_skill, lose_team_skill)
 
-    for p in win_team:
-      pskill = self.get_player_skill(p)
-      new_skill, _ = rate_1vs1(pskill, lose_team_skill)
-      self.__player_skills[p] = new_skill
-      new_win_team.append(new_skill)
-    for p in lose_team:
-      pskill = self.get_player_skill(p)
-      _, new_skill = rate_1vs1(win_team_skill, pskill)
-      self.__player_skills[p] = new_skill
-      new_lose_team.append(new_skill)
+      for p in win_team:
+        pskill = self.get_player_skill(p)
+        new_skill, _ = rate_1vs1(pskill, lose_team_skill)
+        self.__player_skills[p] = new_skill
+        new_win_team.append(new_skill)
+      for p in lose_team:
+        pskill = self.get_player_skill(p)
+        _, new_skill = rate_1vs1(win_team_skill, pskill)
+        self.__player_skills[p] = new_skill
+        new_lose_team.append(new_skill)
+    except FloatingPointError:
+      print("Skill difference too high: {} vs {}. Ratings not updated".
+            format(win_team_skill, lose_team_skill))
 
   def rate_even_match(self, win_team, lose_team):
     win_team_skills = [self.get_player_skill(p) for p in win_team]
     lose_team_skills = [self.get_player_skill(p) for p in lose_team]
-    new_win_team_skills, new_lose_team_skills = rate([win_team_skills, lose_team_skills])
-    for i in range(len(win_team)):
-      win_p = win_team[i]
-      lose_p = lose_team[i]
-      new_win_p_skill = new_win_team_skills[i]
-      new_lose_p_skill = new_lose_team_skills[i]
-      self.__player_skills[win_p] = new_win_p_skill
-      self.__player_skills[lose_p] = new_lose_p_skill
+    try:
+      new_win_team_skills, new_lose_team_skills = rate([win_team_skills, lose_team_skills])
+      for i in range(len(win_team)):
+        win_p = win_team[i]
+        lose_p = lose_team[i]
+        new_win_p_skill = new_win_team_skills[i]
+        new_lose_p_skill = new_lose_team_skills[i]
+        self.__player_skills[win_p] = new_win_p_skill
+        self.__player_skills[lose_p] = new_lose_p_skill
+    except FloatingPointError:
+      print("Skill difference too high: {} vs {}. Ratings not updated".
+            format(win_team_skills, lose_team_skills))
 
   def rate_match(self, win_team, lose_team):
     if len(win_team) == len(lose_team):
