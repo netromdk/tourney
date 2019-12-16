@@ -7,6 +7,9 @@ DEBUG = False
 # In demo mode, no connection to slack is made. Everything is local.
 DEMO = "--demo" in sys.argv
 
+# Use trueskill to create schedule
+MATCHMAKING = True
+
 # A load test will stop the program right after initializing and before starting the REPL.
 LOAD_TEST = "--load-test" in sys.argv
 

@@ -16,7 +16,7 @@ from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, TEAM_NAMES, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
-  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA
+  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING
 from .scores import Scores
 from .player_skill import PlayerSkill
 from .config import Config
@@ -106,20 +106,33 @@ def all_team_combinations(teams):
 
 def create_schedule(teams):
   """Takes list of teams to schedule for."""
-  player_skill = PlayerSkill.get()
-  all_combinations = list(all_team_combinations(list(range(len(teams)))))
-  qualities = []
-  for c in all_combinations:
-    quality = 1.0
-    for m in c:
-      quality = min(quality,
-                    player_skill.get_match_quality([teams[t] for t in m]))
-    qualities.append(quality)
+  matches = []
+  if MATCHMAKING:
+    player_skill = PlayerSkill.get()
+    all_combinations = list(all_team_combinations(list(range(len(teams)))))
+    qualities = []
+    for c in all_combinations:
+      quality = 1.0
+      for m in c:
+        quality = min(quality,
+                      player_skill.get_match_quality([teams[t] for t in m]))
+      qualities.append(quality)
 
-  best_index = qualities.index(max(qualities))
-  best_combination = all_combinations[best_index]
-
-  return best_combination
+    best_index = qualities.index(max(qualities))
+    matches = all_combinations[best_index]
+  else:
+    if len(teams) % 2 == 0:
+      matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+    else:
+      twoRounders = len(teams) - 3
+      if twoRounders > 0:
+        matches = [(i, i + 1, 2) for i in range(0, twoRounders, 2)]
+      # Add last 3 matches of 1 round each.
+      i = twoRounders
+      matches += [(i, i + 1, 1),
+                  (i, i + 2, 1),
+                  (i + 1, i + 2, 1)]
+  return matches
 
 def create_matches():
   state = State.get()
