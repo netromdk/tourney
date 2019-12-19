@@ -64,7 +64,8 @@ class PlayerSkill:
     team_skills = [self.get_player_skill(p) for p in team]
     avg_mu = sum(r.mu for r in team_skills) / len(team)
     # mu_dist = max([r.mu for r in team_skills]) - min([r.mu for r in team_skills])
-    avg_sigma = sum(r.sigma ** 2 for r in team_skills) / len(team)
+    avg_sigma = sum(r.sigma for r in team_skills) / len(team)
+    avg_sigma = avg_sigma * 2  # Increase uncertainty in averaged team skills
     team_skill = Rating(mu=avg_mu, sigma=avg_sigma)
     return team_skill
 
