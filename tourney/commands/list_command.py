@@ -19,7 +19,7 @@ class ListCommand(Command):
       name = lookup.user_name_by_id(uid)
       response += "\n\t{}".format(name)
 
-    if amount < 4:
-      response += "\nAt least 4 players are required to create matches."
+    if amount < 2:
+      response += "\nAt least 2 players are required to create matches."
 
     return response

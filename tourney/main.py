@@ -93,7 +93,7 @@ def create_matches():
   response = "<!channel>\n"
   teams, names = create_teams()
   if teams is None:
-    response += "No games possible! At least 4 players are required!"
+    response += "No games possible! At least 2 players are required!"
   else:
     response += "{} teams: ".format(len(teams))
     for i in range(len(teams)):
