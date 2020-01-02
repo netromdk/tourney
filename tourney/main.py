@@ -16,8 +16,9 @@ from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, TEAM_NAMES, REACTION_REGEX, POSITIVE_REACTIONS, \
   NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
   REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
-  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA
+  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING
 from .scores import Scores
+from .player_skill import PlayerSkill
 from .config import Config
 from .stats import Stats
 from .teams import Teams
@@ -70,22 +71,67 @@ def create_teams():
 
   return teams, names
 
-def pick_pairs(amount):
-  """Picks non-overlapping team pairs of 2 rounds."""
-  return [(i, i + 1, 2) for i in range(0, amount, 2)]
-
-def create_schedule(amount):
-  """Takes amount of teams to schedule for."""
-  matches = []
-  if amount % 2 == 0:
-    matches = pick_pairs(amount)
+def all_team_combinations(teams):
+  """Returns all combinations of pairs of teams"""
+  if len(teams) < 2:
+    yield []
+    return
+  elif len(teams) == 3:
+    # Only one combination possible here
+    yield [(teams[0], teams[1], 1),
+           (teams[1], teams[2], 1),
+           (teams[0], teams[2], 1)]
+    return
+  elif len(teams) % 2 == 1:
+    # Handle odd length list. Make one XvXvX and (n-3)/2 pairs.
+    # Combine each possible triple with each possible configuration of the other teams
+    for i in range(len(teams)):
+      i_remains = list(range(len(teams)))
+      i_remains.remove(i)
+      for j in i_remains:
+        j_remains = [n for n in i_remains]
+        j_remains.remove(j)
+        for k in j_remains:
+          triple = [(teams[i], teams[j], 1), (teams[i], teams[k], 1), (teams[j], teams[k], 1)]
+          remains = [t for t in teams if t not in [teams[i], teams[j], teams[k]]]
+          for result in all_team_combinations(remains):
+            yield triple + result
   else:
-    twoRoundMathces = amount - 3
-    if twoRoundMathces > 0:
-      matches = pick_pairs(twoRoundMathces)
-    # Add last 3 matches of 1 round each.
-    i = twoRoundMathces
-    matches += [(i, i + 1, 1), (i, i + 2, 1), (i + 1, i + 2, 1)]
+    a = teams[0]
+    for i in range(1, len(teams)):
+      # Pick a pair and recurse on rest of list
+      pair = (a, teams[i], 2)
+      for r in all_team_combinations(teams[1:i] + teams[i + 1:]):
+        yield [pair] + r
+
+def create_schedule(teams):
+  """Takes list of teams to schedule for."""
+  matches = []
+  if MATCHMAKING:
+    player_skill = PlayerSkill.get()
+    all_combinations = list(all_team_combinations(list(range(len(teams)))))
+    qualities = []
+    for c in all_combinations:
+      quality = 1.0
+      for m in c:
+        quality = min(quality,
+                      player_skill.get_match_quality([teams[t] for t in m]))
+      qualities.append(quality)
+
+    best_index = qualities.index(max(qualities))
+    matches = all_combinations[best_index]
+  else:
+    if len(teams) % 2 == 0:
+      matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+    else:
+      twoRounders = len(teams) - 3
+      if twoRounders > 0:
+        matches = [(i, i + 1, 2) for i in range(0, twoRounders, 2)]
+      # Add last 3 matches of 1 round each.
+      i = twoRounders
+      matches += [(i, i + 1, 1),
+                  (i, i + 2, 1),
+                  (i + 1, i + 2, 1)]
   return matches
 
 def create_matches():
@@ -109,7 +155,7 @@ def create_matches():
       for p in regen_set:
         response += "  {}\n".format(lookup.user_name_by_id(p))
 
-    sched = create_schedule(len(teams))
+    sched = create_schedule(teams)
     unrecorded_matches = []
 
     response += "\n\nSchedule:"
