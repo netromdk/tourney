@@ -1,4 +1,3 @@
-
 import json
 import os
 from trueskill import Rating, quality, rate, quality_1vs1, rate_1vs1
@@ -14,11 +13,12 @@ class PlayerSkill:
 
       try:
         self.load()
-        if len(self.__player_skills) == 0:
-          self.calc_player_skills()
       except Exception as ex:
         print("PlayerSkill file could not load: {}".format(self.file_path()))
         print(ex)
+
+      if len(self.__player_skills) == 0:
+        self.calc_player_skills()
 
       PlayerSkill.__instance = self
 
@@ -134,7 +134,7 @@ class PlayerSkill:
 
   def calc_player_skills(self):
     scores = Scores.get()
-    for score in scores:
+    for score in scores.matches():
       if score[2] > score[4]:
         winteam = score[1]
         loseteam = score[3]
