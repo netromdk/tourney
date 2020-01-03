@@ -142,14 +142,6 @@ def create_matches():
   if teams is None:
     response += "No games possible! At least 2 players are required!"
   else:
-    tteams = Teams.get()
-    (gen2p, gen3p) = tteams.get_regenerated_users()
-    regen_set = set(gen2p + gen3p)
-    if len(regen_set) > 0:
-      response += ":recycle: Regenerated teams for:\n"
-      for p in regen_set:
-        response += "  {}\n".format(lookup.user_name_by_id(p))
-
     sched = create_schedule(teams)
     unrecorded_matches = []
     for match in sched:
@@ -157,7 +149,15 @@ def create_matches():
       key.sort()
       unrecorded_matches.append(key)
 
-    response += "\n\n" + schedule_text(lookup)
+    response += schedule_text(lookup)
+
+    tteams = Teams.get()
+    (gen2p, gen3p) = tteams.get_regenerated_users()
+    regen_set = set(gen2p + gen3p)
+    if len(regen_set) > 0:
+      response += "\n\n:recycle: Regenerated teams for:\n"
+      for p in regen_set:
+        response += "  {}\n".format(lookup.user_name_by_id(p))
 
     # Remember teams and unrecorded matches but clear participants, morning announce, and users that
     # didn't want today's reminder.
