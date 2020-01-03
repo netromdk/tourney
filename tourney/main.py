@@ -22,7 +22,8 @@ from .player_skill import PlayerSkill
 from .config import Config
 from .stats import Stats
 from .teams import Teams
-from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter
+from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
+  schedule_text
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
@@ -141,33 +142,22 @@ def create_matches():
   if teams is None:
     response += "No games possible! At least 2 players are required!"
   else:
-    response += "{} teams: ".format(len(teams))
-    for i in range(len(teams)):
-      fmt = ", ".join([lookup.user_name_by_id(uid) for uid in teams[i]])
-      name = names[i]
-      response += "\n\t[T{}] *{}*: {}".format(i, name, fmt)
+    sched = create_schedule(teams)
+    unrecorded_matches = []
+    for match in sched:
+      key = [match[0], match[1]]
+      key.sort()
+      unrecorded_matches.append(key)
+
+    response += schedule_text(lookup)
 
     tteams = Teams.get()
     (gen2p, gen3p) = tteams.get_regenerated_users()
     regen_set = set(gen2p + gen3p)
     if len(regen_set) > 0:
-      response += "\n:recycle: Regenerated teams for:\n"
+      response += "\n\n:recycle: Regenerated teams for:\n"
       for p in regen_set:
         response += "  {}\n".format(lookup.user_name_by_id(p))
-
-    sched = create_schedule(teams)
-    unrecorded_matches = []
-
-    response += "\n\nSchedule:"
-    for match in sched:
-      plural = "s" if match[2] > 1 else ""
-      name_a = names[match[0]]
-      name_b = names[match[1]]
-      response += "\n\t[T{}] *{}* vs. [T{}] *{}* ({} round{})".\
-        format(match[0], name_a, match[1], name_b, match[2], plural)
-      key = [match[0], match[1]]
-      key.sort()
-      unrecorded_matches.append(key)
 
     # Remember teams and unrecorded matches but clear participants, morning announce, and users that
     # didn't want today's reminder.
