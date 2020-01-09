@@ -149,16 +149,6 @@ def create_matches():
       key.sort()
       unrecorded_matches.append(key)
 
-    response += schedule_text(lookup)
-
-    tteams = Teams.get()
-    (gen2p, gen3p) = tteams.get_regenerated_users()
-    regen_set = set(gen2p + gen3p)
-    if len(regen_set) > 0:
-      response += "\n\n:recycle: Regenerated teams for:\n"
-      for p in regen_set:
-        response += "  {}\n".format(lookup.user_name_by_id(p))
-
     # Remember teams and unrecorded matches but clear participants, morning announce, and users that
     # didn't want today's reminder.
     state.set_schedule(sched)
@@ -169,6 +159,17 @@ def create_matches():
     state.set_morning_announce(None)
     state.set_dont_remind_users([])
     state.save()
+
+    # Generate response for the channel.
+    response += schedule_text(lookup)
+
+    tteams = Teams.get()
+    (gen2p, gen3p) = tteams.get_regenerated_users()
+    regen_set = set(gen2p + gen3p)
+    if len(regen_set) > 0:
+      response += "\n\n:recycle: Regenerated teams for:\n"
+      for p in regen_set:
+        response += "  {}\n".format(lookup.user_name_by_id(p))
 
   channel_id = state.channel_id()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
