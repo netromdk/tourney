@@ -224,13 +224,14 @@ Top {} teams (% of rounds won): {}
     for team in self.__top_teams:
       if user_id in team[0]:
         teams.append(team)
+    max_teams = min(5, len(teams))
     return """
 You scored {:.2f} goals on average in {} matches ({} rounds),
 won {:.2f}% ({} rounds),
 and lost {:.2f}% ({} rounds).
 You have been in {} teams: {}
 """.format(stats["total_score"], stats["total_matches"], rounds, win_perc, win_rounds, lose_perc,
-           lose_rounds, len(teams), self.__fmt_top_teams(teams, range(len(teams)), lookup))
+           lose_rounds, len(teams), self.__fmt_top_teams(teams, range(max_teams), lookup))
 
   def local_placement(self, user_id):
     top = self.__top_winners

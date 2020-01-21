@@ -27,7 +27,7 @@ class MyStatsCommand(Command):
     rank = ps.get_player_rank(user_id)
     place = to_ordinal(ps.get_player_placement(user_id))
 
-    response += "Your TrueSkill rank is currently {}, which puts you in {} place.\n".\
+    response += "\nYour TrueSkill rank is currently {:.2f}, which puts you in {} place.\n".\
       format(rank, place)
 
     return response
