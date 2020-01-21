@@ -1,9 +1,9 @@
 from .command import Command
+
 from tourney.constants import STATS_PLACEMENT_DELTA
-
-from tourney.util import this_season_filter
-
+from tourney.util import this_season_filter, to_ordinal
 from tourney.stats import Stats
+from tourney.player_skill import PlayerSkill
 
 class MyStatsCommand(Command):
   def __init__(self):
@@ -22,5 +22,12 @@ class MyStatsCommand(Command):
     if stats.generate(time_filter=this_season_filter):
       stats.save()
       response += stats.local_top_list(user_id, STATS_PLACEMENT_DELTA, lookup)
+
+    ps = PlayerSkill.get()
+    rank = ps.get_player_rank(user_id)
+    place = to_ordinal(ps.get_player_placement(user_id))
+
+    response += "Your TrueSkill rank is currently {}, which puts you in {} place.\n".\
+      format(rank, place)
 
     return response

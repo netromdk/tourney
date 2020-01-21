@@ -56,6 +56,34 @@ class PlayerSkill:
       self.__player_skills[user_id] = Rating()
     return self.__player_skills[user_id]
 
+  def __convervative_rank(self, rating):
+    """Microsoft's approach: Player ranks are displayed as the conservative estimate of their skill,
+    R = μ − 3 × σ. This is conservative, because the system is 99% sure that the player's skill is
+    actually higher than what is displayed as their rank.
+    """
+    return rating.mu - 3 * rating.sigma
+
+  def get_player_rank(self, user_id):
+    return self.__convervative_rank(self.get_player_skill(user_id))
+
+  def get_player_placement(self, user_id):
+    """The conservative rank placement of user among all other players.
+    """
+    rankings = []
+    for other_user_id in self.__player_skills:
+      rank = self.__convervative_rank(self.__player_skills[other_user_id])
+      rankings.append((user_id, rank))
+
+    # Sort highest rankings at the top.
+    rankings.sort(key=lambda x: x[1], reverse=True)
+
+    placement = 0
+    for (user, rank) in rankings:
+      placement += 1
+      if user == user_id:
+        return placement
+    return placement
+
   def get_team_skill(self, team):
     """ Average all mu values for the total team skill.
     Lower confidence a lot, since we're not sure about this at all.
