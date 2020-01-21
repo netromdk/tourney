@@ -72,7 +72,7 @@ class PlayerSkill:
     rankings = []
     for other_user_id in self.__player_skills:
       rank = self.__convervative_rank(self.__player_skills[other_user_id])
-      rankings.append((user_id, rank))
+      rankings.append((other_user_id, rank))
 
     # Sort highest rankings at the top.
     rankings.sort(key=lambda x: x[1], reverse=True)
