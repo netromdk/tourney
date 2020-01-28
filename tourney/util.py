@@ -2,6 +2,7 @@ from .constants import PRIVILEGED_COMMANDS
 from .config import Config
 from .state import State
 from .scores import Scores
+from .player_skill import PlayerSkill
 
 from datetime import date, datetime
 
@@ -86,6 +87,7 @@ def schedule_text(lookup):
 
   scores = Scores.get()
   played = scores.today()
+  ps = PlayerSkill.get()
 
   def team_str(members):
     return ", ".join([lookup.user_name_by_id(uid) for uid in members])
@@ -101,6 +103,8 @@ def schedule_text(lookup):
     team_b = teams[match[1]]
     team_b_str = team_str(team_b)
     team_b_score = None
+
+    quality = int(ps.get_match_quality([team_a, team_b]) * 100)
 
     # Check if match was already played.
     for pm in played:
@@ -121,5 +125,5 @@ def schedule_text(lookup):
     if team_b_score is not None:
       res += " *({} pts)*".format(team_b_score)
 
-    res += " ({} round{})".format(match[2], plural)
+    res += " ({} round{}, {}% quality)".format(match[2], plural, quality)
   return res
