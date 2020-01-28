@@ -110,7 +110,7 @@ class PlayerSkill:
     mu_ratio = (1.0 / (mu_diff / max(mus)))
     res_skills = []
     for p in team_skills:
-      res_skills.append(Rating(mu=p.mu, sigma=p.sigma + p.sigma * (mu_ratio/max(mus))))
+      res_skills.append(Rating(mu=p.mu, sigma=p.sigma + p.sigma * (mu_ratio / max(mus))))
     return res_skills
 
   def get_match_quality(self, match):
