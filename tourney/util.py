@@ -104,7 +104,7 @@ def schedule_text(lookup):
     team_b_str = team_str(team_b)
     team_b_score = None
 
-    quality = int(ps.get_match_quality([team_a, team_b]) * 100)
+    quality = ps.get_match_quality([team_a, team_b]) * 100.0
 
     # Check if match was already played.
     for pm in played:
@@ -125,5 +125,5 @@ def schedule_text(lookup):
     if team_b_score is not None:
       res += " *({} pts)*".format(team_b_score)
 
-    res += " ({} round{}, {}% quality)".format(match[2], plural, quality)
+    res += " ({} round{}, {:.2f}% quality)".format(match[2], plural, quality)
   return res
