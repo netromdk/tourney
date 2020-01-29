@@ -4,7 +4,7 @@ import subprocess  # nosec
 from time import sleep, time
 from datetime import datetime, date
 from slackclient import SlackClient
-from random import sample
+from random import sample, random
 import calendar
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
@@ -105,10 +105,10 @@ def all_team_combinations(teams):
       for r in all_team_combinations(teams[1:i] + teams[i + 1:]):
         yield [pair] + r
 
-def create_schedule(teams):
+def create_schedule(teams, rand_matches):
   """Takes list of teams to schedule for."""
   matches = []
-  if MATCHMAKING:
+  if not rand_matches:
     player_skill = PlayerSkill.get()
     all_combinations = list(all_team_combinations(list(range(len(teams)))))
     qualities = []
@@ -142,7 +142,14 @@ def create_matches():
   if teams is None:
     response += "No games possible! At least 2 players are required!"
   else:
-    sched = create_schedule(teams)
+    # Whether or not to do matchmaking or random matchups.
+    if not MATCHMAKING:
+      rand_matches = True
+    else:
+      # 50% chance of random. Range is [0.0, 1.0)
+      rand_matches = random() < 0.5  # nosec
+
+    sched = create_schedule(teams, rand_matches)
     unrecorded_matches = []
     for match in sched:
       key = [match[0], match[1]]
@@ -159,6 +166,10 @@ def create_matches():
     state.set_morning_announce(None)
     state.set_dont_remind_users([])
     state.save()
+
+    if rand_matches:
+      response += ":tractor::dash: {} :tractor::dash:\n\n".\
+        format("Today's matchups brought to you by the RANDOM FACTOR TRACTOR")
 
     # Generate response for the channel.
     response += schedule_text(lookup)
