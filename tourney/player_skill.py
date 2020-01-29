@@ -17,7 +17,7 @@ class PlayerSkill:
         print("PlayerSkill file could not load: {}".format(self.file_path()))
         print(ex)
 
-      if len(self.__player_skills) == 0:
+      if len(self.__player_skills) == 0 or len(self.__team_skills) == 0:
         self.calc_player_skills()
 
       PlayerSkill.__instance = self
@@ -37,19 +37,29 @@ class PlayerSkill:
       if "player_skills" in data:
         player_skills = data["player_skills"]
         for pskill in player_skills:
-            self.__player_skills[pskill[0]] = Rating(pskill[1], pskill[2])
+          self.__player_skills[pskill[0]] = Rating(pskill[1], pskill[2])
+      if "team_skills" in data:
+        team_skills = data["team_skills"]
+        for tskill in team_skills:
+          teamstr = tskill[0]
+          team = teamstr.split(',')
+          self.__team_skills[tuple(team)] = Rating(tskill[1], tskill[2])
 
   def save(self):
     player_skills = [[p, ps.mu, ps.sigma] for p, ps in self.__player_skills.items()]
+    team_skills = [[",".join(t), ts.mu, ts.sigma] for t, ts in self.__team_skills.items()]
     data = {
-      "player_skills": player_skills
+      "player_skills": player_skills,
+      "team_skills": team_skills
     }
+
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
     with open(self.file_path(), "w+", encoding="utf-8") as fp:
       json.dump(data, fp, indent=2)
 
   def reset(self):
     self.__player_skills = {}
+    self.__team_skills = {}
 
   def get_player_skill(self, user_id):
     if user_id not in self.__player_skills:
@@ -85,6 +95,12 @@ class PlayerSkill:
     return placement
 
   def get_team_skill(self, team):
+    tteam = tuple(team)
+    if tteam not in self.__team_skills:
+      self.__team_skills[tteam] = Rating()
+    return self.__team_skills[tteam]
+
+  def calc_team_skill(self, team):
     """ Average all mu values for the total team skill.
     Lower confidence a lot, since we're not sure about this at all.
     TODO: How much to lower the confidence?
@@ -104,11 +120,11 @@ class PlayerSkill:
       team_a_skills = [self.get_player_skill(p) for p in team_a]
       team_b_skills = [self.get_player_skill(p) for p in team_b]
       return quality([team_a_skills, team_b_skills])
-
-    # Unmatched teams, aggregate team skill and rate as 1vs1
-    skill_team_a = self.get_team_skill(team_a)
-    skill_team_b = self.get_team_skill(team_b)
-    return quality_1vs1(skill_team_a, skill_team_b)
+    else:
+      # Unmatched teams, aggregate team skill and rate as 1vs1
+      skill_team_a = self.calc_team_skill(team_a)
+      skill_team_b = self.calc_team_skill(team_b)
+      return quality_1vs1(skill_team_a, skill_team_b)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
@@ -116,8 +132,8 @@ class PlayerSkill:
     against the average of the opposing team.
     TODO: Take into account that we might have really low confidence in the team.
     """
-    win_team_skill = self.get_team_skill(win_team)
-    lose_team_skill = self.get_team_skill(lose_team)
+    win_team_skill = self.calc_team_skill(win_team)
+    lose_team_skill = self.calc_team_skill(lose_team)
     new_win_team = []
     new_lose_team = []
     try:
@@ -155,9 +171,23 @@ class PlayerSkill:
             format(win_team_skills, lose_team_skills))
 
   def rate_match(self, win_team, lose_team):
+    # update player ratings
     if len(win_team) == len(lose_team):
-      return self.rate_even_match(win_team, lose_team)
-    return self.rate_uneven_match(win_team, lose_team)
+        self.rate_even_match(win_team, lose_team)
+    else:
+        self.rate_uneven_match(win_team, lose_team)
+
+    #update team ratings
+    win_team_skill = self.get_team_skill(win_team)
+    lose_team_skill = self.get_team_skill(lose_team)
+    try:
+      new_win_team_skill, new_lose_team_skill =\
+        rate_1vs1(win_team_skill, lose_team_skill)
+      self.__team_skills[tuple(win_team)] = new_win_team_skill
+      self.__team_skills[tuple(lose_team)] = new_lose_team_skill
+    except FloatingPointError:
+      print("Skill difference too high: {} vs {}. Ratings not updated".
+            format(win_team_skill, lose_team_skill))
 
   def calc_player_skills(self):
     scores = Scores.get()
