@@ -1,9 +1,10 @@
-from .constants import PRIVILEGED_COMMANDS
+from .constants import PRIVILEGED_COMMANDS, POSITIVE_REACTIONS, NEGATIVE_REACTIONS
 from .config import Config
 from .state import State
 from .scores import Scores
 from .player_skill import PlayerSkill
 
+import re
 from datetime import date, datetime
 
 def fmt_duration(secs, show_ms=False):
@@ -127,3 +128,20 @@ def schedule_text(lookup):
 
     res += " ({} round{}, {:.2f}% quality)".format(match[2], plural, quality)
   return res
+
+def _is_reaction(reaction, positive):
+  """Check if reaction is positive/negative. It expect the reaction to be without the sorrounding
+  ':' but does support skin tones via ':+1::skin-tone-3:' which is passed as '+1::skin-tone-3', for
+  instance."""
+  # Remove "::skin-tone-\\d" such that "+1::skin-tone-2" becomes "+1".
+  reaction = re.sub("::skin-tone-\\d", "", reaction)
+  if positive:
+    return reaction in POSITIVE_REACTIONS
+  else:
+    return reaction in NEGATIVE_REACTIONS
+
+def is_positive_reaction(reaction):
+  return _is_reaction(reaction, True)
+
+def is_negative_reaction(reaction):
+  return _is_reaction(reaction, False)

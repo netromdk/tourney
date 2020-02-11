@@ -13,17 +13,17 @@ from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, Score
 from .state import State
 from .teamnames import Teamnames
 from .lookup import Lookup
-from .constants import DEMO, COMMAND_REGEX, TEAM_NAMES, REACTION_REGEX, POSITIVE_REACTIONS, \
-  NEGATIVE_REACTIONS, MORNING_ANNOUNCE, MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, \
-  REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, \
-  DEBUG, RTM_READ_DELAY, LOAD_TEST, NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING
+from .constants import DEMO, COMMAND_REGEX, TEAM_NAMES, REACTION_REGEX, MORNING_ANNOUNCE, \
+  MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, \
+  MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, DEBUG, RTM_READ_DELAY, LOAD_TEST, \
+  NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING
 from .scores import Scores
 from .player_skill import PlayerSkill
 from .config import Config
 from .stats import Stats
 from .teams import Teams
 from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
-  schedule_text
+  schedule_text, is_positive_reaction, is_negative_reaction
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
@@ -313,13 +313,14 @@ def parse_events(events):
         handle_command(cmd)
         continue
 
-      # Join/leave game via reaction if not already started.
+      # Join/leave game via reaction if not already started. Note: It only matches a message
+      # _starting_ with a reaction!
       m = re.match(REACTION_REGEX, msg)
       if m and not created_teams:
         reaction = m.group(1)
-        if reaction in POSITIVE_REACTIONS:
+        if is_positive_reaction(reaction):
           handle_command_direct("!join", user_id, channel_id)
-        elif reaction in NEGATIVE_REACTIONS:
+        elif is_negative_reaction(reaction):
           handle_command_direct("!leave", user_id, channel_id)
 
     # Handle leaving channel.
@@ -333,8 +334,8 @@ def parse_events(events):
     elif (event_type == "reaction_added" or event_type == "reaction_removed") \
          and not created_teams:
       added = (event_type == "reaction_added")
-      pos = (event["reaction"] in POSITIVE_REACTIONS)
-      neg = (event["reaction"] in NEGATIVE_REACTIONS)
+      pos = is_positive_reaction(event["reaction"])
+      neg = is_negative_reaction(event["reaction"])
       ts = event["item"]["ts"]
       channel = event["item"]["channel"]
       if ts == state.morning_announce() or ts == state.reminder_announce():

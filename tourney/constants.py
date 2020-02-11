@@ -20,7 +20,7 @@ RTM_READ_DELAY = 0.5  # seconds
 RECONNECT_DELAY = 5.0  # seconds
 
 COMMAND_REGEX = "!(\\w+)\\s*(.*)"
-REACTION_REGEX = ":(.+):"
+REACTION_REGEX = ":(.+?):"  # non-greedy
 SCORE_ARGS_REGEX = "(T\\d+)\\s+(\\d+)\\s+(T\\d+)\\s+(\\d+)"
 WIN_ARGS_REGEX = "(\\d+)\\s+(\\d+)"
 
