@@ -42,23 +42,37 @@ NIGHT_CLEARING_DELTA = timedelta(minutes=59)
 
 POSITIVE_REACTIONS = [
   "+1",
-  "the_horns",
+  "confetti_ball",
+  "dance",
+  "fire",
+  "heavy_plus_sign",
+  "ks",
+  "man-gesturing-ok",
+  "man-raising-hand",
   "metal",
-  "raised_hands",
   "ok",
   "ok_hand",
-  "fire",
+  "party_parrot",
+  "raised_hands",
+  "raising_hand",
+  "soccer",
   "tada",
-  "confetti_ball",
-  "man-gesturing-ok",
-  "woman-gesturing-ok"
+  "the_horns",
+  "thumbsup_all",
+  "woman-gesturing-ok",
+  "woman-raising-hand",
 ]
 
 NEGATIVE_REACTIONS = [
   "-1",
-  "middle_finger",
+  "heavy_minus_sign",
   "man-gesturing-no",
-  "woman-gesturing-no"
+  "middle_finger",
+  "no_entry",
+  "no_entry_sign",
+  "see_no_evil",
+  "stahp",
+  "woman-gesturing-no",
 ]
 
 PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate", "speak"]
