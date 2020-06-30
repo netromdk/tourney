@@ -3,6 +3,7 @@ import json
 from calendar import monthrange
 from datetime import datetime, timedelta
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.dates import date2num
