@@ -115,8 +115,9 @@ def create_schedule(teams, rand_matches):
     for c in all_combinations:
       quality = 1.0
       for m in c:
-        quality = min(quality,
-                      player_skill.get_match_quality([teams[t] for t in m]))
+        lst = [teams[t] for t in m if t in teams]
+        if len(lst) == len(m):
+          quality = min(quality, player_skill.get_match_quality(lst))
       qualities.append(quality)
 
     best_index = qualities.index(max(qualities))
