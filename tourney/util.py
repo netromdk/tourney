@@ -94,6 +94,7 @@ def schedule_text(lookup):
     return ", ".join([lookup.user_name_by_id(uid) for uid in members])
 
   res = "Schedule:"
+  previous_played = False
   for match in sched:
     plural = "s" if match[2] > 1 else ""
     name_a = names[match[0]]
@@ -108,6 +109,7 @@ def schedule_text(lookup):
     quality = ps.get_match_quality([team_a, team_b]) * 100.0
 
     # Check if match was already played.
+    is_played = False
     for pm in played:
       if (pm[1] == team_a or pm[1] == team_b) and (pm[3] == team_a or pm[3] == team_b):
         if pm[1] == team_a:
@@ -116,9 +118,19 @@ def schedule_text(lookup):
         else:
           team_a_score = pm[4]
           team_b_score = pm[2]
+        is_played = True
         break
 
-    res += "\n\t[T{}] *{}*: {}".format(match[0], name_a, team_a_str)
+    res += "\n\t"
+
+    if is_played:
+      res += ":heavy_check_mark:"
+    elif previous_played:
+      res += ":soon:"
+    else:
+      res += ":hourglass_flowing_sand:"
+
+    res += " [T{}] *{}*: {}".format(match[0], name_a, team_a_str)
     if team_a_score is not None:
       res += " *({} pts)*".format(team_a_score)
 
@@ -127,6 +139,8 @@ def schedule_text(lookup):
       res += " *({} pts)*".format(team_b_score)
 
     res += " ({} round{}, {:.2f}% quality)".format(match[2], plural, quality)
+
+    previous_played = is_played
   return res
 
 def _is_reaction(reaction, positive):
