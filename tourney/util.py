@@ -135,14 +135,16 @@ def schedule_text(lookup, mention_next=False):
     else:
       res += ":hourglass_flowing_sand:"
 
-    res += " [T{}] *{}*: {}".format(match[0], name_a, team_a_str)
-    if team_a_score is not None:
-      res += " *({} pts)*".format(team_a_score)
+    def output_block(team_num, team_name, team_members, team_score, opp_score):
+      res = " [T{}] *{}*: {}".format(team_num, team_name, team_members)
+      if team_score is not None:
+        winner_text = " :sports_medal:" if team_score > opp_score else ""
+        res += " *({} pts{})*".format(team_score, winner_text)
+      return res
 
-    res += " vs. [T{}] *{}*: {}".format(match[1], name_b, team_b_str)
-    if team_b_score is not None:
-      res += " *({} pts)*".format(team_b_score)
-
+    block_a = output_block(match[0], name_a, team_a_str, team_a_score, team_b_score)
+    block_b = output_block(match[1], name_b, team_b_str, team_b_score, team_a_score)
+    res += "{} vs. {}".format(block_a, block_b)
     res += " ({} round{}, {:.2f}% quality)".format(match[2], plural, quality)
 
     previous_played = is_played
