@@ -7,6 +7,7 @@ from tourney.scores import Scores
 from tourney.player_skill import PlayerSkill
 from tourney.constants import WIN_ARGS_REGEX
 from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
+from tourney.util import schedule_text
 
 class WinLoseCommand(Command):
   def __init__(self, name):
@@ -94,8 +95,7 @@ class WinLoseCommand(Command):
             # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
-            for [t0, t1] in unrecorded_matches:
-              response += "\n\t[T{}] *{}* vs. [T{}] *{}*".format(t0, names[t0], t1, names[t1])
+            response += "\n{}".format(schedule_text(lookup, True))
         elif len(myMatches) > 1:
           response = "You appear in multiple matches. Please use explicit scoring with !score."
         else:

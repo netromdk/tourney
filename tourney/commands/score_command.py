@@ -7,6 +7,7 @@ from tourney.constants import SCORE_ARGS_REGEX
 from tourney.scores import Scores
 from tourney.player_skill import PlayerSkill
 from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
+from tourney.util import schedule_text
 
 class ScoreCommand(Command):
   def __init__(self):
@@ -88,8 +89,7 @@ class ScoreCommand(Command):
             # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
-            for [t0, t1] in unrecorded_matches:
-              response += "\n\t[T{}] *{}* vs. [T{}] *{}*".format(t0, names[t0], t1, names[t1])
+            response += "\n{}".format(schedule_text(lookup, True))
         else:
           response = "Only players of a match can report the score!"
       else:

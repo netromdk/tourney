@@ -77,7 +77,7 @@ def to_ordinal(number):
     suffix = '{}th'
   return suffix.format(number)
 
-def schedule_text(lookup):
+def schedule_text(lookup, mention_next=False):
   state = State.get()
   sched = state.schedule()
   teams = state.teams()
@@ -90,8 +90,11 @@ def schedule_text(lookup):
   played = scores.today()
   ps = PlayerSkill.get()
 
-  def team_str(members):
-    return ", ".join([lookup.user_name_by_id(uid) for uid in members])
+  def team_str(members, mention=False):
+    if mention:
+      return ", ".join(["<@{}>".format(uid) for uid in members])
+    else:
+      return ", ".join([lookup.user_name_by_id(uid) for uid in members])
 
   res = "Schedule:"
   previous_played = False
@@ -99,11 +102,9 @@ def schedule_text(lookup):
     plural = "s" if match[2] > 1 else ""
     name_a = names[match[0]]
     team_a = teams[match[0]]
-    team_a_str = team_str(team_a)
     team_a_score = None
     name_b = names[match[1]]
     team_b = teams[match[1]]
-    team_b_str = team_str(team_b)
     team_b_score = None
 
     quality = ps.get_match_quality([team_a, team_b]) * 100.0
@@ -120,6 +121,10 @@ def schedule_text(lookup):
           team_b_score = pm[2]
         is_played = True
         break
+
+    mention = mention_next and not is_played and previous_played
+    team_a_str = team_str(team_a, mention)
+    team_b_str = team_str(team_b, mention)
 
     res += "\n\t"
 
