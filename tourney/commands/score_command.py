@@ -85,11 +85,9 @@ class ScoreCommand(Command):
           rem = len(unrecorded_matches)
           if rem == 0:
             response += "\nNo more matches left to record!"
-            # TODO: Handle this!
-            # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
-            response += "\n{}".format(schedule_text(lookup, True))
+          response += "\n{}".format(schedule_text(lookup, True))
         else:
           response = "Only players of a match can report the score!"
       else:

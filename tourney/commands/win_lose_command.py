@@ -91,11 +91,9 @@ class WinLoseCommand(Command):
           rem = len(unrecorded_matches)
           if rem == 0:
             response += "\nNo more matches left to record!"
-            # TODO: Handle this!
-            # handle_command(Command(user_id, "stats"))
           else:
             response += "\n{} matches left to record!".format(rem)
-            response += "\n{}".format(schedule_text(lookup, True))
+          response += "\n{}".format(schedule_text(lookup, True))
         elif len(myMatches) > 1:
           response = "You appear in multiple matches. Please use explicit scoring with !score."
         else:
