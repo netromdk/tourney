@@ -82,7 +82,13 @@ NEGATIVE_REACTIONS = [
   "x",
 ]
 
-PRIVILEGED_COMMANDS = ["undoteams", "generate", "autoupdate", "speak"]
+PRIVILEGED_COMMANDS = [
+  "autoupdate",
+  "generate",
+  "speak",
+  "startseason",
+  "undoteams",
+]
 
 TEAM_NAMES = [
   "Air Farce",
