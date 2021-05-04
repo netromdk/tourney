@@ -200,6 +200,48 @@ def autoupdate():
   subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec
   exit(0)
 
+def start_season():
+  state = State.get()
+  channel_id = state.channel_id()
+  month = calendar.month_name[datetime.today().month]
+
+  season_start_text = ":stadium: *{} season starts today!*\n".format(month)
+  season_start_text += ":trophy: Previous season achievements have been calculated.\n"
+  season_start_text += ":bar_chart: Stats and leaderboards shown with `!stats` will only " \
+    "include the current season.\n"
+  season_start_text += ":globe_with_meridians: Use `!allstats` for full statistics.\n"
+
+  stats = Stats.get()
+  stats.generate()
+  players = stats.get_personals()
+  achievements = Achievements.get()
+  for p in players:
+    achievements.interact(SeasonStartBehavior(p))
+
+  client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
+  # TODO: Display fun facts about the season
+  scores = Scores.get()
+  winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1),
+                                                lookup=lookup)
+  if winrate_plot is None:
+    client.api_call("chat.postMessage", channel=[channel_id], text="Not enough season data!")
+  else:
+    try:
+      with open(winrate_plot, mode="rb") as file_content:
+        client.api_call(
+          "files.upload",
+          channels=channel_id,
+          file=file_content,
+          initial_comment="Win percentage progression for the previous season",
+          title="Season win progression"
+        )
+    except IOError as e:
+      response = "Could not open generated winchart"
+      client.api_call("chat.postMessage", channel=[channel_id], text=response)
+      print("I/O error({0}): {1}".format(e.errno, e.strerror))
+
+  state.save()
+
 def parse_command(event):
   msg = event["text"].strip()
   user_id = event["user"]
@@ -280,6 +322,8 @@ def parse_command(event):
       autoupdate()
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
+    elif command == "startseason":
+      start_season()
 
   # Only send ephemeral message if command hasn't been parsed into a command instance because
   # `handle_command()` will do it otherwise.
@@ -422,36 +466,7 @@ def scheduled_actions():
     # First of the month (or closest monday) announcement for season reset
     month = calendar.month_name[datetime.today().month]
     if now.day == 1 or (now.weekday() == 0 and now.day <= 3):
-      season_start_text = ":stadium: *{} season starts today!*\n".format(month)
-      season_start_text += ":trophy: Previous season achievements have been calculated.\n"
-      season_start_text += ":bar_chart: Stats and leaderboards shown with `!stats` will only " \
-        "include the current season.\n"
-      season_start_text += ":globe_with_meridians: Use `!allstats` for full statistics.\n"
-
-      stats = Stats.get()
-      stats.generate()
-      players = stats.get_personals()
-      for p in players:
-        achievements.interact(SeasonStartBehavior(p))
-
-      client.api_call("chat.postMessage", channel=channel_id, text=season_start_text)
-      # TODO: Display fun facts about the season
-      scores = Scores.get()
-      winrate_plot = scores.get_season_winrate_plot(time_filter=nth_last_season_filter(1),
-                                                    lookup=lookup)
-      try:
-        with open(winrate_plot, mode="rb") as file_content:
-          client.api_call(
-            "files.upload",
-            channels=channel_id,
-            file=file_content,
-            initial_comment="Win percentage progression for the previous season",
-            title="Season win progression"
-          )
-      except IOError as e:
-        response = "Could not open generated winchart"
-        client.api_call("chat.postMessage", channel=[channel_id], text=response)
-        print("I/O error({0}): {1}".format(e.errno, e.strerror))
+      start_season()
 
     # Last of the month (or closest friday) warning for season reset
     month_range = calendar.monthrange(now.year, now.month)

@@ -27,6 +27,7 @@ As the foosball bot, I accept the following commands:
   `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
   `!generate` - Generate teams and matches from players joined. (*privileged!*)
   `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
+  `!startseason` - Starts a new season. (*privileged!*)
 
 Positive reactions: {}
 Negative reactions: {}
