@@ -128,6 +128,10 @@ class Scores:
         winrates.append(result[1] / (i + 1))
       p_winrates[p] = (dates, winrates)
 
+    # Stop if we don't have any win rates.
+    if len(p_winrates) == 0:
+      return None
+
     # Sort by final win percentage to mark the top 5
     p_sorted = sorted(p_winrates.keys(), key=lambda p: p_winrates[p][1][-1])
     p_sorted.reverse()

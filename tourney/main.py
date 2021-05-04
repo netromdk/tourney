@@ -300,19 +300,22 @@ def parse_command(event):
     # TODO: DM personalized wincharts
     winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter,
                                                   lookup=lookup)
-    try:
-      with open(winrate_plot, mode="rb") as file_content:
-        client.api_call(
-          "files.upload",
-          channels=channel,
-          file=file_content,
-          initial_comment="Win percentage progression for the current season",
-          title="Season win progression"
-        )
-    except IOError as e:
-      response = "Could not open generated winchart"
-      client.api_call("chat.postMessage", channel=channel, text=response)
-      print("I/O error({0}): {1}".format(e.errno, e.strerror))
+    if winrate_plot is None:
+      client.api_call("chat.postMessage", channel=channel, text="Not enough season data!")
+    else:
+      try:
+        with open(winrate_plot, mode="rb") as file_content:
+          client.api_call(
+            "files.upload",
+            channels=channel,
+            file=file_content,
+            initial_comment="Win percentage progression for the current season",
+            title="Season win progression"
+          )
+      except IOError as e:
+        response = "Could not open generated winchart"
+        client.api_call("chat.postMessage", channel=channel, text=response)
+        print("I/O error({0}): {1}".format(e.errno, e.strerror))
 
   # Special command handling.
   if command_allowed(command, user_id):
