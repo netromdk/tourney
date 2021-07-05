@@ -335,10 +335,14 @@ You have been in {} teams: {}
   def __fmt_top(self, lst, top_range, lookup):
     """Expects that `self.__personal` has already been filled!"""
     res = ""
+
+    req_plays = max([p["total_matches"] for p in self.__personal.values()]) / 4
+    qualifying_lst = [p for p in lst if self.__personal[p[0]]["total_matches"] >= req_plays]
+
     for index in top_range:
-      if index >= len(lst):
+      if index >= len(qualifying_lst):
         break
-      player = lst[index]
+      player = qualifying_lst[index]
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
       rounds = self.__personal[player[0]]["total_rounds"]

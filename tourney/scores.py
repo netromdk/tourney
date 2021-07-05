@@ -93,6 +93,17 @@ class Scores:
 
     monthscores.sort(key=lambda x: x[0])
 
+    # Get the highest number of matches a single person has played
+    playcount = {}
+    for score in monthscores:
+      team1 = score[1]
+      team2 = score[3]
+      for p in team1 + team2:
+        playcount[p] = playcount.setdefault(p,0) + 1
+
+    # required number of plays to figure in the graph
+    req_plays = max(playcount.values()) / 4
+
     # Collect playername -> [(date, wins)]
     for score in monthscores:
       date = datetime.fromtimestamp(score[0])
@@ -119,11 +130,13 @@ class Scores:
 
     # Get playername -> [(sortable datestamps, win percentages)] for plotting
     p_winrates = {}
-    for p in pwins:
+    for p, wins in pwins.items():
+      if playcount[p] < req_plays:
+        continue
       dates = []
       winrates = []
-      for i in range(len(pwins[p])):
-        result = pwins[p][i]
+      for i in range(len(wins)):
+        result = wins[i]
         dates.append(date2num(result[0]))
         winrates.append(result[1] / (i + 1))
       p_winrates[p] = (dates, winrates)
