@@ -337,7 +337,7 @@ You have been in {} teams: {}
     res = ""
 
     req_plays = max([p["total_matches"] for p in self.__personal.values()]) / 4
-    qualifying_lst = [p for p in lst if self.__personal[p[0]]["total_matches"] > req_plays]
+    qualifying_lst = [p for p in lst if self.__personal[p[0]]["total_matches"] >= req_plays]
 
     for index in top_range:
       if index >= len(qualifying_lst):
