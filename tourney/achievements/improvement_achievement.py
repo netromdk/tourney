@@ -19,25 +19,26 @@ class SelfImprovementAchievement(TieredAchievement):
   def update(self, behavior):
     user_id = behavior.user_id()
     self.check_init(user_id)
-    if not self.data[user_id][0]:
-      stats = Stats.get()
 
-      stats.generate(time_filter=nth_last_season_filter(1))
-      placement = stats.local_placement(user_id)
-      if placement is None:
-        return False
+    stats = Stats.get()
 
-      stats.generate(time_filter=nth_last_season_filter(2))
-      placement_prev = stats.local_placement(user_id)
-      if placement_prev is None:
-        return False
+    stats.generate(time_filter=nth_last_season_filter(1))
+    placement = stats.local_placement(user_id)
+    if placement is None:
+      return False
 
-      # Check if placement is better (smaller).
-      if placement < placement_prev:
-        self.data[user_id][0] += 1
-        amount = self.data[user_id][0]
-        nt = self.next_tier(user_id)
-        if amount == nt:
-          self.data[user_id][1] += 1
-          return True
+    stats.generate(time_filter=nth_last_season_filter(2))
+    placement_prev = stats.local_placement(user_id)
+    if placement_prev is None:
+      return False
+
+    # Check if placement is better (smaller).
+    if placement < placement_prev:
+      self.inc_progress(user_id)
+      amount = self.progress(user_id)
+      nt = self.next_tier(user_id)
+      if amount == nt:
+        self.next_tier(user_id)
+        return True
+
     return False
