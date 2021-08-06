@@ -80,7 +80,7 @@ NEGATIVE_REACTIONS = [
   "heavy_minus_sign",
   "man-gesturing-no",
   "negative_squared_cross_mark",
-  "no_bell"
+  "no_bell",
   "no_entry",
   "no_entry_sign",
   "see_no_evil",
