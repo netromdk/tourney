@@ -42,13 +42,18 @@ NIGHT_CLEARING_DELTA = timedelta(minutes=59)
 
 POSITIVE_REACTIONS = [
   "+1",
+  "accept",
   "arrow_forward",
   "ballot_box_with_check",
+  "boom",
+  "chaos",
   "confetti_ball",
   "dance",
   "fire",
   "heavy_check_mark",
   "heavy_plus_sign",
+  "here",
+  "keyvr",
   "ks",
   "man-gesturing-ok",
   "man-raising-hand",
@@ -56,6 +61,7 @@ POSITIVE_REACTIONS = [
   "ok",
   "ok_hand",
   "party_parrot",
+  "pirate_flag",
   "raised_hands",
   "raising_hand",
   "soccer",
@@ -69,11 +75,12 @@ POSITIVE_REACTIONS = [
 
 NEGATIVE_REACTIONS = [
   "-1",
+  "away",
   "black_square_for_stop",
   "heavy_minus_sign",
   "man-gesturing-no",
-  "middle_finger",
   "negative_squared_cross_mark",
+  "no_bell"
   "no_entry",
   "no_entry_sign",
   "see_no_evil",
