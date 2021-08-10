@@ -97,7 +97,8 @@ class PlayerSkill:
   def get_team_skill(self, team):
     tteam = tuple(team)
     if tteam not in self.__team_skills:
-      self.__team_skills[tteam] = Rating()
+      # A decent starting guess is probably the average team skill
+      self.__team_skills[tteam] = self.calc_team_skill(team)
     return self.__team_skills[tteam]
 
   def calc_team_skill(self, team):
@@ -117,9 +118,16 @@ class PlayerSkill:
     team_a, team_b = match[0], match[1]
     # Two teams in one match, number of rounds ignored
     if len(match[0]) == len(match[1]):
-      team_a_skills = [self.get_player_skill(p) for p in team_a]
-      team_b_skills = [self.get_player_skill(p) for p in team_b]
-      return quality([team_a_skills, team_b_skills])
+      if tuple(team_a) in self.__team_skills:
+        team_a_skill = [self.get_team_skill(team_a)]
+      else:
+        team_a_skill = [self.get_player_skill(p) for p in team_a]
+
+      if tuple(team_b) in self.__team_skills:
+        team_b_skill = [self.get_team_skill(team_b)]
+      else:
+        team_b_skill = [self.get_player_skill(p) for p in team_b]
+      return quality([team_a_skill, team_b_skill])
     else:
       # Unmatched teams, aggregate team skill and rate as 1vs1
       skill_team_a = self.calc_team_skill(team_a)
