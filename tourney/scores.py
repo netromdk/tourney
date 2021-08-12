@@ -99,7 +99,7 @@ class Scores:
       team1 = score[1]
       team2 = score[3]
       for p in team1 + team2:
-        playcount[p] = playcount.setdefault(p,0) + 1
+        playcount[p] = playcount.setdefault(p, 0) + 1
 
     # required number of plays to figure in the graph
     req_plays = max(playcount.values()) / 4
