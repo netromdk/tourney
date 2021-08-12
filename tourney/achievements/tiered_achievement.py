@@ -22,6 +22,10 @@ class TieredAchievement(Achievement):
     self.check_init(user_id)
     return self.data[user_id][0]
 
+  def inc_progress(self, user_id):
+    self.check_init(user_id)
+    self.data[user_id][0] += 1
+
   def next_tier(self, user_id):
     self.check_init(user_id)
     tier = self.data[user_id][1]
