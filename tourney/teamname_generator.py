@@ -49,6 +49,7 @@ TEAM_NAME_DECORATIONS = [
     lambda x: "{} Stranding".format(x),
     lambda x: "{} 2: Son of {}".format(x, x),
     lambda x: "Bride of {}".format(x),
+    lambda x: "Game of {}".format(x),
     lambda x: "\"{}\"".format(x),
     lambda x: x.upper(),
     lambda x: x[::2],
@@ -66,8 +67,19 @@ TEAM_NAME_PARTS = {
         "Kicker",
         "Flamingo",
         "Team",
+        "Gang",
+        "Club",
         "Mafia",
         "Pint",
+        "Player",
+        "Game",
+        "Group",
+        "Trio",
+        "Duo",
+        "Legion",
+        "Amigo",
+        "Hurricane",
+        "Chaos",
         "Disaster",
         "Cobra",
         "Squirrel",
@@ -91,16 +103,25 @@ TEAM_NAME_PARTS = {
         ("Couch", "Couches"),
         ("Ducky","Duckies"),
         "Bride",
-        "Son"
+        "Groom",
+        "Daughter",
+        "Spider",
+        "Dracula",
+        "Frankenstein",
+        "Godzilla",
+        "Dragon",
+        "Thunder",
+        "Football",
+        "Shoe",
+        "Winner",
+        "Loser"
     ],
     "adjective" : [
         "Tenacious",
         "Flaming",
         "Ordinary",
-        "Thunder",
         "Smart",
         "Fantastic",
-        "Fire Breaking",
         "Raging",
         "Designated",
         "Glorious",
@@ -109,8 +130,31 @@ TEAM_NAME_PARTS = {
         "Blessed",
         "Cursed",
         "Punished",
-        "Shin",
-        "Stranding",
+        "Random",
+        "Extraordinary",
+        "Bloody",
+        "Skilled",
+        "Amazing",
+        "Super",
+        "Bad",
+        "Evil",
+        "Good",
+        "Neutral",
+        "Lawful",
+        "Chaotic",
+        "Undead",
+        "Zombie",
+        "Vampire",
+        "Electric",
+        "Eclectic",
+        "Eccentric",
+        "Indominable",
+        "Sideways",
+        "Upside-down",
+        "Underrated",
+        "Overrated",
+        "Dependable",
+        "Unpredictable"
     ],
 }
 
@@ -140,7 +184,7 @@ def adj():
 
 TEAM_NAME_FORMS = [
     lambda: "The {} {}".format(adj(), noun(p=True)), # The Flaming Flamingos
-    lambda: "{}{}".format(adj(), noun(p=True).lower()), # Thunderpants
+    lambda: "{}{}".format(noun(), noun(p=True).lower()), # Thunderpants
     lambda: "{} {}".format(*nouns(n=2)), # Monkey Python
     lambda: "{} {} {}".format(*(adjs(n=2)+nouns())) # Tenacious Raging Bells
 ]
@@ -151,12 +195,12 @@ def generate_teamnames(nteams):
 
 def generate_teamname():
     r = random()
-    if r < 0.01:
+    if r < 0.1:
         return choice(TEAM_NAMES)
     elif r < 0.9:
         return choice(TEAM_NAME_FORMS)()
     else:
-        return choice(TEAM_NAME_DECORATIONS)(generate_teamname())
+        return decorate_teamname(generate_teamname())
 
-for t in generate_teamnames(100):
-    print(t)
+def decorate_teamname(name):
+    return choice(TEAM_NAME_DECORATIONS)(name)
