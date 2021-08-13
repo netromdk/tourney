@@ -159,7 +159,7 @@ TEAM_NAME_PARTS = {
 }
 
 def nouns(n=1, p=False):
-    nnouns = sample(TEAM_NAME_PARTS["noun"],n)
+    nnouns = sample(TEAM_NAME_PARTS["noun"],n)   # nosec
     pnouns = []
     for noun in nnouns:
         pnoun = noun
@@ -177,7 +177,7 @@ def noun(p=False):
     return nouns(n=1, p=p)[0]
 
 def adjs(n=1):
-    return sample(TEAM_NAME_PARTS["adjective"],n)
+    return sample(TEAM_NAME_PARTS["adjective"],n)   # nosec
 
 def adj():
     return adjs(n=1)[0]
@@ -196,11 +196,11 @@ def generate_teamnames(nteams):
 def generate_teamname():
     r = random()
     if r < 0.1:
-        return choice(TEAM_NAMES)
+        return choice(TEAM_NAMES)   # nosec
     elif r < 0.9:
-        return choice(TEAM_NAME_FORMS)()
+        return choice(TEAM_NAME_FORMS)()   # nosec
     else:
         return decorate_teamname(generate_teamname())
 
 def decorate_teamname(name):
-    return choice(TEAM_NAME_DECORATIONS)(name)
+    return choice(TEAM_NAME_DECORATIONS)(name)   # nosec

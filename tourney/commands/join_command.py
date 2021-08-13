@@ -1,5 +1,5 @@
 from .command import Command
-from tourney.constants import TEAM_NAME_DECORATIONS
+from tourney.teamname_generator import decorate_teamname
 from random import choice
 
 from tourney.scores import Scores
@@ -39,7 +39,7 @@ class JoinCommand(Command):
           team_name = team_names[new_team_index]
 
           new_team.append(self.user_id())
-          new_team_name = choice(TEAM_NAME_DECORATIONS)(team_name)  # nosec
+          new_team_name = decorate_teamname(team_name)
 
           teams[new_team_index] = new_team
           team_names[new_team_index] = new_team_name
