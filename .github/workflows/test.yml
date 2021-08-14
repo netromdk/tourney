@@ -1,0 +1,58 @@
+name: Test
+
+# On all pushes to branches and pull requests in general.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [3.9, 3.6, 3.7, 3.8]
+
+        # Currently not running on Windows because matplotlib yields errors.
+        os: [macos-latest, ubuntu-latest]
+
+        # Choose test script depending on OS.
+        include:
+          - os: ubuntu-latest
+            test_script_name: ./.github/workflows/test.sh
+          - os: macos-latest
+            test_script_name: ./.github/workflows/test.sh
+
+        # Only test on macOS with Python 3.9.
+        exclude:
+          - os: macos-latest
+            python-version: 3.6
+          - os: macos-latest
+            python-version: 3.7
+          - os: macos-latest
+            python-version: 3.8
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - uses: actions/cache@v2
+      if: startsWith(matrix.os, 'ubuntu-latest')
+      with:
+        path: ~/.cache/pip
+        key: ${{ matrix.os }}-pip-${{ hashFiles('**/.*-requirements.txt') }}
+        restore-keys: |
+          ${{ matrix.os }}-pip-
+
+    - uses: actions/cache@v2
+      if: startsWith(matrix.os, 'macos-latest')
+      with:
+        path: ~/Library/Caches/pip
+        key: ${{ matrix.os }}-pip-${{ hashFiles('**/.*-requirements.txt') }}
+        restore-keys: |
+          ${{ matrix.os }}-pip-
+
+    - name: Test and Check
+      run: ${{ matrix.test_script_name }}
