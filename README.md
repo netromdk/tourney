@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/netromdk/tourney.svg?branch=master)](https://travis-ci.org/netromdk/tourney)
+[![Test](https://github.com/netromdk/tourney/workflows/Test/badge.svg?branch=master)](https://github.com/netromdk/tourney/actions)
 
 # tourney
 Slack general match generator bot 
