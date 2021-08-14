@@ -1,6 +1,5 @@
 from .command import Command
 from tourney.teamname_generator import decorate_teamname
-from random import choice
 
 from tourney.state import State
 from tourney.achievements import Achievements, LeaveBehavior

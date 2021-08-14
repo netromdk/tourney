@@ -4,7 +4,7 @@ import subprocess  # nosec
 from time import sleep, time
 from datetime import datetime, date
 from slackclient import SlackClient
-from random import sample, random
+from random import random
 import calendar
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
