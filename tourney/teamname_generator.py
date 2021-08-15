@@ -31,6 +31,18 @@ TEAM_NAMES = [
   "Thunderpants",
 ]
 
+def simpleleet(s):
+  return s.lower().\
+    replace("a", "4").\
+    replace("b", "8").\
+    replace("e", "3").\
+    replace("f", "ph").\
+    replace("k", "x").\
+    replace("l", "1").\
+    replace("o", "0").\
+    replace("s", "5").\
+    replace("t", "7")
+
 TEAM_NAME_DECORATIONS = [
   lambda x: "{} of Doom".format(x),
   lambda x: "{} +1".format(x),
@@ -68,6 +80,8 @@ TEAM_NAME_DECORATIONS = [
   lambda x: x[::-1].lower().title(),
   lambda x: "I Can't Believe It's Not {}".format(x),
   lambda x: "".join([c if c.lower() not in "aeiouyæøå" else 'o' for c in x]),
+  lambda x: "".join([choice([c.lower(), c.upper()]) for c in x]),  # nosec
+  lambda x: simpleleet(x),
 ]
 
 TEAM_NAME_PARTS = {
