@@ -78,7 +78,6 @@ TEAM_NAME_PARTS = {
     "Bell",
     "Bride",
     "Brigade",
-    "Chaos",
     "Club",
     "Cobra",
     "Compiler",
@@ -86,12 +85,10 @@ TEAM_NAME_PARTS = {
     "Cyborg",
     "Daughter",
     "Disaster",
-    "Doom",
     "Dracula",
     "Dragon",
     "Drifter",
     "Drinker",
-    "Duo",
     "Dynamo",
     "Flamingo",
     "Football",
@@ -147,7 +144,6 @@ TEAM_NAME_PARTS = {
     "Swashbuckler",
     "Team",
     "Terminator",
-    "Thunder",
     "Trio",
     "Turtle",
     "Uniform",
@@ -159,9 +155,13 @@ TEAM_NAME_PARTS = {
     "Winner",
     "Wizard",
     "Wonder",
+    ("Chaos", None),
     ("Cherry", "Cherries"),
     ("Couch", "Couches"),
+    ("Doom", None),
     ("Ducky", "Duckies"),
+    ("Duo", None),
+    ("Thunder", None),
     (None, "Pants"),
   ],
   "adjective": [
@@ -292,7 +292,10 @@ def nouns(n=1, p=False):
   for noun in nnouns:
     pnoun = noun
     if type(noun) is tuple:
-      if p or noun[0] is None:
+      # Some nouns do not have a plural form, and adding "s" is incorrect.
+      if noun[0] is not None and noun[1] is None:
+        pnoun = noun[0]
+      elif p or noun[0] is None:
         pnoun = noun[1]
       else:
         pnoun = noun[0]
