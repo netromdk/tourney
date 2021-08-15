@@ -317,7 +317,7 @@ TEAM_NAME_FORMS = [
   lambda: "The {} {}".format(adj(), noun(p=True)),  # The Flaming Flamingos
   lambda: "{}{}".format(noun(), noun(p=True).lower()),  # Thunderpants
   lambda: "{} {}".format(*nouns(n=2)),  # Monkey Python
-  lambda: "{} {} {}".format(*(adjs(n=2) + nouns()))  # Tenacious Raging Bells
+  lambda: "{} {} {}".format(*(adjs(n=2) + nouns(p=True)))  # Tenacious Raging Bells
 ]
 
 def generate_teamnames(nteams):
