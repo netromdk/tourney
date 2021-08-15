@@ -318,17 +318,16 @@ TEAM_NAME_FORMS = [
 ]
 
 def generate_teamnames(nteams):
-  teamnames = [generate_teamname() for i in range(nteams)]
-  return teamnames
+  return [generate_teamname() for i in range(nteams)]
 
 def generate_teamname():
   r = random()  # nosec
   if r < 0.1:
-    return choice(TEAM_NAMES)   # nosec
+    return choice(TEAM_NAMES)  # nosec
   elif r < 0.9:
-    return choice(TEAM_NAME_FORMS)()   # nosec
+    return choice(TEAM_NAME_FORMS)()  # nosec
   else:
     return decorate_teamname(generate_teamname())
 
 def decorate_teamname(name):
-  return choice(TEAM_NAME_DECORATIONS)(name)   # nosec
+  return choice(TEAM_NAME_DECORATIONS)(name)  # nosec
