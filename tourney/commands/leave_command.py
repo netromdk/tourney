@@ -1,6 +1,5 @@
 from .command import Command
-from tourney.constants import TEAM_NAME_DECORATIONS
-from random import choice
+from tourney.teamname_generator import decorate_teamname
 
 from tourney.state import State
 from tourney.achievements import Achievements, LeaveBehavior
@@ -34,7 +33,7 @@ class LeaveCommand(Command):
           team_index = teams.index(team)
           team_name = team_names[team_index]
           if len(team) > 1:
-            new_team_name = choice(TEAM_NAME_DECORATIONS)(team_name)  # nosec
+            new_team_name = decorate_teamname(team_name)
             team_names[team_index] = new_team_name
             new_team = [p for p in team if p != user_id]
             new_teams.append(new_team)
