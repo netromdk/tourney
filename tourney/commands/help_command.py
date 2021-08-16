@@ -23,7 +23,8 @@ As the foosball bot, I accept the following commands:
   `!allstats` - Prints general statistics of all games.
   `!mystats` - Prints statistics of all games about invoker.
   `!achievements` - Prints achievements progress for invoker.
-  `!teamname` - Set a teamname for the team you are in today. Example: `!teamname Example Name`
+  `!teamname` - Set a teamname for your team. Call without argument to claim current name.
+                Example: `!teamname Example Name`
   `!undoteams` - Undoes teams and matches and restores as players joined. (*privileged!*)
   `!generate` - Generate teams and matches from players joined. (*privileged!*)
   `!autoupdate` - Updates project git repo and restarts bot. (*privileged!*)
