@@ -41,16 +41,18 @@ class TeamnameCommand(Command):
 
     teamname = self.args()
 
-    if len(teamname) == 0:
-      response = "Please provide a new team name, e.g. \"!teamname Example Team Name\""
-      return response
-
     my_team = my_teams[0]
     team_idx = current_teams.index(my_team)
 
+    if len(teamname) == 0:
+      # Claiming current teamname
+      teamname = current_teamnames[team_idx]
+
+    # Saving chosen name for the team
     teamnames.add(my_team, teamname)
     teamnames.save()
 
+    # Updating state
     current_teamnames[team_idx] = teamname
     state.set_team_names(current_teamnames)
     state.save()
