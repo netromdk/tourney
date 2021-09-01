@@ -5,6 +5,7 @@ from datetime import datetime
 from .constants import DATA_PATH, MEDAL_LIST
 from .scores import Scores
 from .util import fmt_duration, to_ordinal
+from .player_skill import PlayerSkill
 
 class Stats:
   __instance = None
@@ -133,7 +134,7 @@ class Stats:
         player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
 
       # Substitute all team wins with the ratio of winning compared to rounds played.
-      teams = {team:(scores[0]/scores[1], scores[1]) for (team,scores) in teams.items()}
+      teams = {team: (scores[0] / scores[1], scores[1]) for (team, scores) in teams.items()}
 
       def to_list(dict_):
         ranking = [(p, dict_[p]) for p in dict_]
@@ -339,6 +340,9 @@ You have been in {} teams: {}
 
   def __fmt_top(self, players, list_range, lookup):
     """Expects that `self.__personal` has already been filled!"""
+    if len(lst) == 0 or len(self.__personal.values()) == 0:
+      return
+
     res = ""
 
     for index in list_range:
@@ -355,22 +359,30 @@ You have been in {} teams: {}
     return res
 
   def __fmt_top_teams(self, lst, team_range, lookup):
+    if len(lst) == 0:
+      return ""
+
     res = ""
     max_played = max([t[1][1] for t in lst])
     req_plays = max_played / 4
     qualifying_lst = [t for t in lst if t[1][1] > req_plays]
 
+    player_skill = PlayerSkill.get()
+
     for index in team_range:
       if index >= len(qualifying_lst):
         break
-      team = qualifying_lst[index]
-      names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
-      win_ratio = self.__fmt_num(team[1][0] * 100.0)
-      rounds = team[1][1]
+      team_entry = qualifying_lst[index]
+      team = team_entry[0]
+      names = ", ".join([lookup.user_name_by_id(uid) for uid in team_entry[0]])
+      win_ratio = self.__fmt_num(team_entry[1][0] * 100.0)
+      rounds = team_entry[1][1]
       placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
+      trating = player_skill.get_teamwork_rating(team)
+      res += " " + "*" * trating
     return res
 
   def get_personals(self):

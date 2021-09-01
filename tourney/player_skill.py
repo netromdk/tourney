@@ -94,6 +94,22 @@ class PlayerSkill:
         return placement
     return placement
 
+  def get_teamwork_rating(self, team):
+    """The teamwork rating is a one to five rating based on the teamwork
+    factor.
+    """
+    factor = self.get_teamwork_factor(team)
+    if factor > 1.5:
+      return 5
+    elif factor > 1.25:
+      return 4
+    elif factor > 0.75:
+      return 3
+    elif factor > 0.5:
+      return 2
+    else:
+      return 1
+
   def get_teamwork_factor(self, team):
     """The Teamwork Factor is defined as the ratio between the rating of
     the team and the calculated rating based on the individual ratings
@@ -101,13 +117,11 @@ class PlayerSkill:
     """
     team_skill = self.__team_skills[tuple(team)]
     team_skill_est = self.calc_team_skill(team)
-    return (team_skill.mu, team_skill_est.mu)
+    return team_skill.mu / team_skill_est.mu
 
   def get_team_skill(self, team):
     tteam = tuple(team)
     if tteam not in self.__team_skills:
-      # A decent starting guess is probably the average team skill
-      #self.__team_skills[tteam] = self.calc_team_skill(team)
       self.__team_skills[tteam] = Rating()
     return self.__team_skills[tteam]
 
@@ -213,7 +227,7 @@ class PlayerSkill:
     else:
         self.rate_uneven_match(win_team, lose_team)
 
-    #update team ratings
+    # update team ratings
     win_team_skill = self.get_team_skill(win_team)
     lose_team_skill = self.get_team_skill(lose_team)
     try:
