@@ -66,7 +66,7 @@ class PlayerSkill:
       self.__player_skills[user_id] = Rating()
     return self.__player_skills[user_id]
 
-  def __convervative_rank(self, rating):
+  def __conservative_rank(self, rating):
     """Microsoft's approach: Player ranks are displayed as the conservative estimate of their skill,
     R = μ − 3 × σ. This is conservative, because the system is 99% sure that the player's skill is
     actually higher than what is displayed as their rank.
@@ -74,14 +74,14 @@ class PlayerSkill:
     return rating.mu - 3 * rating.sigma
 
   def get_player_rank(self, user_id):
-    return self.__convervative_rank(self.get_player_skill(user_id))
+    return self.__conservative_rank(self.get_player_skill(user_id))
 
   def get_player_placement(self, user_id):
     """The conservative rank placement of user among all other players.
     """
     rankings = []
     for other_user_id in self.__player_skills:
-      rank = self.__convervative_rank(self.__player_skills[other_user_id])
+      rank = self.__conservative_rank(self.__player_skills[other_user_id])
       rankings.append((other_user_id, rank))
 
     # Sort highest rankings at the top.
@@ -93,6 +93,15 @@ class PlayerSkill:
       if user == user_id:
         return placement
     return placement
+
+  def get_teamwork_factor(self, team):
+    """The Teamwork Factor is defined as the ratio between the rating of
+    the team and the calculated rating based on the individual ratings
+    of the team members (which is just the average mu)
+    """
+    team_skill = self.__team_skills[tuple(team)]
+    team_skill_est = self.calc_team_skill(team)
+    return (team_skill.mu, team_skill_est.mu)
 
   def get_team_skill(self, team):
     tteam = tuple(team)
