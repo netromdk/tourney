@@ -89,12 +89,9 @@ TEAM_NAME_PARTS = {
     "Amigo",
     "Automaton",
     "Ark",
-    "Battalion",
     "Bell",
     "Bride",
-    "Brigade",
     "Clone",
-    "Club",
     "Cobra",
     "Compiler",
     "Contingent",
@@ -112,19 +109,15 @@ TEAM_NAME_PARTS = {
     "Football",
     "Frankenstein",
     "Game",
-    "Gang",
     "Godzilla",
     "Golem",
     "Groom",
-    "Group",
     "Hurricane",
     "Hustler",
     "Interpreter",
     "Jedi",
     "Kicker",
     "Kingdom",
-    "League",
-    "Legion",
     "Lexer",
     "Loser",
     "Mafia",
@@ -141,7 +134,6 @@ TEAM_NAME_PARTS = {
     "Phenom",
     "Pint",
     "Piston",
-    "Platoon",
     "Player",
     "Python",
     "Raider",
@@ -161,15 +153,11 @@ TEAM_NAME_PARTS = {
     "Sorcerer",
     "Spider",
     "Spinner",
-    "Squad",
-    "Squadron",
     "Squirrel",
     "Superstar",
     "Swashbuckler",
-    "Team",
     "Temple",
     "Terminator",
-    "Trio",
     "Turtle",
     "Uniform",
     "Vader",
@@ -181,14 +169,26 @@ TEAM_NAME_PARTS = {
     "Winner",
     "Wizard",
     "Wonder",
+    ("Battalion", None),
+    ("Brigade", None),
     ("Chaos", None),
     ("Cherry", "Cherries"),
+    ("Club", None),
     ("Couch", "Couches"),
     ("Doom", None),
     ("Ducky", "Duckies"),
     ("Duo", None),
+    ("Gang", None),
+    ("Group", None),
+    ("League", None),
+    ("Legion", None),
+    ("Platoon", None),
     ("Prodigy", "Prodigies"),
+    ("Squad", None),
+    ("Squadron", None),
+    ("Team", None),
     ("Thunder", None),
+    ("Trio", None),
     (None, "Pants"),
   ],
   "adjective": [
@@ -323,10 +323,11 @@ def nouns(n=1, p=False):
   for noun in nnouns:
     pnoun = noun
     if type(noun) is tuple:
-      # Some nouns do not have a plural form, and adding "s" is incorrect.
       if noun[0] is not None and noun[1] is None:
+        # Some nouns do not have a plural form, and adding "s" is incorrect.
         pnoun = noun[0]
       elif p or noun[0] is None:
+        # Some nouns should not be pluralized at all (for a teamname)
         pnoun = noun[1]
       else:
         pnoun = noun[0]
@@ -347,9 +348,10 @@ def adj():
 TEAM_NAME_FORMS = [
   lambda: "The {} {}".format(adj(), noun(p=True)),  # The Flaming Flamingos
   lambda: "{}{}".format(noun(), noun(p=True).lower()),  # Thunderpants
+  lambda: "{} {}".format(noun(), noun(p=True)),  # Thunder Pants
   lambda: "{} {}".format(*nouns(n=2)),  # Monkey Python
   lambda: "{} {} {}".format(*(adjs(n=2) + nouns(p=True))),  # Tenacious Raging Bells
-  lambda: "{} of the {} {}".format(noun(p=True), adj(), noun()),
+  lambda: "{} of the {} {}".format(noun(p=True), adj(), noun()),  # Raiders of the Lost Ark
 ]
 
 def generate_teamnames(nteams):
