@@ -76,7 +76,7 @@ TEAM_NAME_DECORATIONS = [
   lambda x: "{}: The Squeakquel".format(x),
   lambda x: "\"{}\"".format(x),
   lambda x: x.upper(),
-  lambda x: x[::2],
+  lambda x: " ".join([w[::2] for w in x.split(" ")]),
   lambda x: x[::-1].lower().title(),
   lambda x: "I Can't Believe It's Not {}".format(x),
   lambda x: "".join([c if c.lower() not in "aeiouyæøå" else 'o' for c in x]),
