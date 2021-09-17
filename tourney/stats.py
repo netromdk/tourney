@@ -160,18 +160,22 @@ class Stats:
 
       self.__top_winners.sort(key=top_winners_cmp, reverse=True)
 
-      def teams_key(pair):
+      self.__top_scoring_teams = [(t.split(","), s) for t,s in teams.items()]
+      self.__top_teamwork_teams = [(t.split(","), s) for t,s in teams.items()]
+
+      def teams_player_score_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
         avg_score = sum(scores) / len(scores)
+        # Individual player score average is tie breaker
         return avg_score / 800 + pair[1][0]
 
-      self.__top_teams = to_list(teams)
-      self.__top_teams.sort(key=teams_key, reverse=True)
+      self.__top_scoring_teams.sort(key=teams_player_score_key, reverse=False)
 
-      # Substitute top team string representations with list: "p1,p2" -> ["p1", "p2"]
-      for i in range(len(self.__top_teams)):  # pylint: disable=consider-using-enumerate
-        team = self.__top_teams[i]
-        self.__top_teams[i] = (team[0].split(","), team[1])
+      def teams_teamwork_key(pair):
+        player_skill = PlayerSkill.get()
+        return player_skill.get_teamwork_factor(pair[0].split(","))
+
+      self.__top_teamwork_teams.sort(key=teams_teamwork_key, reverse=True)
 
       # Personal player info.
       for player in player_matches:  # pylint: disable=consider-using-enumerate
@@ -198,6 +202,7 @@ class Stats:
     qualifying_winners = self.__qualifying_players(self.__top_winners)
     top_players_rounds = self.__fmt_top(qualifying_winners, top_range, lookup)
     top_teams = self.__fmt_top_teams(self.__top_teams, team_range, lookup)
+    top_teamwork_teams = self.__fmt_top_teams(self.__top_teamwork_teams, team_range, lookup)
     return f"""
 Total matches: {self.__matches}
 Total rounds: {self.__rounds}
@@ -209,6 +214,7 @@ Average delta: {self.__avg_delta:.2f}
 Top {top_amount} players (avg score / round): {top_players_score}
 Top {top_amount} players (% of rounds won): {top_players_rounds}
 Top {team_amount} teams (% of rounds won): {top_teams}
+Top {team_amount} teams (by TEAMWORK FACTOR): {top_teamwork_teams}
 """
 
   def personal_response(self, lookup, user_id):
@@ -221,7 +227,7 @@ Top {team_amount} teams (% of rounds won): {top_teams}
     lose_perc = 100.0 - win_perc
     lose_rounds = rounds - win_rounds
     teams = []
-    for team in self.__top_teams:
+    for team in self.__top_scoring_teams:
       if user_id in team[0]:
         teams.append(team)
     max_teams = min(5, len(teams))
@@ -276,7 +282,7 @@ You have been in {} teams: {}
     self.__newest_score_time = None
     self.__top_scorers = []
     self.__top_winners = []
-    self.__top_teams = []
+    self.__top_scoring_teams = []
     self.__personal = {}
 
   def save(self):
@@ -291,7 +297,7 @@ You have been in {} teams: {}
       "newest_score_time": self.__newest_score_time,
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
-      "top_teams": self.__top_teams,
+      "top_scoring_teams": self.__top_scoring_teams,
       "personal": self.__personal
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
@@ -321,8 +327,12 @@ You have been in {} teams: {}
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
         self.__top_winners = data["top_winners"]
-      if "top_teams" in data:
-        self.__top_teams = data["top_teams"]
+      if "top_teams" in data: # legacy
+        self.__top_scoring_teams = data["top_teams"]
+      if "top_scoring_teams" in data:
+        self.__top_scoring_teams = data["top_scoring_teams"]
+      if "top_teamwork_teams" in data:
+        self.__top_teamwork_teams = data["top_teamwork_teams"]
       if "personal" in data:
         self.__personal = data["personal"]
 
@@ -381,8 +391,14 @@ You have been in {} teams: {}
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
-      trating = player_skill.get_teamwork_rating(team)
-      res += " " + "*" * trating
+      tfactor = player_skill.get_teamwork_factor(team)
+      res += " {:.0f}% ".format(tfactor*100)
+      if tfactor < 0.9:
+        res += " :slightly_frowning_face:"
+      elif tfactor < 1.1:
+        res += " :neutral_face:"
+      else:
+        res += " :slightly_smiling_face:"
     return res
 
   def get_personals(self):
