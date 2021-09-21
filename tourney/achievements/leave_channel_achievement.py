@@ -4,8 +4,8 @@ from .behavior import LEAVE_CHANNEL_BEHAVIOR
 class LeaveChannelAchievement(TieredAchievement):
   def __init__(self):
     tiers = (
-      (1,  "Sore",                    "Leave the channel."),
-      (5,  "Detoxing",                "Leave the channel 5 times."),
+      (1,  "Hasta la Vista",          "Leave the channel."),
+      (5,  "Be Seeing You",           "Leave the channel 5 times."),
       (10, "I Wish I Could Quit You", "Leave the channel 10 times."),
     )
     super(LeaveChannelAchievement, self).__init__("LeaveChannel", tiers)
