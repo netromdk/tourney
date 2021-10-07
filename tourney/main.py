@@ -79,7 +79,7 @@ def all_team_combinations(teams):
     yield []
     return
   elif len(teams) == 3:
-    # Only one combination possible here
+    # Only one combination possible here, three one-rounders combining all three teams
     yield [(teams[0], teams[1], 1),
            (teams[1], teams[2], 1),
            (teams[0], teams[2], 1)]
@@ -101,8 +101,8 @@ def all_team_combinations(teams):
   else:
     a = teams[0]
     for i in range(1, len(teams)):
-      # Pick a pair and recurse on rest of list
-      pair = (a, teams[i], 2)
+      # Pick a pair for a one-round match and recurse on rest of list
+      pair = (a, teams[i], 1)
       for r in all_team_combinations(teams[1:i] + teams[i + 1:]):
         yield [pair] + r
 
@@ -125,7 +125,8 @@ def create_schedule(teams, rand_matches):
     matches = all_combinations[best_index]
   else:
     if len(teams) % 2 == 0:
-      matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+      # Add one-round matches for random pairs of teams
+      matches = [(i, i + 1, 1) for i in range(0, len(teams), 2)]
     else:
       twoRounders = len(teams) - 3
       if twoRounders > 0:
