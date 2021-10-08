@@ -17,7 +17,7 @@ from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
   MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, \
   MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, DEBUG, RTM_READ_DELAY, LOAD_TEST, \
-  NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING
+  NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING, PREFERRED_ROUNDS
 from .scores import Scores
 from .player_skill import PlayerSkill
 from .config import Config
@@ -79,7 +79,7 @@ def all_team_combinations(teams):
     yield []
     return
   elif len(teams) == 3:
-    # Only one combination possible here
+    # Only one combination possible here, three one-rounders combining all three teams
     yield [(teams[0], teams[1], 1),
            (teams[1], teams[2], 1),
            (teams[0], teams[2], 1)]
@@ -101,15 +101,18 @@ def all_team_combinations(teams):
   else:
     a = teams[0]
     for i in range(1, len(teams)):
-      # Pick a pair and recurse on rest of list
-      pair = (a, teams[i], 2)
+      # Pick a pair for a one-round match and recurse on rest of list
+      pair = (a, teams[i], PREFERRED_ROUNDS)
       for r in all_team_combinations(teams[1:i] + teams[i + 1:]):
         yield [pair] + r
 
 def create_schedule(teams, rand_matches):
   """Takes list of teams to schedule for."""
   matches = []
-  if not rand_matches:
+  if len(teams) == 2:
+    # Just the one game today, let's make it a two-rounder
+    matches = [(0, 1, 2)]
+  elif not rand_matches:
     player_skill = PlayerSkill.get()
     all_combinations = list(all_team_combinations(list(range(len(teams)))))
     qualities = []
@@ -125,7 +128,8 @@ def create_schedule(teams, rand_matches):
     matches = all_combinations[best_index]
   else:
     if len(teams) % 2 == 0:
-      matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+      # Add one-round matches for random pairs of teams
+      matches = [(i, i + 1, PREFERRED_ROUNDS) for i in range(0, len(teams), 2)]
     else:
       twoRounders = len(teams) - 3
       if twoRounders > 0:
@@ -169,7 +173,7 @@ def create_matches():
     state.set_dont_remind_users([])
     state.save()
 
-    if rand_matches:
+    if len(teams) > 2 and rand_matches:
       response += ":tractor::dash: {} :tractor::dash:\n\n".\
         format("Today's matchups brought to you by the RANDOM FACTOR TRACTOR")
 
