@@ -409,6 +409,7 @@ TEAM_NAME_PARTS = {
       'Merry',
       'Naughty',
       'Nice',
+      'Pumpkin Spice',
       'Seasonal',
       'Winter',
       'Xmas',
@@ -468,13 +469,12 @@ def generate_teamnames(nteams):
 def generate_teamname():
   teamname = ""
   r = random()  # nosec
-  if r < 0.1:
+  if r < 0.1 and SEASON is None:
     teamname = choice(TEAM_NAMES)  # nosec
-  elif r < 0.9:
+  elif r < 0.9 or SEASON is None:
     teamname = choice(TEAM_NAME_FORMS)()  # nosec
   else:
     teamname = decorate_teamname(generate_teamname())
-  print("New name: {}".format(teamname))
   return teamname
 
 def decorate_teamname(name):
