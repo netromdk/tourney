@@ -1,6 +1,10 @@
 import sys
 from datetime import time, timedelta
 
+# Special seasons
+SEASONS = ["easter", "halloween", "xmas"]
+SEASON = None
+
 # Will print all read events to stdout.
 DEBUG = False
 
