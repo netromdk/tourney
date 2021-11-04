@@ -19,6 +19,7 @@ class UndoTeamsCommand(Command):
 
     state.set_teams([])
     state.set_team_names([])
+    state.set_schedule([])
     state.set_unrecorded_matches([])
     state.set_midday_announce(False)
     state.save()
