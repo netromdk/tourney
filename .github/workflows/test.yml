@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.9, 3.6, 3.7, 3.8]
+        python-version: ["3.10", 3.9, 3.6, 3.7, 3.8]
 
         # Currently not running on Windows because matplotlib yields errors.
         os: [macos-latest, ubuntu-latest]
@@ -22,7 +22,7 @@ jobs:
           - os: macos-latest
             test_script_name: ./.github/workflows/test.sh
 
-        # Only test on macOS with Python 3.9.
+        # Only test on macOS with Python 3.10.
         exclude:
           - os: macos-latest
             python-version: 3.6
@@ -30,6 +30,8 @@ jobs:
             python-version: 3.7
           - os: macos-latest
             python-version: 3.8
+          - os: macos-latest
+            python-version: 3.9
 
     steps:
     - uses: actions/checkout@v2
