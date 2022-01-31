@@ -173,7 +173,7 @@ def create_matches():
     state.set_dont_remind_users([])
     state.save()
 
-    if len(teams) > 2 and rand_matches:
+    if len(teams) > 3 and rand_matches:
       response += ":tractor::dash: {} :tractor::dash:\n\n".\
         format("Today's matchups brought to you by the RANDOM FACTOR TRACTOR")
 
