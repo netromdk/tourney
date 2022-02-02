@@ -74,6 +74,7 @@ POSITIVE_REACTIONS = [
   "soccer",
   "tada",
   "the_horns",
+  "thumbsup",
   "thumbsup_all",
   "white_check_mark",
   "woman-gesturing-ok",
@@ -92,6 +93,7 @@ NEGATIVE_REACTIONS = [
   "no_entry_sign",
   "see_no_evil",
   "stahp",
+  "thumbsdown",
   "woman-gesturing-no",
   "x",
 ]
