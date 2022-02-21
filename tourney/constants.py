@@ -56,6 +56,7 @@ POSITIVE_REACTIONS = [
   "chaos",
   "confetti_ball",
   "dance",
+  "dizzy",
   "fire",
   "heavy_check_mark",
   "heavy_plus_sign",
