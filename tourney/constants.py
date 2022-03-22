@@ -45,7 +45,7 @@ NIGHT_CLEARING = time(23)
 NIGHT_CLEARING_DELTA = timedelta(minutes=59)
 
 # Preferred number of rounds in cases where one or two could be played
-PREFERRED_ROUNDS = 2
+PREFERRED_ROUNDS = 1
 
 POSITIVE_REACTIONS = [
   "+1",
