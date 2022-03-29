@@ -390,6 +390,7 @@ TEAM_NAME_PARTS = {
       ('Judas', 'Judases'),
       ('Lance', 'Lances'),
       ('Lily', 'Lilies'),
+      ('Longinus', 'Longinuses'),
       ('Lunch', 'Lunches'),
       ('Mass', 'Masses'),
       (None, 'Pieces of Silver'),
@@ -546,6 +547,9 @@ TEAM_NAME_FORMS = [
   lambda: "{} {}".format(*nouns(n=2)),  # Monkey Python
   lambda: "{} {} {}".format(*(adjs(n=2) + nouns(p=True))),  # Tenacious Raging Bells
   lambda: "{} of the {} {}".format(noun(p=True), adj(), noun()),  # Raiders of the Lost Ark
+  lambda: "The {} of {}".format(noun(), noun(p=True)),  # The Ace of Spades
+  lambda: "The {} of the {}".format(*nouns(n=2)),  # The Passion of the Christ
+  lambda: "{} {}".format(adj(), noun(p=True)),  # Tenacious Turtles
 ]
 
 def generate_teamnames(nteams):
