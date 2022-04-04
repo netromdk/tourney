@@ -419,7 +419,7 @@ TEAM_NAME_PARTS = {
       'Resurrected',
       'Risen',
       'Saved',
-      'Spring'
+      'Spring',
       'Suffering',
       'Thirty',
       'Thorned',
