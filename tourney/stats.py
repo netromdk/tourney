@@ -194,6 +194,8 @@ class Stats:
       total_dur = fmt_duration(self.__newest_score_time - self.__oldest_score_time)
     else:
       total_dur = 0
+    qualifying_scorers = self.__qualifying_players(self.__top_scorers)
+    qualifying_winners = self.__qualifying_players(self.__top_winners)
     return """
 Total matches: {}
 Total rounds: {}
@@ -207,8 +209,8 @@ Top {} players (% of rounds won): {}
 Top {} teams (% of rounds won): {}
 """.format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur,
            self.__avg_score, self.__avg_delta, top_amount,
-           self.__fmt_top(self.__top_scorers, top_range, lookup), top_amount,
-           self.__fmt_top(self.__top_winners, top_range, lookup), team_amount,
+           self.__fmt_top(qualifying_scorers, top_range, lookup), top_amount,
+           self.__fmt_top(qualifying_winners, top_range, lookup), team_amount,
            self.__fmt_top_teams(self.__top_teams, team_range, lookup))
 
   def personal_response(self, lookup, user_id):
@@ -244,7 +246,7 @@ You have been in {} teams: {}
 
   def local_top_list(self, user_id, delta, lookup):
     response = ""
-    top = self.__top_winners
+    top = self.__qualifying_players(self.__top_winners)
     top_enum = enumerate(top)
     try:
       placement = next(i for i, v in top_enum if v[0] == user_id)
@@ -254,11 +256,10 @@ You have been in {} teams: {}
       local_start_index = max(0, placement - delta)
       local_end_index = min(placement + delta, len(top))
       local_top_range = range(local_start_index, local_end_index + 1)
-      print("top range: {}".format(local_top_range))
       response += "Your current position in the ongoing season:"
       if local_start_index > 0:
         response += "\n\t..."
-      response += self.__fmt_top(self.__top_winners, local_top_range, lookup)
+      response += self.__fmt_top(top, local_top_range, lookup)
       if local_end_index < len(top) - 1:
         response += "\n\t..."
     return response
@@ -332,17 +333,21 @@ You have been in {} teams: {}
       return "{:.2f}".format(num)
     return "{}".format(num)
 
-  def __fmt_top(self, lst, top_range, lookup):
+  def __qualifying_players(self, players):
+    if len(self.__personal.values()) == 0:
+      return players
+    req_plays = max([p["total_matches"] for p in self.__personal.values()]) / 4
+    qualifying_players = [p for p in players if self.__personal[p[0]]["total_matches"] >= req_plays]
+    return qualifying_players
+
+  def __fmt_top(self, players, list_range, lookup):
     """Expects that `self.__personal` has already been filled!"""
     res = ""
 
-    req_plays = max([p["total_matches"] for p in self.__personal.values()]) / 4
-    qualifying_lst = [p for p in lst if self.__personal[p[0]]["total_matches"] >= req_plays]
-
-    for index in top_range:
-      if index >= len(qualifying_lst):
+    for index in list_range:
+      if index >= len(players):
         break
-      player = qualifying_lst[index]
+      player = players[index]
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
       rounds = self.__personal[player[0]]["total_rounds"]
