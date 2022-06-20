@@ -160,8 +160,8 @@ class Stats:
 
       self.__top_winners.sort(key=top_winners_cmp, reverse=True)
 
-      self.__top_scoring_teams = [(t.split(","), s) for t,s in teams.items()]
-      self.__top_teamwork_teams = [(t.split(","), s) for t,s in teams.items()]
+      self.__top_scoring_teams = [(t.split(","), s) for t, s in teams.items()]
+      self.__top_teamwork_teams = [(t.split(","), s) for t, s in teams.items()]
 
       def teams_player_score_key(pair):
         scores = [player_scores[p] for p in pair[0].split(",")]
@@ -327,7 +327,7 @@ You have been in {} teams: {}
         self.__top_scorers = data["top_scorers"]
       if "top_winners" in data:
         self.__top_winners = data["top_winners"]
-      if "top_teams" in data: # legacy
+      if "top_teams" in data:  # legacy
         self.__top_scoring_teams = data["top_teams"]
       if "top_scoring_teams" in data:
         self.__top_scoring_teams = data["top_scoring_teams"]
@@ -392,7 +392,7 @@ You have been in {} teams: {}
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
       tfactor = player_skill.get_teamwork_factor(team)
-      res += " {:.0f}% ".format(tfactor*100)
+      res += " {:.0f}% ".format(tfactor * 100)
       if tfactor < 0.9:
         res += " :slightly_frowning_face:"
       elif tfactor < 1.1:
