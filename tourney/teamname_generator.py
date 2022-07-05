@@ -559,8 +559,9 @@ def generate_teamname():
   teamname = ""
   r = random()  # nosec
   if r < 0.1 and SEASON is None:
+    # Only use pre-defined teamnames outside of special seasons, p=0.1
     teamname = choice(TEAM_NAMES)  # nosec
-  elif r < 0.9 or SEASON is None:
+  elif r < 0.9:
     teamname = choice(TEAM_NAME_FORMS)()  # nosec
   else:
     teamname = decorate_teamname(generate_teamname())
