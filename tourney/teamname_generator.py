@@ -1,5 +1,5 @@
-from random import sample, choice, random
-from .constants import SEASON
+from random import sample, choice, random, choices, shuffle
+from .constants import SEASON, SEASONS
 
 TEAM_NAMES = [
   "Air Farce",
@@ -505,37 +505,75 @@ TEAM_NAME_PARTS = {
   }
 }
 
-def parts_for_season():
-  if SEASON in TEAM_NAME_PARTS:
-    return TEAM_NAME_PARTS[SEASON]
+def parts_for_season(season=None):
+  if season in TEAM_NAME_PARTS:
+    return TEAM_NAME_PARTS[season]
   else:
     return TEAM_NAME_PARTS[None]
 
+def n_parts_by_season(n=1):
+  # Decide how many parts to sample from each season
+  nparts_by_season = {}
+  if SEASON is None:
+    p_none = 1 - sum(SEASONS.values())
+    # Split SEASONS into lists
+    seasons, probs = map(list, zip(*SEASONS.items()))
+    seasons.append(None)
+    probs.append(p_none)
+    part_seasons = choices(seasons, weights=probs, k=n)  # nosec
+    print(part_seasons)
+    nparts_by_season = {s: part_seasons.count(s) for s in set(part_seasons)}
+  else:
+    nparts_by_season[SEASON] = n
+
+  return nparts_by_season
+
+def get_parts(n_by_s, ptype):
+  # Sample the nouns from the part list
+  parts = []
+  for s, sn in n_by_s.items():
+    season_parts = parts_for_season(s)[ptype]
+    parts += sample(season_parts, sn)  # nosec
+
+  return parts
+
 def nouns(n=1, p=False):
-  season_nouns = parts_for_season()["noun"]
-  nnouns = sample(season_nouns, n)  # nosec
-  pnouns = []
-  for noun in nnouns:
-    pnoun = noun
-    if type(noun) is tuple:
-      if noun[0] is not None and noun[1] is None:
+  nnouns_by_season = n_parts_by_season(n)
+
+  # Sample the nouns from the part list
+  noun_parts = get_parts(nnouns_by_season, "noun")
+
+  # Pluralise the selected noun parts
+  plur_nouns = []
+  for noun_part in noun_parts:
+    plur_noun = noun_part
+    if type(noun_part) is tuple:
+      if noun_part[0] is not None and noun_part[1] is None:
         # Some nouns do not have a plural form, and adding "s" is incorrect.
-        pnoun = noun[0]
-      elif p or noun[0] is None:
+        plur_noun = noun_part[0]
+      elif p or noun_part[0] is None:
         # Some nouns should not be pluralized at all (for a teamname)
-        pnoun = noun[1]
+        plur_noun = noun_part[1]
       else:
-        pnoun = noun[0]
+        plur_noun = noun_part[0]
     elif p:
-      pnoun = "{}s".format(noun)
-    pnouns.append(pnoun)
-  return pnouns
+      plur_noun = "{}s".format(noun_part)
+    plur_nouns.append(plur_noun)
+
+  # Shuffle the resulting list and return
+  shuffle(plur_nouns)  # nosec
+  return plur_nouns
 
 def noun(p=False):
   return nouns(n=1, p=p)[0]
 
 def adjs(n=1):
-  return sample(parts_for_season()["adjective"], n)  # nosec
+  nadjs_by_season = n_parts_by_season(n)
+
+  # Sample the nouns from the part list
+  adjs = get_parts(nadjs_by_season, "adjective")
+
+  return adjs
 
 def adj():
   return adjs(n=1)[0]
@@ -559,8 +597,9 @@ def generate_teamname():
   teamname = ""
   r = random()  # nosec
   if r < 0.1 and SEASON is None:
+    # Only use pre-defined teamnames outside of special seasons, p=0.1
     teamname = choice(TEAM_NAMES)  # nosec
-  elif r < 0.9 or SEASON is None:
+  elif r < 0.9:
     teamname = choice(TEAM_NAME_FORMS)()  # nosec
   else:
     teamname = decorate_teamname(generate_teamname())
