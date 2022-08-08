@@ -170,7 +170,7 @@ class Stats:
       self.__top_teams.sort(key=teams_key, reverse=True)
 
       # Substitute top team string representations with list: "p1,p2" -> ["p1", "p2"]
-      for i in range(len(self.__top_teams)):
+      for i in range(len(self.__top_teams)):  # pylint: disable=consider-using-enumerate
         team = self.__top_teams[i]
         self.__top_teams[i] = (team[0].split(","), team[1])
 

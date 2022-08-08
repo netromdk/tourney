@@ -135,8 +135,7 @@ class Scores:
         continue
       dates = []
       winrates = []
-      for i in range(len(wins)):
-        result = wins[i]
+      for (i, result) in enumerate(wins):
         dates.append(date2num(result[0]))
         winrates.append(result[1] / (i + 1))
       p_winrates[p] = (dates, winrates)
@@ -155,8 +154,7 @@ class Scores:
 
     ax.axhline(p5_rate, color='gold', lw=2)
 
-    for i in range(len(p_sorted)):
-      p = p_sorted[i]
+    for (i, p) in enumerate(p_sorted):
       (dates, winrates) = p_winrates[p]
       if i < 5:
         pname = lookup.user_name_by_id(p)

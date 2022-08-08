@@ -66,8 +66,8 @@ def create_teams():
 
   teamnames = Teamnames.get()
   names = generate_teamnames(len(teams))
-  for i in range(len(teams)):
-    name = teamnames.teamname(teams[i])
+  for (i, team) in enumerate(teams):
+    name = teamnames.teamname(team)
     if name:
       names[i] = name
 
@@ -87,15 +87,15 @@ def all_team_combinations(teams):
   elif len(teams) % 2 == 1:
     # Handle odd length list. Make one XvXvX and (n-3)/2 pairs.
     # Combine each possible triple with each possible configuration of the other teams
-    for i in range(len(teams)):
+    for (i, team_i) in enumerate(teams):
       i_remains = list(range(len(teams)))
       i_remains.remove(i)
       for j in i_remains:
         j_remains = [n for n in i_remains]
         j_remains.remove(j)
         for k in j_remains:
-          triple = [(teams[i], teams[j], 1), (teams[i], teams[k], 1), (teams[j], teams[k], 1)]
-          remains = [t for t in teams if t not in [teams[i], teams[j], teams[k]]]
+          triple = [(team_i, teams[j], 1), (team_i, teams[k], 1), (teams[j], teams[k], 1)]
+          remains = [t for t in teams if t not in [team_i, teams[j], teams[k]]]
           for result in all_team_combinations(remains):
             yield triple + result
   else:

@@ -161,7 +161,7 @@ class PlayerSkill:
     lose_team_skills = [self.get_player_skill(p) for p in lose_team]
     try:
       new_win_team_skills, new_lose_team_skills = rate([win_team_skills, lose_team_skills])
-      for i in range(len(win_team)):
+      for i in range(len(win_team)):  # pylint: disable=consider-using-enumerate
         win_p = win_team[i]
         lose_p = lose_team[i]
         new_win_p_skill = new_win_team_skills[i]
