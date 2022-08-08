@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess  # nosec
+import sys
 from time import sleep, time
 from datetime import datetime, date
 from slackclient import SlackClient
@@ -43,9 +44,9 @@ if DEMO:
     try:
       text = input("> ")  # nosec
     except KeyboardInterrupt:
-      exit(0)
+      sys.exit(0)
     except EOFError:
-      exit(0)
+      sys.exit(0)
     event = {
       "type": "message",
       "text": text,
@@ -206,7 +207,7 @@ def autoupdate():
   if Config.get().running_as_service():
     script = "update.sh"
   subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec
-  exit(0)
+  sys.exit(0)
 
 def start_season():
   state = State.get()
@@ -575,7 +576,7 @@ def init():
     channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
     if channel_id is None:
       print("Could not find ID for channel: {}".format(CHANNEL_NAME))
-      exit(1)
+      sys.exit(1)
     state.set_channel_id(channel_id)
   print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
 
@@ -605,13 +606,13 @@ def start_tourney():
   else:
     if not bot_token:
       print("TOURNEY_BOT_TOKEN must be defined in environment!")
-      exit(1)
+      sys.exit(1)
     connect()
 
   init()
 
   if LOAD_TEST:
     print("Exiting load test.")
-    exit(0)
+    sys.exit(0)
 
   repl()
