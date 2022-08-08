@@ -176,11 +176,11 @@ class Teams:
       "teams_3p": list(self.__get_teams_3p())
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
-    with open(self.file_path(), "w+") as fp:
+    with open(self.file_path(), "w+", encoding="utf-8") as fp:
       json.dump(data, fp, indent=2)
 
   def load(self):
-    with open(self.file_path(), "r") as fp:
+    with open(self.file_path(), "r", encoding="utf-8") as fp:
       data = json.load(fp)
       if "players" in data:
         self.__players = set(data["players"])
