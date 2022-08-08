@@ -139,7 +139,7 @@ class PlayerSkill:
     new_win_team = []
     new_lose_team = []
     try:
-      new_win_team_skill, new_lose_team_skill =\
+      _new_win_team_skill, _new_lose_team_skill =\
         rate_1vs1(win_team_skill, lose_team_skill)
 
       for p in win_team:

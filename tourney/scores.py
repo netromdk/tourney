@@ -126,7 +126,7 @@ class Scores:
           wins = pwins[p][-1][1]
           pwins[p].append((date, wins))
 
-    fig, ax = plt.subplots()
+    _fig, ax = plt.subplots()
 
     # Get playername -> [(sortable datestamps, win percentages)] for plotting
     p_winrates = {}
