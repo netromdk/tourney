@@ -1,6 +1,6 @@
-from .command import Command
-
 from tourney.stats import Stats
+
+from .command import Command
 
 class AllStatsCommand(Command):
   def __init__(self):

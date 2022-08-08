@@ -1,6 +1,6 @@
-from .command import Command
-
 from tourney.scores import Scores
+
+from .command import Command
 
 class ScorigamiCommand(Command):
   def __init__(self):

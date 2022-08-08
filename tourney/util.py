@@ -1,11 +1,11 @@
+import re
+from datetime import date, datetime
+
 from .constants import PRIVILEGED_COMMANDS, POSITIVE_REACTIONS, NEGATIVE_REACTIONS
 from .config import Config
 from .state import State
 from .scores import Scores
 from .player_skill import PlayerSkill
-
-import re
-from datetime import date, datetime
 
 def fmt_duration(secs, show_ms=False):
   ms = 0

@@ -1,8 +1,10 @@
-from .tiered_achievement import TieredAchievement
-from .behavior import SEASON_START_BEHAVIOR
 from datetime import date
+
 from tourney.stats import Stats
 from tourney.util import nth_last_season_filter
+
+from .tiered_achievement import TieredAchievement
+from .behavior import SEASON_START_BEHAVIOR
 
 class SeasonTopFiveAchievement(TieredAchievement):
   def __init__(self):

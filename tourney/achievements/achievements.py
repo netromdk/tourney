@@ -1,6 +1,8 @@
 import os
 import json
 
+from tourney.constants import DATA_PATH
+
 from .rtfm_achievement import RtfmAchievement
 from .commander_achievement import CommanderAchievement
 from .participation_achievement import ParticipationAchievement
@@ -21,8 +23,6 @@ from .threeplayer_win_achievement import ThreePlayerWinAchievement
 from .threetwo_win_achievement import ThreeVTwoWinAchievement
 from .season_top_five_achievement import SeasonTopFiveAchievement
 from .improvement_achievement import SelfImprovementAchievement
-
-from tourney.constants import DATA_PATH
 
 class Achievements:
   __instance = None

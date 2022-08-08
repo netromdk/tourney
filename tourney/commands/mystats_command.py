@@ -1,9 +1,9 @@
-from .command import Command
-
 from tourney.constants import STATS_PLACEMENT_DELTA
 from tourney.util import this_season_filter, to_ordinal
 from tourney.stats import Stats
 from tourney.player_skill import PlayerSkill
+
+from .command import Command
 
 class MyStatsCommand(Command):
   def __init__(self):

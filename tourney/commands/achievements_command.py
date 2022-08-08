@@ -1,6 +1,6 @@
-from .command import Command
-
 from tourney.achievements import Achievements
+
+from .command import Command
 
 class AchievementsCommand(Command):
   def __init__(self):

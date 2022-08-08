@@ -1,5 +1,6 @@
-from .command import Command
 from tourney.util import schedule_text
+
+from .command import Command
 
 class ScheduleCommand(Command):
   def __init__(self):

@@ -1,8 +1,8 @@
-from .command import Command
-
 from tourney.teamnames import Teamnames
 from tourney.state import State
 from tourney.scores import Scores
+
+from .command import Command
 
 class TeamnameCommand(Command):
   def __init__(self):

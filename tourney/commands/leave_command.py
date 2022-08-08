@@ -1,8 +1,8 @@
-from .command import Command
 from tourney.teamname_generator import decorate_teamname
-
 from tourney.state import State
 from tourney.achievements import Achievements, LeaveBehavior
+
+from .command import Command
 
 class LeaveCommand(Command):
   def __init__(self):

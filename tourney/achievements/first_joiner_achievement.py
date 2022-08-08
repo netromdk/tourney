@@ -1,6 +1,7 @@
+from tourney.state import State
+
 from .achievement import Achievement
 from .behavior import JOIN_BEHAVIOR
-from tourney.state import State
 
 class FirstJoinerAchievement(Achievement):
   def __init__(self):

@@ -1,13 +1,13 @@
 import re
 
-from .command import Command
-
 from tourney.state import State
 from tourney.constants import SCORE_ARGS_REGEX
 from tourney.scores import Scores
 from tourney.player_skill import PlayerSkill
 from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
 from tourney.util import schedule_text
+
+from .command import Command
 
 class ScoreCommand(Command):
   def __init__(self):
