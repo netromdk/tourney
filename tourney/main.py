@@ -145,6 +145,7 @@ def create_matches():
   state = State.get()
   response = "<!channel>\n"
   teams, names = create_teams()
+
   if teams is None:
     response += "No games possible! At least 2 players are required!"
   else:
@@ -168,10 +169,6 @@ def create_matches():
     state.set_teams(teams)
     state.set_team_names(names)
     state.set_unrecorded_matches(unrecorded_matches)
-    state.set_participants([])
-    state.set_morning_announce(None)
-    state.set_dont_remind_users([])
-    state.save()
 
     if len(teams) > 3 and rand_matches:
       response += ":tractor::dash: {} :tractor::dash:\n\n".\
@@ -187,6 +184,12 @@ def create_matches():
       response += "\n\n:recycle: Regenerated teams for:\n"
       for p in regen_set:
         response += "  {}\n".format(lookup.user_name_by_id(p))
+
+  # Clean state
+  state.set_participants([])
+  state.set_morning_announce(None)
+  state.set_dont_remind_users([])
+  state.save()
 
   channel_id = state.channel_id()
   client.api_call("chat.postMessage", channel=channel_id, text=response)
