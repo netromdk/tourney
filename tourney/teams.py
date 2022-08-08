@@ -36,7 +36,7 @@ class Teams:
     return (self.__regenerated_2p_users, self.__regenerated_3p_users)
 
   def split_teams(self, n):
-    if n == 1 or n == 0:
+    if n in (1, 0):
       return []
     elif n == 2:
       return [1, 1]

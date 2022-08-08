@@ -276,7 +276,7 @@ def parse_command(event):
   elif command == "score":
     cmd = ScoreCommand()
     channel = state.channel_id()  # Always write response in main channel.
-  elif command == "win" or command == "lose":
+  elif command in ("win", "lose"):
     cmd = WinLoseCommand(command)
     channel = state.channel_id()
   elif command == "stats":
@@ -388,8 +388,7 @@ def parse_events(events):
     # Adding a positive reaction to morning or reminder announce message will join game, negative
     # will leave game, and removing reaction will do the opposite action. But only if game is not
     # already started.
-    elif (event_type == "reaction_added" or event_type == "reaction_removed") \
-         and not created_teams:
+    elif event_type in ("reaction_added", "reaction_removed") and not created_teams:
       added = (event_type == "reaction_added")
       pos = is_positive_reaction(event["reaction"])
       neg = is_negative_reaction(event["reaction"])
