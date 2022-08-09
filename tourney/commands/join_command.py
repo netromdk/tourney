@@ -21,7 +21,7 @@ class JoinCommand(Command):
 
     created_teams = len(teams) > 0
     if created_teams:
-      if any([self.user_id() in t for t in teams]):
+      if any(self.user_id() in t for t in teams):
         return "{}, you are _already_ on a team today!".format(user_name)
 
       scored_teams = []

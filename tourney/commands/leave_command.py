@@ -24,7 +24,7 @@ class LeaveCommand(Command):
       state.save()
       extra_msg = "\nYou won't be reminded later today."
 
-    if any([user_id in t for t in teams]):
+    if any(user_id in t for t in teams):
       # Let users leave their active team, probably resulting in a 1p team
       new_teams = []
       response = ""
