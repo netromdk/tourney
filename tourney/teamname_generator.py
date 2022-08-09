@@ -546,7 +546,7 @@ def nouns(n=1, p=False):
   plur_nouns = []
   for noun_part in noun_parts:
     plur_noun = noun_part
-    if type(noun_part) is tuple:
+    if isinstance(noun_part, tuple):
       if noun_part[0] is not None and noun_part[1] is None:
         # Some nouns do not have a plural form, and adding "s" is incorrect.
         plur_noun = noun_part[0]

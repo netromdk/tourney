@@ -29,7 +29,7 @@ class SelfImprovementAchievement(TieredAchievement):
     else:
       last_season = [today.year, today.month - 1]
 
-    if type(self.data[user_id][0]) == int:
+    if isinstance(self.data[user_id][0], int):
       self.data[user_id][0] = [0]
     if last_season in self.data[user_id][0]:
       # Already scored
