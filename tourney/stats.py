@@ -195,23 +195,22 @@ class Stats:
     else:
       total_dur = 0
     qualifying_scorers = self.__qualifying_players(self.__top_scorers)
+    top_players_score = self.__fmt_top(qualifying_scorers, top_range, lookup)
     qualifying_winners = self.__qualifying_players(self.__top_winners)
-    return """
-Total matches: {}
-Total rounds: {}
-Total teams: {}
-Total score: {}
-Total duration: {}
-Average score: {:.2f}
-Average delta: {:.2f}
-Top {} players (avg score / round): {}
-Top {} players (% of rounds won): {}
-Top {} teams (% of rounds won): {}
-""".format(self.__matches, self.__rounds, self.__team_amount, self.__total_score, total_dur,
-           self.__avg_score, self.__avg_delta, top_amount,
-           self.__fmt_top(qualifying_scorers, top_range, lookup), top_amount,
-           self.__fmt_top(qualifying_winners, top_range, lookup), team_amount,
-           self.__fmt_top_teams(self.__top_teams, team_range, lookup))
+    top_players_rounds = self.__fmt_top(qualifying_winners, top_range, lookup)
+    top_teams = self.__fmt_top_teams(self.__top_teams, team_range, lookup)
+    return f"""
+Total matches: {self.__matches}
+Total rounds: {self.__rounds}
+Total teams: {self.__team_amount}
+Total score: {self.__total_score}
+Total duration: {total_dur}
+Average score: {self.__avg_score:.2f}
+Average delta: {self.__avg_delta:.2f}
+Top {top_amount} players (avg score / round): {top_players_score}
+Top {top_amount} players (% of rounds won): {top_players_rounds}
+Top {team_amount} teams (% of rounds won): {top_teams}
+"""
 
   def personal_response(self, lookup, user_id):
     if user_id not in self.__personal:
