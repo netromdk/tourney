@@ -334,7 +334,7 @@ You have been in {} teams: {}
   def __qualifying_players(self, players):
     if len(self.__personal.values()) == 0:
       return players
-    req_plays = max([p["total_matches"] for p in self.__personal.values()]) / 4
+    req_plays = max(p["total_matches"] for p in self.__personal.values()) / 4
     qualifying_players = [p for p in players if self.__personal[p[0]]["total_matches"] >= req_plays]
     return qualifying_players
 
