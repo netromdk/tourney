@@ -206,7 +206,7 @@ def autoupdate():
   script = "autoupdate.sh"
   if Config.get().running_as_service():
     script = "update.sh"
-  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec
+  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec # pylint: disable=subprocess-run-check
   sys.exit(0)
 
 def start_season():
