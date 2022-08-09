@@ -122,11 +122,11 @@ class PlayerSkill:
       team_b_skills = [self.get_player_skill(p) for p in team_b]
       team_b_skills = self.__modify_team_sigmas_by_mu_ratio(team_b_skills)
       return quality([team_a_skills, team_b_skills])
-    else:
-      # Unmatched teams, aggregate team skill and rate as 1vs1
-      skill_team_a = self.get_team_skill(team_a)
-      skill_team_b = self.get_team_skill(team_b)
-      return quality_1vs1(skill_team_a, skill_team_b)
+
+    # Unmatched teams, aggregate team skill and rate as 1vs1
+    skill_team_a = self.get_team_skill(team_a)
+    skill_team_b = self.get_team_skill(team_b)
+    return quality_1vs1(skill_team_a, skill_team_b)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
@@ -174,9 +174,8 @@ class PlayerSkill:
 
   def rate_match(self, win_team, lose_team):
     if len(win_team) == len(lose_team):
-        return self.rate_even_match(win_team, lose_team)
-    else:
-        return self.rate_uneven_match(win_team, lose_team)
+      return self.rate_even_match(win_team, lose_team)
+    return self.rate_uneven_match(win_team, lose_team)
 
   def calc_player_skills(self):
     scores = Scores.get()

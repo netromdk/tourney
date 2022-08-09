@@ -508,8 +508,7 @@ TEAM_NAME_PARTS = {
 def parts_for_season(season=None):
   if season in TEAM_NAME_PARTS:
     return TEAM_NAME_PARTS[season]
-  else:
-    return TEAM_NAME_PARTS[None]
+  return TEAM_NAME_PARTS[None]
 
 def n_parts_by_season(n=1):
   # Decide how many parts to sample from each season

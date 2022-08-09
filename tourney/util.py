@@ -93,8 +93,7 @@ def schedule_text(lookup, mention_next=False):
   def team_str(members, mention=False):
     if mention:
       return ", ".join(["<@{}>".format(uid) for uid in members])
-    else:
-      return ", ".join([lookup.user_name_by_id(uid) for uid in members])
+    return ", ".join([lookup.user_name_by_id(uid) for uid in members])
 
   res = "Schedule:"
   previous_played = False
@@ -158,8 +157,7 @@ def _is_reaction(reaction, positive):
   reaction = re.sub("::skin-tone-\\d", "", reaction)
   if positive:
     return reaction in POSITIVE_REACTIONS
-  else:
-    return reaction in NEGATIVE_REACTIONS
+  return reaction in NEGATIVE_REACTIONS
 
 def is_positive_reaction(reaction):
   return _is_reaction(reaction, True)

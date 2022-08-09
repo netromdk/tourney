@@ -79,13 +79,13 @@ def all_team_combinations(teams):
   if len(teams) < 2:
     yield []
     return
-  elif len(teams) == 3:
+  if len(teams) == 3:
     # Only one combination possible here, three one-rounders combining all three teams
     yield [(teams[0], teams[1], 1),
            (teams[1], teams[2], 1),
            (teams[0], teams[2], 1)]
     return
-  elif len(teams) % 2 == 1:
+  if len(teams) % 2 == 1:
     # Handle odd length list. Make one XvXvX and (n-3)/2 pairs.
     # Combine each possible triple with each possible configuration of the other teams
     for (i, team_i) in enumerate(teams):

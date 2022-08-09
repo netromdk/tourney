@@ -61,7 +61,7 @@ class LeaveCommand(Command):
 
       response += extra_msg
       return response
-    elif self.user_id() not in participants:
+    if self.user_id() not in participants:
       return "{}, you've _not_ joined today's game!{}".format(user_name, extra_msg)
 
     state.remove_participant(self.user_id())

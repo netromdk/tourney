@@ -39,8 +39,7 @@ class Teamnames:
     teamnames = [x[1] for x in self.__teamnames if set(x[0]) == team_set]
     if teamnames:
       return teamnames[0]
-    else:
-      return None
+    return None
 
   def file_path(self):
     return os.path.expanduser("{}/teamnames.json".format(DATA_PATH))

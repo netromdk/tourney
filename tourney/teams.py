@@ -38,18 +38,17 @@ class Teams:
   def split_teams(self, n):
     if n in (1, 0):
       return []
-    elif n == 2:
+    if n == 2:
       return [1, 1]
-    elif n == 3:
+    if n == 3:
       return [1, 1, 1]
-    elif n == 7:
+    if n == 7:
       return [2, 2, 3]
-    else:
-      remainder = n % 4
-      num_teams = (n - remainder) // 2
-      duos = [2] * (num_teams - remainder)
-      trios = [3] * remainder
-      return duos + trios
+    remainder = n % 4
+    num_teams = (n - remainder) // 2
+    duos = [2] * (num_teams - remainder)
+    trios = [3] * remainder
+    return duos + trios
 
   def get_teams_for_players(self, current_players):
     self.__regenerated_2p_users = []

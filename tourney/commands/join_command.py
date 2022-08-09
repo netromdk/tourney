@@ -62,11 +62,11 @@ class JoinCommand(Command):
             format(user_name, formatted_team_name, formatted_new_team_name)
 
       return "{}, you're too late. No late-joinable teams were found.".format(user_name)
-    else:
-      if self.user_id() not in participants:
-        state.add_participant(self.user_id())
-        state.save()
-        Achievements.get().interact(JoinBehavior(self.user_id()))
-        return "{}, you've joined today's game!".format(user_name)
-      else:
-        return "{}, you've _already_ joined today's game!".format(user_name)
+
+    if self.user_id() not in participants:
+      state.add_participant(self.user_id())
+      state.save()
+      Achievements.get().interact(JoinBehavior(self.user_id()))
+      return "{}, you've joined today's game!".format(user_name)
+
+    return "{}, you've _already_ joined today's game!".format(user_name)
