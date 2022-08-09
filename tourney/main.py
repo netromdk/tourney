@@ -467,7 +467,7 @@ def scheduled_actions():
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + MORNING_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.morning_announce():
+  if start <= now < end and not state.morning_announce():
     announce_text = "<!channel> Remember to join today's game before {} by using" \
       " `!join` or :+1: reaction to this message!".format(midday_hhmm)
 
@@ -494,7 +494,7 @@ def scheduled_actions():
   # explicitly didn't want to play today's game.
   start = datetime.combine(date.today(), REMINDER_ANNOUNCE)
   end = start + REMINDER_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.reminder_announce():
+  if start <= now < end and not state.reminder_announce():
     scores = Scores.get()
     remaining = scores.recent_users(7) - set(state.participants()) - set(state.dont_remind_users())
     if len(remaining) == 0:
@@ -516,7 +516,7 @@ def scheduled_actions():
   # Midday announcement of game.
   start = midday_announce
   end = start + MIDDAY_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.midday_announce():
+  if start <= now < end and not state.midday_announce():
     state.set_midday_announce(True)
     state.save()
     create_matches()
@@ -531,7 +531,7 @@ def scheduled_actions():
   should_clear = (len(state.participants()) > 0 or len(state.teams()) > 0 or
                   len(state.teams()) > 0 or len(state.team_names()) > 0 or
                   len(state.dont_remind_users()) > 0)
-  if now >= start and now < end and should_clear:
+  if start <= now < end and should_clear:
     print("Executing nightly cleanup")
     state.set_schedule([])
     state.set_teams([])
