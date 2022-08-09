@@ -137,8 +137,8 @@ class Stats:
       res = teams[team]
       teams[team] = (res[0] / res[1], res[1])
 
-    def to_list(dict):
-      ranking = [(p, dict[p]) for p in dict]
+    def to_list(dict_):
+      ranking = [(p, dict_[p]) for p in dict_]
       return ranking
 
     # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
