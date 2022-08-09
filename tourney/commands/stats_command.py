@@ -1,14 +1,14 @@
-from .command import Command
-
 from datetime import datetime
 import calendar
-from tourney.util import this_season_filter
 
+from tourney.util import this_season_filter
 from tourney.stats import Stats
+
+from .command import Command
 
 class StatsCommand(Command):
   def __init__(self):
-    super(StatsCommand, self).__init__("stats")
+    super().__init__("stats")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

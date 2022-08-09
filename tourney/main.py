@@ -1,11 +1,12 @@
 import os
 import re
 import subprocess  # nosec
+import sys
 from time import sleep, time
 from datetime import datetime, date
-from slackclient import SlackClient
-from random import random
 import calendar
+from random import random
+from slackclient import SlackClient
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
@@ -43,9 +44,9 @@ if DEMO:
     try:
       text = input("> ")  # nosec
     except KeyboardInterrupt:
-      exit(0)
+      sys.exit(0)
     except EOFError:
-      exit(0)
+      sys.exit(0)
     event = {
       "type": "message",
       "text": text,
@@ -66,8 +67,8 @@ def create_teams():
 
   teamnames = Teamnames.get()
   names = generate_teamnames(len(teams))
-  for i in range(len(teams)):
-    name = teamnames.teamname(teams[i])
+  for (i, team) in enumerate(teams):
+    name = teamnames.teamname(team)
     if name:
       names[i] = name
 
@@ -78,24 +79,24 @@ def all_team_combinations(teams):
   if len(teams) < 2:
     yield []
     return
-  elif len(teams) == 3:
+  if len(teams) == 3:
     # Only one combination possible here, three one-rounders combining all three teams
     yield [(teams[0], teams[1], 1),
            (teams[1], teams[2], 1),
            (teams[0], teams[2], 1)]
     return
-  elif len(teams) % 2 == 1:
+  if len(teams) % 2 == 1:
     # Handle odd length list. Make one XvXvX and (n-3)/2 pairs.
     # Combine each possible triple with each possible configuration of the other teams
-    for i in range(len(teams)):
+    for (i, team_i) in enumerate(teams):
       i_remains = list(range(len(teams)))
       i_remains.remove(i)
       for j in i_remains:
-        j_remains = [n for n in i_remains]
+        j_remains = list(i_remains)
         j_remains.remove(j)
         for k in j_remains:
-          triple = [(teams[i], teams[j], 1), (teams[i], teams[k], 1), (teams[j], teams[k], 1)]
-          remains = [t for t in teams if t not in [teams[i], teams[j], teams[k]]]
+          triple = [(team_i, teams[j], 1), (team_i, teams[k], 1), (teams[j], teams[k], 1)]
+          remains = [t for t in teams if t not in [team_i, teams[j], teams[k]]]
           for result in all_team_combinations(remains):
             yield triple + result
   else:
@@ -205,8 +206,8 @@ def autoupdate():
   script = "autoupdate.sh"
   if Config.get().running_as_service():
     script = "update.sh"
-  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec
-  exit(0)
+  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec # pylint: disable=subprocess-run-check
+  sys.exit(0)
 
 def start_season():
   state = State.get()
@@ -275,7 +276,7 @@ def parse_command(event):
   elif command == "score":
     cmd = ScoreCommand()
     channel = state.channel_id()  # Always write response in main channel.
-  elif command == "win" or command == "lose":
+  elif command in ("win", "lose"):
     cmd = WinLoseCommand(command)
     channel = state.channel_id()
   elif command == "stats":
@@ -387,8 +388,7 @@ def parse_events(events):
     # Adding a positive reaction to morning or reminder announce message will join game, negative
     # will leave game, and removing reaction will do the opposite action. But only if game is not
     # already started.
-    elif (event_type == "reaction_added" or event_type == "reaction_removed") \
-         and not created_teams:
+    elif event_type in ("reaction_added", "reaction_removed") and not created_teams:
       added = (event_type == "reaction_added")
       pos = is_positive_reaction(event["reaction"])
       neg = is_negative_reaction(event["reaction"])
@@ -467,7 +467,7 @@ def scheduled_actions():
   # Morning announcement for participants to join game.
   start = datetime.combine(date.today(), MORNING_ANNOUNCE)
   end = start + MORNING_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.morning_announce():
+  if start <= now < end and not state.morning_announce():
     announce_text = "<!channel> Remember to join today's game before {} by using" \
       " `!join` or :+1: reaction to this message!".format(midday_hhmm)
 
@@ -494,7 +494,7 @@ def scheduled_actions():
   # explicitly didn't want to play today's game.
   start = datetime.combine(date.today(), REMINDER_ANNOUNCE)
   end = start + REMINDER_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.reminder_announce():
+  if start <= now < end and not state.reminder_announce():
     scores = Scores.get()
     remaining = scores.recent_users(7) - set(state.participants()) - set(state.dont_remind_users())
     if len(remaining) == 0:
@@ -516,7 +516,7 @@ def scheduled_actions():
   # Midday announcement of game.
   start = midday_announce
   end = start + MIDDAY_ANNOUNCE_DELTA
-  if now >= start and now < end and not state.midday_announce():
+  if start <= now < end and not state.midday_announce():
     state.set_midday_announce(True)
     state.save()
     create_matches()
@@ -531,7 +531,7 @@ def scheduled_actions():
   should_clear = (len(state.participants()) > 0 or len(state.teams()) > 0 or
                   len(state.teams()) > 0 or len(state.team_names()) > 0 or
                   len(state.dont_remind_users()) > 0)
-  if now >= start and now < end and should_clear:
+  if start <= now < end and should_clear:
     print("Executing nightly cleanup")
     state.set_schedule([])
     state.set_teams([])
@@ -575,7 +575,7 @@ def init():
     channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
     if channel_id is None:
       print("Could not find ID for channel: {}".format(CHANNEL_NAME))
-      exit(1)
+      sys.exit(1)
     state.set_channel_id(channel_id)
   print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
 
@@ -605,13 +605,13 @@ def start_tourney():
   else:
     if not bot_token:
       print("TOURNEY_BOT_TOKEN must be defined in environment!")
-      exit(1)
+      sys.exit(1)
     connect()
 
   init()
 
   if LOAD_TEST:
     print("Exiting load test.")
-    exit(0)
+    sys.exit(0)
 
   repl()

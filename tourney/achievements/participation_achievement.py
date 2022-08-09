@@ -8,7 +8,7 @@ class ParticipationAchievement(TieredAchievement):
       (50,  "Silver Participation Trophy", "Join 50 games."),
       (100, "Gold Participation Trophy",   "Join 100 games."),
     )
-    super(ParticipationAchievement, self).__init__("Participation", tiers)
+    super().__init__("Participation", tiers)
 
   def accepted_behaviors(self):
     return [JOIN_BEHAVIOR]

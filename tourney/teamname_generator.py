@@ -49,41 +49,41 @@ def simpleleet(s):
     replace("t", "7")
 
 TEAM_NAME_DECORATIONS = [
-  lambda x: "{} of Doom".format(x),
-  lambda x: "{} +1".format(x),
-  lambda x: "{} (Handicapped)".format(x),
-  lambda x: "{} in the Membrane".format(x),
-  lambda x: "{} on the Rocks".format(x),
-  lambda x: "{} et al.".format(x),
-  lambda x: "{} With Bells On".format(x),
-  lambda x: "{}, Cherry on Top".format(x),
-  lambda x: "{}! Here We Go Again".format(x),
-  lambda x: "To {} Or Not To {}".format(x, x),
-  lambda x: "Not {}".format(x),
-  lambda x: "{}²".format(x),
-  lambda x: "{} 2½".format(x),
-  lambda x: "Blessed {}".format(x),
-  lambda x: "Cursed {}".format(x),
-  lambda x: "Punished {}".format(x),
-  lambda x: "Shin {}".format(x),
-  lambda x: "{} Stranding".format(x),
-  lambda x: "{} 2: Son of {}".format(x, x),
-  lambda x: "Bride of {}".format(x),
-  lambda x: "Game of {}".format(x),
-  lambda x: "Dawn of {}".format(x),
-  lambda x: "Rise of {}".format(x),
-  lambda x: "Battle for {}".format(x),
-  lambda x: "Escape from {}".format(x),
-  lambda x: "How to {} and Get Away With It".format(x),
-  lambda x: "Operation {}".format(x),
-  lambda x: "{} Begin Again".format(x),
-  lambda x: "Look who's {} now!".format(x),
-  lambda x: "{}: The Squeakquel".format(x),
-  lambda x: "\"{}\"".format(x),
+  lambda x: f"{x} of Doom",
+  lambda x: f"{x} +1",
+  lambda x: f"{x} (Handicapped)",
+  lambda x: f"{x} in the Membrane",
+  lambda x: f"{x} on the Rocks",
+  lambda x: f"{x} et al.",
+  lambda x: f"{x} With Bells On",
+  lambda x: f"{x}, Cherry on Top",
+  lambda x: f"{x}! Here We Go Again",
+  lambda x: f"To {x} Or Not To {x}",
+  lambda x: f"Not {x}",
+  lambda x: f"{x}²",
+  lambda x: f"{x} 2½",
+  lambda x: f"Blessed {x}",
+  lambda x: f"Cursed {x}",
+  lambda x: f"Punished {x}",
+  lambda x: f"Shin {x}",
+  lambda x: f"{x} Stranding",
+  lambda x: f"{x} 2: Son of {x}",
+  lambda x: f"Bride of {x}",
+  lambda x: f"Game of {x}",
+  lambda x: f"Dawn of {x}",
+  lambda x: f"Rise of {x}",
+  lambda x: f"Battle for {x}",
+  lambda x: f"Escape from {x}",
+  lambda x: f"How to {x} and Get Away With It",
+  lambda x: f"Operation {x}",
+  lambda x: f"{x} Begin Again",
+  lambda x: f"Look who's {x} now!",
+  lambda x: f"{x}: The Squeakquel",
+  lambda x: f"\"{x}\"",
   lambda x: x.upper(),
   lambda x: " ".join([w[::2] for w in x.split(" ")]),
   lambda x: x[::-1].lower().title(),
-  lambda x: "I Can't Believe It's Not {}".format(x),
+  lambda x: f"I Can't Believe It's Not {x}",
   lambda x: "".join([c if c.lower() not in "aeiouyæøå" else 'o' for c in x]),
   lambda x: "".join([choice([c.lower(), c.upper()]) for c in x]),  # nosec
   lambda x: simpleleet(x),
@@ -508,8 +508,7 @@ TEAM_NAME_PARTS = {
 def parts_for_season(season=None):
   if season in TEAM_NAME_PARTS:
     return TEAM_NAME_PARTS[season]
-  else:
-    return TEAM_NAME_PARTS[None]
+  return TEAM_NAME_PARTS[None]
 
 def n_parts_by_season(n=1):
   # Decide how many parts to sample from each season
@@ -547,7 +546,7 @@ def nouns(n=1, p=False):
   plur_nouns = []
   for noun_part in noun_parts:
     plur_noun = noun_part
-    if type(noun_part) is tuple:
+    if isinstance(noun_part, tuple):
       if noun_part[0] is not None and noun_part[1] is None:
         # Some nouns do not have a plural form, and adding "s" is incorrect.
         plur_noun = noun_part[0]

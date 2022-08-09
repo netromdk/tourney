@@ -1,10 +1,10 @@
-from .command import Command
-
 from tourney.state import State
+
+from .command import Command
 
 class TeamsCommand(Command):
   def __init__(self):
-    super(TeamsCommand, self).__init__("teams")
+    super().__init__("teams")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

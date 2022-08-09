@@ -1,12 +1,12 @@
-from .command import Command
 from tourney.teamname_generator import decorate_teamname
-
 from tourney.state import State
 from tourney.achievements import Achievements, LeaveBehavior
 
+from .command import Command
+
 class LeaveCommand(Command):
   def __init__(self):
-    super(LeaveCommand, self).__init__("leave")
+    super().__init__("leave")
 
   def execute(self, lookup=None):
     state = State.get()
@@ -24,7 +24,7 @@ class LeaveCommand(Command):
       state.save()
       extra_msg = "\nYou won't be reminded later today."
 
-    if any([user_id in t for t in teams]):
+    if any(user_id in t for t in teams):
       # Let users leave their active team, probably resulting in a 1p team
       new_teams = []
       response = ""
@@ -61,7 +61,7 @@ class LeaveCommand(Command):
 
       response += extra_msg
       return response
-    elif self.user_id() not in participants:
+    if self.user_id() not in participants:
       return "{}, you've _not_ joined today's game!{}".format(user_name, extra_msg)
 
     state.remove_participant(self.user_id())

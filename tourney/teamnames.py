@@ -39,8 +39,7 @@ class Teamnames:
     teamnames = [x[1] for x in self.__teamnames if set(x[0]) == team_set]
     if teamnames:
       return teamnames[0]
-    else:
-      return None
+    return None
 
   def file_path(self):
     return os.path.expanduser("{}/teamnames.json".format(DATA_PATH))
@@ -53,11 +52,11 @@ class Teamnames:
       "teamnames": self.__teamnames,
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
-    with open(self.file_path(), "w+") as fp:
+    with open(self.file_path(), "w+", encoding="utf-8") as fp:
       json.dump(data, fp)
 
   def load(self):
-    with open(self.file_path(), "r") as fp:
+    with open(self.file_path(), "r", encoding="utf-8") as fp:
       data = json.load(fp)
       if "teamnames" in data:
         self.__teamnames = data["teamnames"]

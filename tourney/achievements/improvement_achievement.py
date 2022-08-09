@@ -1,8 +1,10 @@
-from .tiered_achievement import TieredAchievement
-from .behavior import SEASON_START_BEHAVIOR
 from datetime import date
+
 from tourney.stats import Stats
 from tourney.util import nth_last_season_filter
+
+from .tiered_achievement import TieredAchievement
+from .behavior import SEASON_START_BEHAVIOR
 
 class SelfImprovementAchievement(TieredAchievement):
   def __init__(self):
@@ -12,7 +14,7 @@ class SelfImprovementAchievement(TieredAchievement):
       (6,  "Faster",   "Improve your end-of-season ranking six times."),
       (12, "Stronger", "Improve your end-of-season ranking twelve times."),
     )
-    super(SelfImprovementAchievement, self).__init__("SelfImprovement", tiers)
+    super().__init__("SelfImprovement", tiers)
 
   def accepted_behaviors(self):
     return [SEASON_START_BEHAVIOR]
@@ -27,7 +29,7 @@ class SelfImprovementAchievement(TieredAchievement):
     else:
       last_season = [today.year, today.month - 1]
 
-    if type(self.data[user_id][0]) == int:
+    if isinstance(self.data[user_id][0], int):
       self.data[user_id][0] = [0]
     if last_season in self.data[user_id][0]:
       # Already scored

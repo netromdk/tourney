@@ -1,12 +1,12 @@
-from .command import Command
-
 from tourney.teamnames import Teamnames
 from tourney.state import State
 from tourney.scores import Scores
 
+from .command import Command
+
 class TeamnameCommand(Command):
   def __init__(self):
-    super(TeamnameCommand, self).__init__("teamname")
+    super().__init__("teamname")
     self.set_public(True)
     self.set_ephemeral(False)
 

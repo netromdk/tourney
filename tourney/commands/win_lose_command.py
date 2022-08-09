@@ -1,5 +1,3 @@
-from .command import Command
-
 import re
 
 from tourney.state import State
@@ -9,9 +7,11 @@ from tourney.constants import WIN_ARGS_REGEX
 from tourney.achievements import Achievements, WinBehavior, LoseBehavior, ReportScoreBehavior
 from tourney.util import schedule_text
 
+from .command import Command
+
 class WinLoseCommand(Command):
   def __init__(self, name):
-    super(WinLoseCommand, self).__init__(name)
+    super().__init__(name)
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

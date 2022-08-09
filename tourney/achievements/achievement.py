@@ -16,17 +16,14 @@ class Achievement(ABC):
   @abstractmethod
   def name(self):
     """Name of achievement."""
-    pass
 
   @abstractmethod
   def description(self):
     """Description of achievement."""
-    pass
 
   @abstractmethod
   def accepted_behaviors(self):
     """List of accepted behavior kinds."""
-    pass
 
   def accepts(self, behavior_kind):
     return behavior_kind in self.accepted_behaviors()
@@ -35,13 +32,11 @@ class Achievement(ABC):
   def update(self, behavior):
     """Update achievement progress given behavior.
     Must return True if achievement was obtained, and False otherwise."""
-    pass
 
   @abstractmethod
   def achieved(self, user_id):
     """Whether or not user achived the achievement. For multi-tiered achievements it must always
     yield True after the first tier is achieved."""
-    pass
 
   def current_progress(self, user_id):
     """Returns formatted string of current progress for user.

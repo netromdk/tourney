@@ -32,7 +32,7 @@ class PlayerSkill:
     return os.path.expanduser("{}/player_skill.json".format(DATA_PATH))
 
   def load(self):
-    with open(self.file_path(), "r") as fp:
+    with open(self.file_path(), "r", encoding="utf-8") as fp:
       data = json.load(fp)
       if "player_skills" in data:
         player_skills = data["player_skills"]
@@ -45,7 +45,7 @@ class PlayerSkill:
       "player_skills": player_skills
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
-    with open(self.file_path(), "w+") as fp:
+    with open(self.file_path(), "w+", encoding="utf-8") as fp:
       json.dump(data, fp, indent=2)
 
   def reset(self):
@@ -122,11 +122,11 @@ class PlayerSkill:
       team_b_skills = [self.get_player_skill(p) for p in team_b]
       team_b_skills = self.__modify_team_sigmas_by_mu_ratio(team_b_skills)
       return quality([team_a_skills, team_b_skills])
-    else:
-      # Unmatched teams, aggregate team skill and rate as 1vs1
-      skill_team_a = self.get_team_skill(team_a)
-      skill_team_b = self.get_team_skill(team_b)
-      return quality_1vs1(skill_team_a, skill_team_b)
+
+    # Unmatched teams, aggregate team skill and rate as 1vs1
+    skill_team_a = self.get_team_skill(team_a)
+    skill_team_b = self.get_team_skill(team_b)
+    return quality_1vs1(skill_team_a, skill_team_b)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
@@ -139,7 +139,7 @@ class PlayerSkill:
     new_win_team = []
     new_lose_team = []
     try:
-      new_win_team_skill, new_lose_team_skill =\
+      _new_win_team_skill, _new_lose_team_skill =\
         rate_1vs1(win_team_skill, lose_team_skill)
 
       for p in win_team:
@@ -161,7 +161,7 @@ class PlayerSkill:
     lose_team_skills = [self.get_player_skill(p) for p in lose_team]
     try:
       new_win_team_skills, new_lose_team_skills = rate([win_team_skills, lose_team_skills])
-      for i in range(len(win_team)):
+      for i in range(len(win_team)):  # pylint: disable=consider-using-enumerate
         win_p = win_team[i]
         lose_p = lose_team[i]
         new_win_p_skill = new_win_team_skills[i]
@@ -174,9 +174,8 @@ class PlayerSkill:
 
   def rate_match(self, win_team, lose_team):
     if len(win_team) == len(lose_team):
-        return self.rate_even_match(win_team, lose_team)
-    else:
-        return self.rate_uneven_match(win_team, lose_team)
+      return self.rate_even_match(win_team, lose_team)
+    return self.rate_uneven_match(win_team, lose_team)
 
   def calc_player_skills(self):
     scores = Scores.get()

@@ -9,7 +9,7 @@ class ThreePlayerWinAchievement(TieredAchievement):
       (33,  "Three Kings", "Win thirty three matches in three-player teams."),
       (333, "Holy Trinity", "Win three hundred and thirty three matches in three-player teams."),
     )
-    super(ThreePlayerWinAchievement, self).__init__("ThreePlayerWin", tiers)
+    super().__init__("ThreePlayerWin", tiers)
 
   def accepted_behaviors(self):
     return [WIN_BEHAVIOR]

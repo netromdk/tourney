@@ -1,10 +1,10 @@
-from .command import Command
-
 from tourney.stats import Stats
+
+from .command import Command
 
 class AllStatsCommand(Command):
   def __init__(self):
-    super(AllStatsCommand, self).__init__("allstats")
+    super().__init__("allstats")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

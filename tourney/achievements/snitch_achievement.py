@@ -3,7 +3,7 @@ from .behavior import REPORT_SCORE_BEHAVIOR
 
 class ReportOtherAchievement(Achievement):
   def __init__(self):
-    super(ReportOtherAchievement, self).__init__("ReportOther")
+    super().__init__("ReportOther")
 
   def name(self):
     return "Snitch"

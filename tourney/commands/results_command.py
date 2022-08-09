@@ -1,10 +1,10 @@
-from .command import Command
-
 from tourney.scores import Scores
+
+from .command import Command
 
 class ResultsCommand(Command):
   def __init__(self):
-    super(ResultsCommand, self).__init__("results")
+    super().__init__("results")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

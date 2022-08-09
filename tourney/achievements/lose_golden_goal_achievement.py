@@ -3,7 +3,7 @@ from .behavior import LOSE_BEHAVIOR
 
 class LoseGoldenGoalAchievement(Achievement):
   def __init__(self):
-    super(LoseGoldenGoalAchievement, self).__init__("LoseGoldenGoal")
+    super().__init__("LoseGoldenGoal")
 
   def name(self):
     return "No Cigar"

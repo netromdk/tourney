@@ -2,7 +2,7 @@ from .behavior import Behavior, INVOKE_BEHAVIOR
 
 class InvokeBehavior(Behavior):
   def __init__(self, user_id, command_name):
-    super(InvokeBehavior, self).__init__(INVOKE_BEHAVIOR, user_id)
+    super().__init__(INVOKE_BEHAVIOR, user_id)
     self.__command_name = command_name
 
   def command_name(self):

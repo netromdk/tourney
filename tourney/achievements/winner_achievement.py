@@ -11,7 +11,7 @@ class WinnerAchievement(TieredAchievement):
       (500,  "Adamantium Winner", "Win 500 rounds."),
       (1000, "Unobtanium Winner", "Win 1000 rounds."),
     )
-    super(WinnerAchievement, self).__init__("Winner", tiers)
+    super().__init__("Winner", tiers)
 
   def accepted_behaviors(self):
     return [WIN_BEHAVIOR]
@@ -22,7 +22,7 @@ class WinnerAchievement(TieredAchievement):
     self.data[user_id][0] += behavior.rounds()
     amount = self.data[user_id][0]
     nt = self.next_tier(user_id)
-    if nt is not None and (amount == nt or amount == nt + 1):
+    if nt is not None and amount in (nt, nt + 1):
       self.data[user_id][1] += 1
       return True
     return False

@@ -36,20 +36,19 @@ class Teams:
     return (self.__regenerated_2p_users, self.__regenerated_3p_users)
 
   def split_teams(self, n):
-    if n == 1 or n == 0:
+    if n in (1, 0):
       return []
-    elif n == 2:
+    if n == 2:
       return [1, 1]
-    elif n == 3:
+    if n == 3:
       return [1, 1, 1]
-    elif n == 7:
+    if n == 7:
       return [2, 2, 3]
-    else:
-      remainder = n % 4
-      num_teams = (n - remainder) // 2
-      duos = [2] * (num_teams - remainder)
-      trios = [3] * remainder
-      return duos + trios
+    remainder = n % 4
+    num_teams = (n - remainder) // 2
+    duos = [2] * (num_teams - remainder)
+    trios = [3] * remainder
+    return duos + trios
 
   def get_teams_for_players(self, current_players):
     self.__regenerated_2p_users = []
@@ -176,11 +175,11 @@ class Teams:
       "teams_3p": list(self.__get_teams_3p())
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
-    with open(self.file_path(), "w+") as fp:
+    with open(self.file_path(), "w+", encoding="utf-8") as fp:
       json.dump(data, fp, indent=2)
 
   def load(self):
-    with open(self.file_path(), "r") as fp:
+    with open(self.file_path(), "r", encoding="utf-8") as fp:
       data = json.load(fp)
       if "players" in data:
         self.__players = set(data["players"])

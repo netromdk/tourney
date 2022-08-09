@@ -3,7 +3,7 @@ from .behavior import INVOKE_BEHAVIOR
 
 class RtfmAchievement(Achievement):
   def __init__(self):
-    super(RtfmAchievement, self).__init__("RTFM")
+    super().__init__("RTFM")
 
   def name(self):
     return "RTFM"

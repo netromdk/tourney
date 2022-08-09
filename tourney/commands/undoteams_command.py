@@ -1,12 +1,12 @@
 import itertools
 
-from .command import Command
-
 from tourney.state import State
+
+from .command import Command
 
 class UndoTeamsCommand(Command):
   def __init__(self):
-    super(UndoTeamsCommand, self).__init__("undoteams")
+    super().__init__("undoteams")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):
