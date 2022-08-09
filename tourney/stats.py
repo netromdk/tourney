@@ -133,8 +133,7 @@ class Stats:
       player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
 
     # Substitute all team wins with the ratio of winning compared to rounds played.
-    for team in teams:
-      res = teams[team]
+    for (team, res) in teams.items():
       teams[team] = (res[0] / res[1], res[1])
 
     def to_list(dict_):
@@ -175,7 +174,7 @@ class Stats:
       self.__top_teams[i] = (team[0].split(","), team[1])
 
     # Personal player info.
-    for player in player_matches:
+    for player in player_matches:  # pylint: disable=consider-using-dict-items
       info = {
         "total_matches": player_matches[player] if player in player_matches else 0,
         "total_rounds": player_rounds[player] if player in player_rounds else 0,
