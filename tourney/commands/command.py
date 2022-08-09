@@ -56,4 +56,3 @@ class Command(ABC):
   def execute(self, lookup=None):
     """Action to execute with optinal lookup class instance. Returns response to send or None on
     failure."""
-    pass
