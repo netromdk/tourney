@@ -8,7 +8,7 @@ class LoserAchievement(TieredAchievement):
       (10,  "Extremely Bad Luck",    "Lose 10 rounds."),
       (100, "Unbelievably Bad Luck", "Lose 100 rounds."),
     )
-    super(LoserAchievement, self).__init__("Loser", tiers)
+    super().__init__("Loser", tiers)
 
   def accepted_behaviors(self):
     return [LOSE_BEHAVIOR]

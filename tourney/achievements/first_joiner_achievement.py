@@ -5,7 +5,7 @@ from .behavior import JOIN_BEHAVIOR
 
 class FirstJoinerAchievement(Achievement):
   def __init__(self):
-    super(FirstJoinerAchievement, self).__init__("FirstJoiner")
+    super().__init__("FirstJoiner")
 
   def name(self):
     return "Early Bird"

@@ -3,7 +3,7 @@ from .behavior import INVOKE_BEHAVIOR
 
 class ObsessedAchievement(Achievement):
   def __init__(self):
-    super(ObsessedAchievement, self).__init__("Obsessed")
+    super().__init__("Obsessed")
 
   def name(self):
     return "Obsessed"

@@ -3,7 +3,7 @@ from .behavior import INVOKE_BEHAVIOR
 
 class SpellingAchievement(Achievement):
   def __init__(self):
-    super(SpellingAchievement, self).__init__("Spelling")
+    super().__init__("Spelling")
 
   def name(self):
     return "I Before E"

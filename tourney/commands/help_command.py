@@ -4,7 +4,7 @@ from .command import Command
 
 class HelpCommand(Command):
   def __init__(self):
-    super(HelpCommand, self).__init__("help")
+    super().__init__("help")
 
   def execute(self, lookup=None):
     return """

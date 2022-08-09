@@ -4,7 +4,7 @@ from .command import Command
 
 class AchievementsCommand(Command):
   def __init__(self):
-    super(AchievementsCommand, self).__init__("achievements")
+    super().__init__("achievements")
 
   def execute(self, lookup=None):
     achievements = Achievements.get()

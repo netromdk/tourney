@@ -5,7 +5,7 @@ class TieredAchievement(Achievement):
 
   def __init__(self, kind, tiers):
     """Each tier consists of the goal to achieve it, its title, and its description."""
-    super(TieredAchievement, self).__init__(kind)
+    super().__init__(kind)
     self.__tiers = tiers
 
   def name(self):

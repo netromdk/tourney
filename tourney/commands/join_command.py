@@ -9,7 +9,7 @@ from .command import Command
 
 class JoinCommand(Command):
   def __init__(self):
-    super(JoinCommand, self).__init__("join")
+    super().__init__("join")
 
   def execute(self, lookup=None):
     state = State.get()

@@ -7,7 +7,7 @@ from .command import Command
 
 class MyStatsCommand(Command):
   def __init__(self):
-    super(MyStatsCommand, self).__init__("mystats")
+    super().__init__("mystats")
 
   def execute(self, lookup=None):
     user_id = self.user_id()

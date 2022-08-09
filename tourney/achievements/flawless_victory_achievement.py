@@ -3,7 +3,7 @@ from .behavior import WIN_BEHAVIOR
 
 class FlawlessVictoryAchievement(Achievement):
   def __init__(self):
-    super(FlawlessVictoryAchievement, self).__init__("FlawlessVictory")
+    super().__init__("FlawlessVictory")
 
   def name(self):
     return "Flawless Victory"

@@ -13,7 +13,7 @@ class CommanderAchievement(TieredAchievement):
       (150, "Commander General",            "Invoke 150 commands."),
       (300, "Commander Field Marshal",      "Invoke 300 commands."),
     )
-    super(CommanderAchievement, self).__init__("Commander", tiers)
+    super().__init__("Commander", tiers)
 
   def accepted_behaviors(self):
     return [INVOKE_BEHAVIOR]

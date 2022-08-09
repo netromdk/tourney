@@ -8,7 +8,7 @@ class ThreeVTwoWinAchievement(TieredAchievement):
       (10,  "E Pluribus", "In a three-player team, beat a two player team ten times."),
       (50,  "My Name is Legion", "In a three-player team, beat a two player team fifty times."),
     )
-    super(ThreeVTwoWinAchievement, self).__init__("ThreeVTwoWin", tiers)
+    super().__init__("ThreeVTwoWin", tiers)
 
   def accepted_behaviors(self):
     return [WIN_BEHAVIOR]

@@ -11,7 +11,7 @@ from .command import Command
 
 class ScoreCommand(Command):
   def __init__(self):
-    super(ScoreCommand, self).__init__("score")
+    super().__init__("score")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

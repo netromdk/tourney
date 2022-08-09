@@ -16,7 +16,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
       (12, "A Very Good Year", "End twelve seasons in the top five by wins "
          "while participating in a significant number of matches."),
     )
-    super(SeasonTopFiveAchievement, self).__init__("SeasonTopFive", tiers)
+    super().__init__("SeasonTopFive", tiers)
 
   def accepted_behaviors(self):
     return [SEASON_START_BEHAVIOR]

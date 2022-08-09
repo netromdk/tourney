@@ -6,7 +6,7 @@ from .command import Command
 
 class LeaveCommand(Command):
   def __init__(self):
-    super(LeaveCommand, self).__init__("leave")
+    super().__init__("leave")
 
   def execute(self, lookup=None):
     state = State.get()

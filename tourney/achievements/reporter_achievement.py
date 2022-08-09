@@ -15,7 +15,7 @@ class ReporterAchievement(TieredAchievement):
       (500,  "Larry King",         "Reported 500 scores."),
       (1000, "Walter Cronkite",    "Reported 1000 scores."),
     )
-    super(ReporterAchievement, self).__init__("Reporter", tiers)
+    super().__init__("Reporter", tiers)
 
   def accepted_behaviors(self):
     return [REPORT_SCORE_BEHAVIOR]

@@ -4,7 +4,7 @@ from .command import Command
 
 class ScheduleCommand(Command):
   def __init__(self):
-    super(ScheduleCommand, self).__init__("schedule")
+    super().__init__("schedule")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

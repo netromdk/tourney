@@ -4,7 +4,7 @@ from .command import Command
 
 class ListCommand(Command):
   def __init__(self):
-    super(ListCommand, self).__init__("list")
+    super().__init__("list")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

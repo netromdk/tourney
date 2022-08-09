@@ -6,7 +6,7 @@ from .command import Command
 
 class TeamnameCommand(Command):
   def __init__(self):
-    super(TeamnameCommand, self).__init__("teamname")
+    super().__init__("teamname")
     self.set_public(True)
     self.set_ephemeral(False)
 

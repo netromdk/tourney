@@ -4,7 +4,7 @@ from .command import Command
 
 class ScorigamiCommand(Command):
   def __init__(self):
-    super(ScorigamiCommand, self).__init__("scorigami")
+    super().__init__("scorigami")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

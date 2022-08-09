@@ -11,7 +11,7 @@ from .command import Command
 
 class WinLoseCommand(Command):
   def __init__(self, name):
-    super(WinLoseCommand, self).__init__(name)
+    super().__init__(name)
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):

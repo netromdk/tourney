@@ -8,7 +8,7 @@ class LeaveChannelAchievement(TieredAchievement):
       (5,  "Be Seeing You",           "Leave the channel 5 times."),
       (10, "I Wish I Could Quit You", "Leave the channel 10 times."),
     )
-    super(LeaveChannelAchievement, self).__init__("LeaveChannel", tiers)
+    super().__init__("LeaveChannel", tiers)
 
   def accepted_behaviors(self):
     return [LEAVE_CHANNEL_BEHAVIOR]

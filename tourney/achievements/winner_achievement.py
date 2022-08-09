@@ -11,7 +11,7 @@ class WinnerAchievement(TieredAchievement):
       (500,  "Adamantium Winner", "Win 500 rounds."),
       (1000, "Unobtanium Winner", "Win 1000 rounds."),
     )
-    super(WinnerAchievement, self).__init__("Winner", tiers)
+    super().__init__("Winner", tiers)
 
   def accepted_behaviors(self):
     return [WIN_BEHAVIOR]
