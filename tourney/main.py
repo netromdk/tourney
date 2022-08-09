@@ -92,7 +92,7 @@ def all_team_combinations(teams):
       i_remains = list(range(len(teams)))
       i_remains.remove(i)
       for j in i_remains:
-        j_remains = [n for n in i_remains]
+        j_remains = list(i_remains)
         j_remains.remove(j)
         for k in j_remains:
           triple = [(team_i, teams[j], 1), (team_i, teams[k], 1), (teams[j], teams[k], 1)]
