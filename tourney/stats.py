@@ -35,157 +35,157 @@ class Stats:
     self.__matches = 0
     if len(matches) == 0:
       return False
-    else:
-      rounds = 0
-      total_score = 0
-      avg_delta = 0
-      player_matches = {}
-      player_rounds = {}
-      player_scores = {}
-      player_wins = {}
-      teams = {}
-      oldest_time = None
-      newest_time = None
 
-      def player_score_count(team, score):
-        for player in team:
-          if player not in player_scores:
-            player_scores[player] = 0
-          player_scores[player] += score
-          if player not in player_matches:
-            player_matches[player] = 0
-          player_matches[player] += 1
+    rounds = 0
+    total_score = 0
+    avg_delta = 0
+    player_matches = {}
+    player_rounds = {}
+    player_scores = {}
+    player_wins = {}
+    teams = {}
+    oldest_time = None
+    newest_time = None
 
-      def team_win_count(team_key, team, win_team, match_rounds):
-        if team_key not in teams:
-          teams[team_key] = (0, 0)
-        t = teams[team_key]
-        teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
+    def player_score_count(team, score):
+      for player in team:
+        if player not in player_scores:
+          player_scores[player] = 0
+        player_scores[player] += score
+        if player not in player_matches:
+          player_matches[player] = 0
+        player_matches[player] += 1
 
-      now = datetime.utcnow()
-      for match in matches:
-        match_time = match[0]
-        if time_back_delta is not None and \
-           (now - time_back_delta) >= datetime.fromtimestamp(match_time):
-          continue
-        if time_filter is not None and not time_filter(match_time):
-          continue
+    def team_win_count(team_key, team, win_team, match_rounds):
+      if team_key not in teams:
+        teams[team_key] = (0, 0)
+      t = teams[team_key]
+      teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
 
-        self.__matches += 1
+    now = datetime.utcnow()
+    for match in matches:
+      match_time = match[0]
+      if time_back_delta is not None and \
+         (now - time_back_delta) >= datetime.fromtimestamp(match_time):
+        continue
+      if time_filter is not None and not time_filter(match_time):
+        continue
 
-        if oldest_time is None and newest_time is None:
-          oldest_time = match_time
-          newest_time = match_time
-        elif match_time < oldest_time:
-          oldest_time = match_time
-        elif match_time > newest_time:
-          newest_time = match_time
+      self.__matches += 1
 
-        team_a = match[1]
-        team_a.sort()
-        team_a_key = ",".join(team_a)  # lists/sets aren't hashable so turn into string.
-        score_a = match[2]
-        team_b = match[3]
-        team_b.sort()
-        team_b_key = ",".join(team_b)  # Make hashable.
-        score_b = match[4]
-        total_score += score_a + score_b
-        avg_delta += abs(score_a - score_b)
-        player_score_count(team_a, score_a)
-        player_score_count(team_b, score_b)
-        win_team = team_a
-        win_score = score_a
-        if score_b > score_a:
-          win_team = team_b
-          win_score = score_b
+      if oldest_time is None and newest_time is None:
+        oldest_time = match_time
+        newest_time = match_time
+      elif match_time < oldest_time:
+        oldest_time = match_time
+      elif match_time > newest_time:
+        newest_time = match_time
 
-        # Count rounds won.
-        match_rounds = (win_score // 8)
-        rounds += match_rounds
+      team_a = match[1]
+      team_a.sort()
+      team_a_key = ",".join(team_a)  # lists/sets aren't hashable so turn into string.
+      score_a = match[2]
+      team_b = match[3]
+      team_b.sort()
+      team_b_key = ",".join(team_b)  # Make hashable.
+      score_b = match[4]
+      total_score += score_a + score_b
+      avg_delta += abs(score_a - score_b)
+      player_score_count(team_a, score_a)
+      player_score_count(team_b, score_b)
+      win_team = team_a
+      win_score = score_a
+      if score_b > score_a:
+        win_team = team_b
+        win_score = score_b
 
-        # Count rounds and wins for team configurations.
-        team_win_count(team_a_key, team_a, win_team, match_rounds)
-        team_win_count(team_b_key, team_b, win_team, match_rounds)
+      # Count rounds won.
+      match_rounds = (win_score // 8)
+      rounds += match_rounds
 
-        for player in win_team:
-          if player not in player_wins:
-            player_wins[player] = 0
-          player_wins[player] += match_rounds
-        for player in team_a + team_b:
-          if player not in player_rounds:
-            player_rounds[player] = 0
-          player_rounds[player] += match_rounds
+      # Count rounds and wins for team configurations.
+      team_win_count(team_a_key, team_a, win_team, match_rounds)
+      team_win_count(team_b_key, team_b, win_team, match_rounds)
 
-      self.__rounds = rounds
-      self.__team_amount = len(teams)
-      self.__total_score = total_score
-      self.__avg_score = 0
-      self.__avg_delta = 0
-      if self.__matches > 0:
-        self.__avg_score = total_score / self.__matches
-        self.__avg_delta = avg_delta / self.__matches
-      self.__oldest_score_time = oldest_time
-      self.__newest_score_time = newest_time
+      for player in win_team:
+        if player not in player_wins:
+          player_wins[player] = 0
+        player_wins[player] += match_rounds
+      for player in team_a + team_b:
+        if player not in player_rounds:
+          player_rounds[player] = 0
+        player_rounds[player] += match_rounds
 
-      # Average all players' total scores and won rounds by the amount of rounds they played.
-      for player in player_scores:
-        player_scores[player] /= player_rounds[player]
-      for player in player_wins:
-        player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
+    self.__rounds = rounds
+    self.__team_amount = len(teams)
+    self.__total_score = total_score
+    self.__avg_score = 0
+    self.__avg_delta = 0
+    if self.__matches > 0:
+      self.__avg_score = total_score / self.__matches
+      self.__avg_delta = avg_delta / self.__matches
+    self.__oldest_score_time = oldest_time
+    self.__newest_score_time = newest_time
 
-      # Substitute all team wins with the ratio of winning compared to rounds played.
-      teams = {team: (scores[0] / scores[1], scores[1]) for (team, scores) in teams.items()}
+    # Average all players' total scores and won rounds by the amount of rounds they played.
+    for player in player_scores:
+      player_scores[player] /= player_rounds[player]
+    for player in player_wins:
+      player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
 
-      def to_list(dict_):
-        ranking = [(p, dict_[p]) for p in dict_]
-        return ranking
+    # Substitute all team wins with the ratio of winning compared to rounds played.
+    teams = {team: (scores[0] / scores[1], scores[1]) for (team, scores) in teams.items()}
 
-      # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
-      # nudge factor only count a 1/1000th.
-      self.__top_scorers = to_list(player_scores)
+    def to_list(dict_):
+      ranking = [(p, dict_[p]) for p in dict_]
+      return ranking
 
-      def top_scorers_cmp(pair):
-        res = pair[1]
-        if pair[0] in player_wins:
-          res += player_wins[pair[0]] / 10000
-        return res
-      self.__top_scorers.sort(key=top_scorers_cmp, reverse=True)
-      self.__top_winners = to_list(player_wins)
+    # Sort players/teams with greatest scores and wins first, and a secondary factor. Make every
+    # nudge factor only count a 1/1000th.
+    self.__top_scorers = to_list(player_scores)
 
-      def top_winners_cmp(pair):
-        res = pair[1]
-        if pair[0] in player_scores:
-          res += player_scores[pair[0]] / 800
-        return res
+    def top_scorers_cmp(pair):
+      res = pair[1]
+      if pair[0] in player_wins:
+        res += player_wins[pair[0]] / 10000
+      return res
+    self.__top_scorers.sort(key=top_scorers_cmp, reverse=True)
+    self.__top_winners = to_list(player_wins)
 
-      self.__top_winners.sort(key=top_winners_cmp, reverse=True)
+    def top_winners_cmp(pair):
+      res = pair[1]
+      if pair[0] in player_scores:
+        res += player_scores[pair[0]] / 800
+      return res
 
-      self.__top_scoring_teams = [(t.split(","), s) for t, s in teams.items()]
-      self.__top_teamwork_teams = [(t.split(","), s) for t, s in teams.items()]
+    self.__top_winners.sort(key=top_winners_cmp, reverse=True)
 
-      def teams_player_score_key(pair):
-        scores = [player_scores[p] for p in pair[0].split(",")]
-        avg_score = sum(scores) / len(scores)
-        # Individual player score average is tie breaker
-        return avg_score / 800 + pair[1][0]
+    self.__top_scoring_teams = [(t.split(","), s) for t, s in teams.items()]
+    self.__top_teamwork_teams = [(t.split(","), s) for t, s in teams.items()]
 
-      self.__top_scoring_teams.sort(key=teams_player_score_key, reverse=False)
+    def teams_player_score_key(pair):
+      scores = [player_scores[p] for p in pair[0]]
+      avg_score = sum(scores) / len(scores)
+      # Individual player score average is tie breaker
+      return avg_score / 800 + pair[1][0]
 
-      def teams_teamwork_key(pair):
-        player_skill = PlayerSkill.get()
-        return player_skill.get_teamwork_factor(pair[0].split(","))
+    self.__top_scoring_teams.sort(key=teams_player_score_key, reverse=True)
 
-      self.__top_teamwork_teams.sort(key=teams_teamwork_key, reverse=True)
+    def teams_teamwork_key(pair):
+      player_skill = PlayerSkill.get()
+      return player_skill.get_teamwork_factor(pair[0])
 
-      # Personal player info.
-      for player in player_matches:  # pylint: disable=consider-using-enumerate
-        info = {
-          "total_matches": player_matches[player] if player in player_matches else 0,
-          "total_rounds": player_rounds[player] if player in player_rounds else 0,
-          "total_score": player_scores[player] if player in player_scores else 0,
-          "total_wins": player_wins[player] if player in player_wins else 0,
-        }
-        self.__personal[player] = info
+    self.__top_teamwork_teams.sort(key=teams_teamwork_key, reverse=True)
+
+    # Personal player info.
+    for player in player_matches:  # pylint: disable=consider-using-dict-items
+      info = {
+        "total_matches": player_matches[player] if player in player_matches else 0,
+        "total_rounds": player_rounds[player] if player in player_rounds else 0,
+        "total_score": player_scores[player] if player in player_scores else 0,
+        "total_wins": player_wins[player] if player in player_wins else 0,
+      }
+      self.__personal[player] = info
     return True
 
   def general_response(self, lookup):
@@ -201,7 +201,7 @@ class Stats:
     top_players_score = self.__fmt_top(qualifying_scorers, top_range, lookup)
     qualifying_winners = self.__qualifying_players(self.__top_winners)
     top_players_rounds = self.__fmt_top(qualifying_winners, top_range, lookup)
-    top_teams = self.__fmt_top_teams(self.__top_teams, team_range, lookup)
+    top_scoring_teams = self.__fmt_top_teams(self.__top_scoring_teams, team_range, lookup)
     top_teamwork_teams = self.__fmt_top_teams(self.__top_teamwork_teams, team_range, lookup)
     return f"""
 Total matches: {self.__matches}
@@ -213,7 +213,7 @@ Average score: {self.__avg_score:.2f}
 Average delta: {self.__avg_delta:.2f}
 Top {top_amount} players (avg score / round): {top_players_score}
 Top {top_amount} players (% of rounds won): {top_players_rounds}
-Top {team_amount} teams (% of rounds won): {top_teams}
+Top {team_amount} teams (% of rounds won): {top_scoring_teams}
 Top {team_amount} teams (by TEAMWORK FACTOR): {top_teamwork_teams}
 """
 
@@ -350,10 +350,10 @@ You have been in {} teams: {}
 
   def __fmt_top(self, players, list_range, lookup):
     """Expects that `self.__personal` has already been filled!"""
-    if len(lst) == 0 or len(self.__personal.values()) == 0:
-      return
-
     res = ""
+
+    if len(players) == 0 or len(self.__personal.values()) == 0:
+      return res
 
     for index in list_range:
       if index >= len(players):
@@ -373,7 +373,7 @@ You have been in {} teams: {}
       return ""
 
     res = ""
-    max_played = max([t[1][1] for t in lst])
+    max_played = max(t[1][1] for t in lst)
     req_plays = max_played / 4
     qualifying_lst = [t for t in lst if t[1][1] > req_plays]
 

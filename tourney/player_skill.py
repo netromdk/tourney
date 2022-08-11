@@ -101,21 +101,20 @@ class PlayerSkill:
     factor = self.get_teamwork_factor(team)
     if factor > 1.5:
       return 5
-    elif factor > 1.25:
+    if factor > 1.25:
       return 4
-    elif factor > 0.75:
+    if factor > 0.75:
       return 3
-    elif factor > 0.5:
+    if factor > 0.5:
       return 2
-    else:
-      return 1
+    return 1
 
   def get_teamwork_factor(self, team):
     """The Teamwork Factor is defined as the ratio between the rating of
     the team and the calculated rating based on the individual ratings
     of the team members (which is just the average mu)
     """
-    team_skill = self.__team_skills[tuple(team)]
+    team_skill = self.__team_skills.get(tuple(team), Rating())
     team_skill_est = self.calc_team_skill(team)
     return team_skill.mu / team_skill_est.mu
 
@@ -149,32 +148,32 @@ class PlayerSkill:
       team_a_skills = [self.get_player_skill(p) for p in team_a]
 
       # Use by-team rating if confidence is high enough
-      if team_a_skill.sigma < sum([r.sigma for r in team_a_skills]) / len(team_a_skills):
+      if team_a_skill.sigma < sum(r.sigma for r in team_a_skills) / len(team_a_skills):
         team_a_skills = [team_a_skill]
 
       team_b_skill = self.get_team_skill(team_b)
       team_b_skills = [self.get_player_skill(p) for p in team_b]
 
       # Use by-team rating if confidence is high enough
-      if team_b_skill.sigma < sum([r.sigma for r in team_b_skills]) / len(team_b_skills):
+      if team_b_skill.sigma < sum(r.sigma for r in team_b_skills) / len(team_b_skills):
         team_b_skills = [team_b_skill]
 
       return quality([team_a_skills, team_b_skills])
-    else:
-      # Unmatched teams, aggregate team skill and rate as 1vs1
-      # Use team skills if confidence is better
-      team_a_skill = self.get_team_skill(team_a)
-      team_a_skill_calc = self.calc_team_skill(team_a)
 
-      team_b_skill = self.get_team_skill(team_b)
-      team_b_skill_calc = self.calc_team_skill(team_b)
+    # Unmatched teams, aggregate team skill and rate as 1vs1
+    # Use team skills if confidence is better
+    team_a_skill = self.get_team_skill(team_a)
+    team_a_skill_calc = self.calc_team_skill(team_a)
 
-      if team_a_skill_calc.sigma < team_a_skill.sigma:
-        team_a_skill = team_a_skill_calc
-      if team_b_skill_calc.sigma < team_b_skill.sigma:
-        team_b_skill = team_b_skill_calc
+    team_b_skill = self.get_team_skill(team_b)
+    team_b_skill_calc = self.calc_team_skill(team_b)
 
-      return quality_1vs1(team_a_skill, team_b_skill)
+    if team_a_skill_calc.sigma < team_a_skill.sigma:
+      team_a_skill = team_a_skill_calc
+    if team_b_skill_calc.sigma < team_b_skill.sigma:
+      team_b_skill = team_b_skill_calc
+
+    return quality_1vs1(team_a_skill, team_b_skill)
 
   def rate_uneven_match(self, win_team, lose_team):
     """Rates a match between differently-sized teams implementation,
