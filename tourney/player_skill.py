@@ -97,30 +97,12 @@ class PlayerSkill:
     team_skill = Rating(mu=avg_mu, sigma=avg_sigma)
     return team_skill
 
-  def __modify_team_sigmas_by_mu_ratio(self, team_skills):
-    """Modify team sigmas by mu ratio such that the difference in skill is taken into consideration.
-    A strong player and a less strong player won't likely be matched up against two strong players
-    when this is done. And it means players won't always play the same group of persons, too.
-    """
-    mus = [r.mu for r in team_skills]
-    mu_diff = mus[0]
-    for mu in mus[1:]:
-      mu_diff -= mu
-    mu_diff = abs(mu_diff)
-    mu_ratio = (1.0 / (mu_diff / max(mus)))
-    res_skills = []
-    for p in team_skills:
-      res_skills.append(Rating(mu=p.mu, sigma=p.sigma + p.sigma * (mu_ratio / max(mus))))
-    return res_skills
-
   def get_match_quality(self, match):
     team_a, team_b = match[0], match[1]
     # Two teams in one match, number of rounds ignored
     if len(match[0]) == len(match[1]):
       team_a_skills = [self.get_player_skill(p) for p in team_a]
-      team_a_skills = self.__modify_team_sigmas_by_mu_ratio(team_a_skills)
       team_b_skills = [self.get_player_skill(p) for p in team_b]
-      team_b_skills = self.__modify_team_sigmas_by_mu_ratio(team_b_skills)
       return quality([team_a_skills, team_b_skills])
 
     # Unmatched teams, aggregate team skill and rate as 1vs1
