@@ -283,6 +283,7 @@ You have been in {} teams: {}
     self.__top_scorers = []
     self.__top_winners = []
     self.__top_scoring_teams = []
+    self.__top_teamwork_teams = []
     self.__personal = {}
 
   def save(self):
@@ -298,6 +299,7 @@ You have been in {} teams: {}
       "top_scorers": self.__top_scorers,
       "top_winners": self.__top_winners,
       "top_scoring_teams": self.__top_scoring_teams,
+      "top_teamwork_teams": self.__top_teamwork_teams,
       "personal": self.__personal
     }
     os.makedirs(os.path.dirname(self.file_path()), exist_ok=True)
