@@ -145,18 +145,22 @@ class PlayerSkill:
       # Compensate player skills for high skill delta
       # Use team skills if confidence is better than average sigma
       team_a_skill = self.get_team_skill(team_a)
-      team_a_skills = [self.get_player_skill(p) for p in team_a]
 
-      # Use by-team rating if confidence is high enough
-      if team_a_skill.sigma < sum(r.sigma for r in team_a_skills) / len(team_a_skills):
+      # Use by-team rating if confidence is better than the default
+      # starting confidence.
+      if team_a_skill.sigma < Rating().sigma:
         team_a_skills = [team_a_skill]
+      else:
+        team_a_skills = [self.get_player_skill(p) for p in team_a]
 
       team_b_skill = self.get_team_skill(team_b)
-      team_b_skills = [self.get_player_skill(p) for p in team_b]
 
-      # Use by-team rating if confidence is high enough
-      if team_b_skill.sigma < sum(r.sigma for r in team_b_skills) / len(team_b_skills):
+      # Use by-team rating if confidence is better than the default
+      # starting confidence.
+      if team_b_skill.sigma < Rating().sigma:
         team_b_skills = [team_b_skill]
+      else:
+        team_b_skills = [self.get_player_skill(p) for p in team_b]
 
       return quality([team_a_skills, team_b_skills])
 
