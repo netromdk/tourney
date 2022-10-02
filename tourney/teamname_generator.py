@@ -349,7 +349,6 @@ TEAM_NAME_PARTS = {
       'Bone',
       'Cat',
       'Cauldron',
-      'Cemetary',
       'Cobweb',
       'Costume',
       'Crypt',
