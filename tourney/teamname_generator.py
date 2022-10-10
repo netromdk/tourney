@@ -352,7 +352,7 @@ TEAM_NAME_PARTS = {
       'Cobweb',
       'Costume',
       'Crypt',
-      'Cryptids',
+      'Cryptid',
       'Demon',
       'Devil',
       'Fang',
