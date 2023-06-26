@@ -41,7 +41,7 @@ class ScoreCommand(Command):
 
     response = None
     if team_a in r and team_b in r and team_a_score >= 0 and team_b_score >= 0 and \
-       (team_a_score % 8 == 0 or team_b_score % 8 == 0):
+       max([team_a_score, team_b_score]) % 8 == 0:
       key = [team_a, team_b]
       key.sort()
       if key in unrecorded_matches:
@@ -96,7 +96,7 @@ class ScoreCommand(Command):
     if response is None:
       response = """
 Invalid arguments!
-Teams must be input like 'T1' and scores must be positive and one be divisible by 8.
+Teams must be input like 'T1' and scores must be positive and the largest be divisible by 8.
 Example: {}
 """.format(example)
 
