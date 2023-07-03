@@ -5,6 +5,7 @@ from tourney.scores import Scores
 from tourney.state import State
 from tourney.achievements import Achievements, JoinBehavior
 from tourney.util import decorated_playername_list
+from tourney.starsigns import Starsign, Starsigns
 
 from .command import Command
 
@@ -20,10 +21,18 @@ class JoinCommand(Command):
     teams = state.teams()
     team_names = state.team_names()
 
+    response = ""
+    
+    starsigns = Starsigns.get()
+    if not starsigns.starsign(self.user_id()):
+      guess_str = starsigns.guess(self.user_id())
+      response += guess_str + '\n'
+
     created_teams = len(teams) > 0
     if created_teams:
       if any(self.user_id() in t for t in teams):
-        return "{}, you are _already_ on a team today!".format(user_name)
+        response += "{}, you are _already_ on a team today!".format(user_name)
+        return response
 
       scored_teams = []
       for score in Scores.get().today():
@@ -59,16 +68,20 @@ class JoinCommand(Command):
           # This response must be made public because it changes the team for other players!
           self.set_public(True)
 
-          return "{}, you've joined existing team\n{}\nwhich becomes:\n{}\n"\
+          response += "{}, you've joined existing team\n{}\nwhich becomes:\n{}\n"\
             "Check `!schedule` for overview.".\
             format(user_name, formatted_team_name, formatted_new_team_name)
+          return response
 
-      return "{}, you're too late. No late-joinable teams were found.".format(user_name)
+      response += "{}, you're too late. No late-joinable teams were found.".format(user_name)
+      return response
 
     if self.user_id() not in participants:
       state.add_participant(self.user_id())
       state.save()
       Achievements.get().interact(JoinBehavior(self.user_id()))
-      return "{}, you've joined today's game!".format(user_name)
+      response += "{}, you've joined today's game!".format(user_name)
+      return response
 
-    return "{}, you've _already_ joined today's game!".format(user_name)
+    response += "{}, you've _already_ joined today's game!".format(user_name)
+    return response
