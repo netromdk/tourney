@@ -14,6 +14,15 @@ class TieredAchievement(Achievement):
   def description(self):
     return self.__tiers[0][2]
 
+  # Convert from previously untiered achievement
+  def convert_from_untiered(self, user_id):
+    if user_id in self.data and isinstance(self.data[user_id], bool):
+      # Previous, untiered achievement scored
+      self.data[user_id] = [
+        1,  # Overall progress set to 1
+        0,  # First tier achieved
+      ]
+
   def achieved(self, user_id):
     self.check_init(user_id)
     return self.data[user_id][1] >= 0
@@ -22,9 +31,14 @@ class TieredAchievement(Achievement):
     self.check_init(user_id)
     return self.data[user_id][0]
 
+  # Increment progress (and bump tier if necessary)
   def inc_progress(self, user_id):
     self.check_init(user_id)
     self.data[user_id][0] += 1
+    if self.data[user_id][0] == self.next_tier(user_id):
+      self.data[user_id][1] += 1  # Bump tier
+      return True
+    return False
 
   def next_tier(self, user_id):
     self.check_init(user_id)
