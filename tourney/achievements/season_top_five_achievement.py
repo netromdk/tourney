@@ -15,6 +15,10 @@ class SeasonTopFiveAchievement(TieredAchievement):
          "while participating in a significant number of matches."),
       (12, "A Very Good Year", "End twelve seasons in the top five by wins "
          "while participating in a significant number of matches."),
+      (24, "Biennial", "End 24 seasons in the top five by wins "
+         "while participating in a significant number of matches."),
+      (36, "Third Age", "End 36 seasons in the top five by wins "
+         "while participating in a significant number of matches."),
     )
     super().__init__("SeasonTopFive", tiers)
 
@@ -67,7 +71,7 @@ class SeasonTopFiveAchievement(TieredAchievement):
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])
       nt = self.next_tier(user_id)
-      if amount == nt:
+      if amount >= nt:
         self.data[user_id][1] += 1
         return True
     return False

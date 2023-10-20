@@ -7,6 +7,8 @@ class ThreeVTwoWinAchievement(TieredAchievement):
       (1,   "Strength in Numbers", "In a three-player team, beat a two player team."),
       (10,  "E Pluribus", "In a three-player team, beat a two player team ten times."),
       (50,  "My Name is Legion", "In a three-player team, beat a two player team fifty times."),
+      (100,  "Polyrhythm Triplets Attacker",
+       "In a three-player team, beat a two player team 100 times."),
     )
     super().__init__("ThreeVTwoWin", tiers)
 
@@ -22,7 +24,7 @@ class ThreeVTwoWinAchievement(TieredAchievement):
       self.data[user_id][0] += 1
       amount = self.data[user_id][0]
       nt = self.next_tier(user_id)
-      if amount == nt:
+      if amount >= nt:
         self.data[user_id][1] += 1
         return True
     return False
