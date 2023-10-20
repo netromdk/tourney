@@ -182,7 +182,7 @@ class PlayerSkill:
     self.__player_skills["TESTUSER6"] = Rating(25)
     team_a = ("TESTUSER1", "TESTUSER2", "TESTUSER3")
     team_b = ("TESTUSER4", "TESTUSER5")
-    team_c = ("TESTUSER6")
+    team_c = ("TESTUSER6",)
 
     mquality = self.get_match_quality((team_a, team_a, 2))
     print("Mirror match quality: {}".format(mquality))

@@ -13,6 +13,7 @@ class SelfImprovementAchievement(TieredAchievement):
       (4,  "Better",   "Improve your end-of-season ranking four times."),
       (6,  "Faster",   "Improve your end-of-season ranking six times."),
       (12, "Stronger", "Improve your end-of-season ranking twelve times."),
+      (24, "Mightier", "Improve your end-of-season ranking twenty four times."),
     )
     super().__init__("SelfImprovement", tiers)
 
@@ -52,7 +53,7 @@ class SelfImprovementAchievement(TieredAchievement):
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])
       nt = self.next_tier(user_id)
-      if amount == nt:
+      if amount >= nt:
         self.data[user_id][1] += 1
         return True
 

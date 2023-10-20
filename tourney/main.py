@@ -389,7 +389,7 @@ def parse_events(events):
     # will leave game, and removing reaction will do the opposite action. But only if game is not
     # already started.
     elif event_type in ("reaction_added", "reaction_removed") and not created_teams:
-      added = (event_type == "reaction_added")
+      added = event_type == "reaction_added"
       pos = is_positive_reaction(event["reaction"])
       neg = is_negative_reaction(event["reaction"])
       ts = event["item"]["ts"]
