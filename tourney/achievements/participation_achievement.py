@@ -21,7 +21,8 @@ class ParticipationAchievement(TieredAchievement):
     self.check_init(user_id)
     self.data[user_id][0] += 1
     amount = self.data[user_id][0]
-    if amount >= self.next_tier(user_id):
+    nt = self.next_tier(user_id)
+    if nt is not None and amount >= nt:
       self.data[user_id][1] += 1
       return True
     return False

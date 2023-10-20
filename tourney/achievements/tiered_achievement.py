@@ -35,7 +35,8 @@ class TieredAchievement(Achievement):
   def inc_progress(self, user_id):
     self.check_init(user_id)
     self.data[user_id][0] += 1
-    if self.data[user_id][0] == self.next_tier(user_id):
+    nt = self.next_tier(user_id)
+    if nt is not None and self.data[user_id][0] >= nt:
       self.data[user_id][1] += 1  # Bump tier
       return True
     return False
