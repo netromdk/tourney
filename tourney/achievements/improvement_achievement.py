@@ -53,7 +53,7 @@ class SelfImprovementAchievement(TieredAchievement):
       self.data[user_id][0].append(last_season)
       amount = len(self.data[user_id][0])
       nt = self.next_tier(user_id)
-      if amount >= nt:
+      if nt is not None and amount >= nt:
         self.data[user_id][1] += 1
         return True
 

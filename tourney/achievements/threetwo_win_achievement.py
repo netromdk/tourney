@@ -24,7 +24,7 @@ class ThreeVTwoWinAchievement(TieredAchievement):
       self.data[user_id][0] += 1
       amount = self.data[user_id][0]
       nt = self.next_tier(user_id)
-      if amount >= nt:
+      if nt is not None and amount >= nt:
         self.data[user_id][1] += 1
         return True
     return False
