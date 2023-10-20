@@ -99,7 +99,7 @@ class Stats:
         win_score = score_b
 
       # Count rounds won.
-      match_rounds = (win_score // 8)
+      match_rounds = win_score // 8
       rounds += match_rounds
 
       # Count rounds and wins for team configurations.
