@@ -51,7 +51,14 @@ class JoinCommand(Command):
 
           formatted_team_name = "[T{}] *{}*".format(new_team_index, team_name)
 
-          fmt = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
+          roled_names = [":shield: {}".format(lookup.user_name_by_id(new_team[0]))]
+          if len(new_team) > 1:
+            roled_names.append(":crossed_swords: {}".format(lookup.user_name_by_id(new_team[1])))
+          if len(new_team) > 2:
+            for p in new_team[2:]:
+              roled_names.append(":repeat: {}".format(lookup.user_name_by_id(p)))
+          fmt = ", ".join(roled_names)
+
           formatted_new_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
 
           # This response must be made public because it changes the team for other players!
