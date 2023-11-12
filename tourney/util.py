@@ -1,5 +1,6 @@
 import re
 from datetime import date, datetime
+from random import choice
 
 from .constants import PRIVILEGED_COMMANDS, POSITIVE_REACTIONS, NEGATIVE_REACTIONS
 from .config import Config
@@ -82,6 +83,7 @@ def schedule_text(lookup, mention_next=False):
   sched = state.schedule()
   teams = state.teams()
   names = state.team_names()
+  indent = "     "
 
   if len(sched) == 0:
     return "There is no schedule yet!"
@@ -90,15 +92,43 @@ def schedule_text(lookup, mention_next=False):
   played = scores.today()
   ps = PlayerSkill.get()
 
-  def team_str(members, mention=False):
+  def playername_str(uid, mention=False):
     if mention:
-      return ", ".join(["<@{}>".format(uid) for uid in members])
-    return ", ".join([lookup.user_name_by_id(uid) for uid in members])
+      return "<@{}>".format(uid)
+    return lookup.user_name_by_id(uid)
 
-  res = "Schedule:"
+  def output_team_block(team_num, members, team_name, team_score, winner):
+    t_res = 2 * indent
+    t_res += " [T{}] *{}*".format(team_num, team_name)
+    if team_score:
+      winner_text = " :sports_medal:" if winner else ""
+      t_res += " *({} pts{})*".format(team_score, winner_text)
+
+    t_res += "\n"
+
+    if len(members) == 1:
+      solo_emotes = [
+        'unicorn_face',
+        'muscle',
+        'godmode',
+        'weight_lifter',
+        'sweat_drops']
+      t_res += 3 * indent
+      t_res += ":{}: {}\n"\
+        .format(choice(solo_emotes), playername_str(members[0], mention))  # nosec
+    else:
+      defense_emote = 'shield'
+      offense_emote = 'crossed_swords'
+      rotate_emote = 'repeat'
+      t_res += 3 * indent + ":{}: {}\n".format(defense_emote, playername_str(members[0], mention))
+      t_res += 3 * indent + ":{}: {}\n".format(offense_emote, playername_str(members[1], mention))
+      for m in members[2:]:
+        t_res += 3 * indent + ":{}: {}\n".format(rotate_emote, playername_str(m, mention))
+    return t_res
+
+  res = "Schedule:\n"
   previous_played = False
   for match in sched:
-    plural = "s" if match[2] > 1 else ""
     name_a = names[match[0]]
     team_a = teams[match[0]]
     team_a_score = None
@@ -122,10 +152,8 @@ def schedule_text(lookup, mention_next=False):
         break
 
     mention = mention_next and not is_played and previous_played
-    team_a_str = team_str(team_a, mention)
-    team_b_str = team_str(team_b, mention)
 
-    res += "\n\t"
+    res += indent
 
     if is_played:
       res += ":heavy_check_mark:"
@@ -134,17 +162,15 @@ def schedule_text(lookup, mention_next=False):
     else:
       res += ":hourglass_flowing_sand:"
 
-    def output_block(team_num, team_name, team_members, team_score, opp_score):
-      res = " [T{}] *{}*: {}".format(team_num, team_name, team_members)
-      if team_score is not None:
-        winner_text = " :sports_medal:" if team_score > opp_score else ""
-        res += " *({} pts{})*".format(team_score, winner_text)
-      return res
+    plural = "s" if match[2] > 1 else ""
+    res += "*Match {}* - ({} round{}, {:.2f}% quality)\n"\
+      .format(sched.index(match), match[2], plural, quality)
 
-    block_a = output_block(match[0], name_a, team_a_str, team_a_score, team_b_score)
-    block_b = output_block(match[1], name_b, team_b_str, team_b_score, team_a_score)
-    res += "{} vs. {}".format(block_a, block_b)
-    res += " ({} round{}, {:.2f}% quality)".format(match[2], plural, quality)
+    team_a_win = team_a_score and team_a_score > team_b_score
+    res += output_team_block(match[0], team_a, name_a, team_a_score, team_a_win)
+    res += 5 * indent + ":vs:\n"
+    team_b_win = team_b_score and team_b_score > team_a_score
+    res += output_team_block(match[1], team_b, name_b, team_b_score, team_b_win)
 
     previous_played = is_played
   return res
