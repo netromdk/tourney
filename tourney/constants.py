@@ -100,6 +100,16 @@ NEGATIVE_REACTIONS = [
   "x",
 ]
 
+DEFENSE_EMOTE = 'shield'
+OFFENSE_EMOTE = 'crossed_swords'
+ROTATE_EMOTE = 'repeat'
+SOLO_EMOTES = [
+  'unicorn_face',
+  'muscle',
+  'godmode',
+  'weight_lifter',
+  'sweat_drops']
+
 PRIVILEGED_COMMANDS = [
   "autoupdate",
   "generate",
