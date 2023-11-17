@@ -172,12 +172,14 @@ def schedule_text(lookup, mention_next=False):
       winner_text = " :sports_medal:" if team_a_score > team_b_score else ""
       res += " *({} pts{})*".format(team_a_score, winner_text)
 
+      res += " vs. "
+
       players_b = playername_list(team_b, lookup, mention)
-      res += " vs. [T{}] *{}*: {}".format(match[1], name_b, ", ".join(players_b))
+      res += "[T{}] *{}*: {}".format(match[1], name_b, ", ".join(players_b))
       winner_text = " :sports_medal:" if team_b_score > team_a_score else ""
       res += " *({} pts{})*".format(team_b_score, winner_text)
 
-      res += "({} round{}, {:.2f}% quality)\n".format(match[2], plural, quality)
+      res += " ({} round{}, {:.2f}% quality)\n".format(match[2], plural, quality)
     else:
       if previous_played:
         res += ":soon: "
