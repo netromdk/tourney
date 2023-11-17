@@ -4,6 +4,7 @@ from tourney.teamname_generator import decorate_teamname
 from tourney.scores import Scores
 from tourney.state import State
 from tourney.achievements import Achievements, JoinBehavior
+from tourney.util import decorated_playername_list
 
 from .command import Command
 
@@ -51,15 +52,8 @@ class JoinCommand(Command):
 
           formatted_team_name = "[T{}] *{}*".format(new_team_index, team_name)
 
-          roled_names = [":shield: {}".format(lookup.user_name_by_id(new_team[0]))]
-          if len(new_team) > 1:
-            roled_names.append(":crossed_swords: {}".format(lookup.user_name_by_id(new_team[1])))
-          if len(new_team) > 2:
-            for p in new_team[2:]:
-              roled_names.append(":repeat: {}".format(lookup.user_name_by_id(p)))
-          fmt = ", ".join(roled_names)
-
-          formatted_new_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, fmt)
+          plist = decorated_playername_list(new_team, lookup)
+          formatted_new_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, plist)
 
           # This response must be made public because it changes the team for other players!
           self.set_public(True)

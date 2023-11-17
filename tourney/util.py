@@ -3,6 +3,7 @@ from datetime import date, datetime
 from random import choice
 
 from .constants import PRIVILEGED_COMMANDS, POSITIVE_REACTIONS, NEGATIVE_REACTIONS
+from .constants import OFFENSE_EMOTE, DEFENSE_EMOTE, ROTATE_EMOTE, SOLO_EMOTES
 from .config import Config
 from .state import State
 from .scores import Scores
@@ -78,6 +79,30 @@ def to_ordinal(number):
     suffix = '{}th'
   return suffix.format(number)
 
+def playername_str(uid, lookup, mention=False):
+  if mention:
+    return "<@{}>".format(uid)
+  return lookup.user_name_by_id(uid)
+
+def playername_list(team, lookup, mention):
+  return [playername_str(p, lookup, mention) for p in team]
+
+def decorated_playername_list(team, lookup, mention=False):
+  if len(team) == 1:
+    solo_emote = choice(SOLO_EMOTES)  # nosec
+    decorated_names = [":{}: {}"
+                       .format(solo_emote, playername_str(team[0], lookup, mention))]
+  else:
+    decorated_names = [":{}: {}"
+                       .format(DEFENSE_EMOTE, playername_str(team[0], lookup, mention))]
+  if len(team) > 1:
+    decorated_names.append(":{}: {}"
+                           .format(OFFENSE_EMOTE, playername_str(team[1], lookup, mention)))
+  if len(team) > 2:
+    for p in team[2:]:
+      decorated_names.append(":{}: {}".format(ROTATE_EMOTE, playername_str(p, lookup, mention)))
+  return decorated_names
+
 def schedule_text(lookup, mention_next=False):
   state = State.get()
   sched = state.schedule()
@@ -92,12 +117,7 @@ def schedule_text(lookup, mention_next=False):
   played = scores.today()
   ps = PlayerSkill.get()
 
-  def playername_str(uid, mention=False):
-    if mention:
-      return "<@{}>".format(uid)
-    return lookup.user_name_by_id(uid)
-
-  def output_team_block(team_num, members, team_name, team_score, winner):
+  def large_team_block(team_num, members, team_name, team_score, winner):
     t_res = 2 * indent
     t_res += " [T{}] *{}*".format(team_num, team_name)
     if team_score:
@@ -106,24 +126,12 @@ def schedule_text(lookup, mention_next=False):
 
     t_res += "\n"
 
-    if len(members) == 1:
-      solo_emotes = [
-        'unicorn_face',
-        'muscle',
-        'godmode',
-        'weight_lifter',
-        'sweat_drops']
+    dec_players = decorated_playername_list(members, lookup, mention)
+    for dec_player in dec_players:
       t_res += 3 * indent
-      t_res += ":{}: {}\n"\
-        .format(choice(solo_emotes), playername_str(members[0], mention))  # nosec
-    else:
-      defense_emote = 'shield'
-      offense_emote = 'crossed_swords'
-      rotate_emote = 'repeat'
-      t_res += 3 * indent + ":{}: {}\n".format(defense_emote, playername_str(members[0], mention))
-      t_res += 3 * indent + ":{}: {}\n".format(offense_emote, playername_str(members[1], mention))
-      for m in members[2:]:
-        t_res += 3 * indent + ":{}: {}\n".format(rotate_emote, playername_str(m, mention))
+      t_res += dec_player
+      t_res += "\n"
+
     return t_res
 
   res = "Schedule:\n"
@@ -155,22 +163,33 @@ def schedule_text(lookup, mention_next=False):
 
     res += indent
 
+    plural = "s" if match[2] > 1 else ""
+
     if is_played:
       res += ":heavy_check_mark:"
-    elif previous_played:
-      res += ":soon:"
+      players_a = playername_list(team_a, lookup, mention)
+      res += "[T{}] *{}*: {}".format(match[0], name_a, ", ".join(players_a))
+      winner_text = " :sports_medal:" if team_a_score > team_b_score else ""
+      res += " *({} pts{})*".format(team_a_score, winner_text)
+
+      players_b = playername_list(team_b, lookup, mention)
+      res += " vs. [T{}] *{}*: {}".format(match[1], name_b, ", ".join(players_b))
+      winner_text = " :sports_medal:" if team_b_score > team_a_score else ""
+      res += " *({} pts{})*".format(team_b_score, winner_text)
+
+      res += "({} round{}, {:.2f}% quality)\n".format(match[2], plural, quality)
     else:
-      res += ":hourglass_flowing_sand:"
-
-    plural = "s" if match[2] > 1 else ""
-    res += "*Match {}* - ({} round{}, {:.2f}% quality)\n"\
-      .format(sched.index(match), match[2], plural, quality)
-
-    team_a_win = team_a_score and team_a_score > team_b_score
-    res += output_team_block(match[0], team_a, name_a, team_a_score, team_a_win)
-    res += 5 * indent + ":vs:\n"
-    team_b_win = team_b_score and team_b_score > team_a_score
-    res += output_team_block(match[1], team_b, name_b, team_b_score, team_b_win)
+      if previous_played:
+        res += ":soon: "
+      else:
+        res += ":hourglass_flowing_sand: "
+      res += "*Match {}* - ({} round{}, {:.2f}% quality)\n"\
+        .format(sched.index(match), match[2], plural, quality)
+      team_a_win = team_a_score and team_a_score > team_b_score
+      res += large_team_block(match[0], team_a, name_a, team_a_score, team_a_win)
+      res += 5 * indent + ":vs:\n"
+      team_b_win = team_b_score and team_b_score > team_a_score
+      res += large_team_block(match[1], team_b, name_b, team_b_score, team_b_win)
 
     previous_played = is_played
   return res

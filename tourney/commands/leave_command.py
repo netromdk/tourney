@@ -1,6 +1,7 @@
 from tourney.teamname_generator import decorate_teamname
 from tourney.state import State
 from tourney.achievements import Achievements, LeaveBehavior
+from tourney.util import decorated_playername_list
 
 from .command import Command
 
@@ -38,10 +39,11 @@ class LeaveCommand(Command):
             new_team = [p for p in team if p != user_id]
             new_teams.append(new_team)
 
-            user_list = ", ".join([lookup.user_name_by_id(uid) for uid in new_team])
             formatted_team_name = "[T{}] *{}*".format(team_index, team_name)
+
+            plist = decorated_playername_list(new_team, lookup)
             formatted_new_team_name = "[T{}] *{}* ({})".\
-              format(team_index, new_team_name, user_list)
+              format(team_index, new_team_name, plist)
 
             response += "{}, you have left team\n{}\nwhich becomes\n{}\n".\
               format(user_name, formatted_team_name, formatted_new_team_name)
