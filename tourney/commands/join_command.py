@@ -53,7 +53,8 @@ class JoinCommand(Command):
           formatted_team_name = "[T{}] *{}*".format(new_team_index, team_name)
 
           plist = decorated_playername_list(new_team, lookup)
-          formatted_new_team_name = "[T{}] *{}*: {}".format(new_team_index, new_team_name, plist)
+          formatted_new_team_name = "[T{}] *{}*: {}".\
+            format(new_team_index, new_team_name, ", ".join(plist))
 
           # This response must be made public because it changes the team for other players!
           self.set_public(True)

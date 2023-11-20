@@ -43,7 +43,7 @@ class LeaveCommand(Command):
 
             plist = decorated_playername_list(new_team, lookup)
             formatted_new_team_name = "[T{}] *{}* ({})".\
-              format(team_index, new_team_name, plist)
+              format(team_index, new_team_name, ", ".join(plist))
 
             response += "{}, you have left team\n{}\nwhich becomes\n{}\n".\
               format(user_name, formatted_team_name, formatted_new_team_name)
