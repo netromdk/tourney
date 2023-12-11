@@ -107,6 +107,9 @@ class Teams:
 
       teams.append(list(team))
 
+    # Random team order
+    for team in teams:
+      shuffle(team)  # nosec
     shuffle(teams)  # nosec
 
     self.save()
