@@ -7,8 +7,7 @@ from .constants import DATA_PATH
 western_zodiac = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces']
 chinese_zodiac = ['Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig']
 other = 'Unknown'
-zodiac_types = 
-    
+
 class Starsign:
     def __init__(self, name):
         self.__name = "Unknown"
@@ -16,34 +15,37 @@ class Starsign:
     def compatibility(self, other):
         if type(self) is UnknownStarsign and type(other) is UnknownStarsign:
             # Others are compatible
-            return 0.5 + random(0.5)  # nosec
+            return 0.9  # nosec
         if type(self) is WesternStarsign and type(other) is WesterstarSign:
             # Use source ... for western comparisons
             return 1
         else if type(self) is ChineseStarsign and type(other) is ChineseStarsign:
             # Use source https://www.lovetoknow.com/life/astrology/chinese-zodiac-marriage-combinations for chinese comparisons
             matrix ="""\
-                   RAT 	No long-lasting friendships, determined, ambitious 	Rat, Ox, Pig 	Dragon, Monkey, Tiger 	Snake, Ram, Rooster 	Rabbit, Horse, Dog
-                   OX 	Loner, inspiration to others, wonderful parent 	Monkey, Snake, Rat 	Ox, Rooster, Rabbit 	Dragon, Ram, Dog, Pig 	Tiger, Horse
-                   TIGER 	Brave, aggressive yet caring 	Horse, Dog, Pig 	Rat 	Tiger, Dragon, Snake, Rooster 	Rabbit, Ram, Monkey, Ox
-                   RABBIT 	Lucky and rather shy by affectionate 	Dragon, Pig, Ram 	Rabbit, Snake, Ox, Dog, Monkey 	Horse, Rooster 	Rat, Tiger
-                   DRAGON 	Robust and passionate about life 	Snake, Ram, Monkey, Rabbit 	Pig, Rooster, Rat 	Horse, Dog, Ox, Tiger 	Dragon
-                   SNAKE 	Hard-worker, friendly, calm 	Rooster, Dragon, Ox 	Rabbit 	Snake, Tiger, Horse, Ram, Monkey, Rat 	Dog, Pig
-                   HORSE 	Goal-oriented, See all sides, sense of humor 	Ram, Dog, Tiger 	Dragon 	Horse, Rooster, Pig, Rabbit, Snake 	Monkey, Rat, Ox
-                   RAM 	Homebody, social, artistic 	Rabbit, Pig, Dragon, Horse 	Monkey 	Ram, Rat, Ox, Snake 	Rooster, Dog, Tiger
-                   MONKEY 	Curious, playful, prankster 	Dragon, Ox 	Monkey, Rat, Rabbit, Ram 	Rooster, Dog, Pig, Snake 	Tiger, Horse
-                   ROOSTER 	Multi-Taskers, ambitious, expectant 	Pig, Snake 	Ox, Dragon 	Dog, Rat, Tiger, Rabbit, Horse, Monkey 	Rooster, Ram
-                   DOG 	Loyal, honest, leader 	Pig, Tiger Horse 	Rabbit 	Dog, Ox, Dragon, Monkey, Rooster 	Rat, Snake, Ram
-                   PIG 	Planner, leader, family-oriented 	Pig, Rat, Ram, Rabbit, Tiger, Rooster, Dog 	Dragon 	Ox, Horse, Monkey 	Snake """
-                   return 1
+                                Traits                                                  Ideal                                      Good                           Difficult                              Worst
+                   RAT          No long-lasting friendships, determined, ambitious      Rat, Ox, Pig                               Dragon, Monkey, Tiger          Snake, Ram, Rooster                    Rabbit, Horse, Dog
+                   OX           Loner, inspiration to others, wonderful parent          Monkey, Snake, Rat                         Ox, Rooster, Rabbit            Dragon, Ram, Dog, Pig                  Tiger, Horse
+                   TIGER        Brave, aggressive yet caring                            Horse, Dog, Pig                            Rat                            Tiger, Dragon, Snake, Rooster          Rabbit, Ram, Monkey, Ox
+                   RABBIT       Lucky and rather shy by affectionate                    Dragon, Pig, Ram                           Rabbit, Snake, Ox, Dog, Monkey Horse, Rooster                         Rat, Tiger
+                   DRAGON       Robust and passionate about life                        Snake, Ram, Monkey, Rabbit                 Pig, Rooster, Rat              Horse, Dog, Ox, Tiger                  Dragon
+                   SNAKE        Hard-worker, friendly, calm                             Rooster, Dragon, Ox                        Rabbit                         Snake, Tiger, Horse, Ram, Monkey, Rat  Dog, Pig
+                   HORSE        Goal-oriented, See all sides, sense of humor            Ram, Dog, Tiger                            Dragon                         Horse, Rooster, Pig, Rabbit, Snake     Monkey, Rat, Ox
+                   RAM          Homebody, social, artistic                              Rabbit, Pig, Dragon, Horse                 Monkey                         Ram, Rat, Ox, Snake                    Rooster, Dog, Tiger
+                   MONKEY       Curious, playful, prankster                             Dragon, Ox                                 Monkey, Rat, Rabbit, Ram       Rooster, Dog, Pig, Snake               Tiger, Horse
+                   ROOSTER      Multi-Taskers, ambitious, expectant                     Pig, Snake                                 Ox, Dragon                     Dog, Rat, Tiger, Rabbit, Horse, Monkey Rooster, Ram
+                   DOG          Loyal, honest, leader                                   Pig, Tiger Horse                           Rabbit                         Dog, Ox, Dragon, Monkey, Rooster       Rat, Snake, Ram
+                   PIG          Planner, leader, family-oriented                        Pig, Rat, Ram, Rabbit, Tiger, Rooster, Dog Dragon                         Ox, Horse, Monkey                      Snake """
+            return 1
         else if type(self) is ChineseStarsign and type(other) is WesternStarsign or type(self) is WesternStarsign and type(other) is ChineseStarsign:
             # East/West mix
             if type(self) is ChineseStarsign:
                 east = self
                 west = other
+                return 0.5
             else:
                 east = other
                 west = self
+                return 0.5
             return 0.5
         else:
             # Unknown mixes are incompatible
@@ -108,6 +110,18 @@ class ChineseStarsign(Starsign):
         return choice(guesses).format(self.__name)  # nosec
 
     def guess():
+        self.__name = choice(chinese_zodiac)  # nosec
+    def guess():
+
+
+    def sign():
+        return("Unknown")
+
+class UnknownStarsign(Starsign):
+    def __init__(self):
+        super.__init__()
+
+    def guess_str():
         guesses = [
             "Were you born on a distant planet?",
             "Were you born underground?",
@@ -123,17 +137,6 @@ class ChineseStarsign(Starsign):
             ]
         return "You don't seem to have a normal starsign. " + \
             choice(guesses) + " Terrestrial astrology may not apply to you."# nosec
-
-
-    def sign():
-        return("Unknown")
-
-class UnknownStarsign(Starsign):
-    def __init__(self):
-        super.__init__()
-
-    def guess_str():
-        return "You seem like you were born under the skies of a
         
 class Starsigns:
   __instance = None
