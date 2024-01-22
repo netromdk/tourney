@@ -5,7 +5,7 @@ from tourney.scores import Scores
 from tourney.state import State
 from tourney.achievements import Achievements, JoinBehavior
 from tourney.util import decorated_playername_list
-from tourney.starsigns import Starsign, Starsigns
+from tourney.starsigns import Starsigns
 
 from .command import Command
 
@@ -25,7 +25,7 @@ class JoinCommand(Command):
     
     starsigns = Starsigns.get()
     if not starsigns.starsign(self.user_id()):
-      guess_str = starsigns.guess(self.user_id())
+      guess_str = starsigns.guess_sign(self.user_id())
       response += guess_str + '\n'
 
     created_teams = len(teams) > 0
