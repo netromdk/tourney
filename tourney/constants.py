@@ -81,6 +81,7 @@ POSITIVE_REACTIONS = [
   "white_check_mark",
   "woman-gesturing-ok",
   "woman-raising-hand",
+  "100",
 ]
 
 NEGATIVE_REACTIONS = [
