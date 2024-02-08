@@ -65,6 +65,7 @@ POSITIVE_REACTIONS = [
   "keyvr",
   "keyshot",
   "ks",
+  "ksnr",
   "man-gesturing-ok",
   "man-raising-hand",
   "metal",
