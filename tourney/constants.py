@@ -63,6 +63,7 @@ POSITIVE_REACTIONS = [
   "heavy_plus_sign",
   "here",
   "keyvr",
+  "keyshot",
   "ks",
   "man-gesturing-ok",
   "man-raising-hand",
