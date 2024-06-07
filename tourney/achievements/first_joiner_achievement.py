@@ -11,6 +11,7 @@ class FirstJoinerAchievement(TieredAchievement):
       (10,  "Earliest Bird", "Be the first player to join ten times."),
       (25,  "Night Owl",     "Be the first player to join twenty five times."),
       (50,  "Pterosaur",     "Earliest of the birds! Be the first player to join fifty times."),
+      (100, "Hipster",       "Joined before it was cool! Be the first player to join one hundred times."),
     )
     super().__init__("FirstJoiner", tiers)
 
