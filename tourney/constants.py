@@ -2,8 +2,8 @@ import sys
 from datetime import time, timedelta
 
 # Special seasons, with off-season mixin chance
-SEASONS = {"easter": 0.01, "halloween": 0.1, "xmas": 0.05, "dune": 0.01}
-SEASON = None
+SEASONS = {"easter": 0.01, "halloween": 0.1, "xmas": 0.05, "dune": 0.01, "pirate_day": 0.1}
+SEASON = "pirate_day"
 
 # Will print all read events to stdout.
 DEBUG = False
