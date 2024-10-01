@@ -1,5 +1,5 @@
 from random import sample, choice, random, choices, shuffle
-from .constants import SEASON, SEASONS
+from .season_checker import SeasonChecker
 
 TEAM_NAMES = [
   "Air Farce",
@@ -828,18 +828,21 @@ def parts_for_season(season=None):
 
 def n_parts_by_season(n=1):
   # Decide how many parts to sample from each season
+  season_checker = SeasonChecker.get()
+  season = season_checker.get_season()
+
   nparts_by_season = {}
-  if SEASON is None:
-    p_none = 1 - sum(SEASONS.values())
-    # Split SEASONS into lists
-    seasons, probs = map(list, zip(*SEASONS.items()))
-    seasons.append(None)
-    probs.append(p_none)
-    part_seasons = choices(seasons, weights=probs, k=n)  # nosec
-    print(part_seasons)
+  if season is None:
+    seasons = season_checker.get_seasons()
+    season_mixins = [s.mixin for s in seasons]
+    season_names = [s.name for s in seasons]
+    p_none = 1 - sum(season_mixins)
+    season_names.append(None)
+    season_mixins.append(p_none)
+    part_seasons = choices(season_names, weights=season_mixins, k=n)  # nosec
     nparts_by_season = {s: part_seasons.count(s) for s in set(part_seasons)}
   else:
-    nparts_by_season[SEASON] = n
+    nparts_by_season[season] = n
 
   return nparts_by_season
 
@@ -911,7 +914,9 @@ def generate_teamnames(nteams):
 def generate_teamname():
   teamname = ""
   r = random()  # nosec
-  if r < 0.1 and SEASON is None:
+  season_checker = SeasonChecker.get()
+  season = season_checker.get_season()
+  if r < 0.1 and season is None:
     # Only use pre-defined teamnames outside of special seasons, p=0.1
     teamname = choice(TEAM_NAMES)  # nosec
   elif r < 0.9:
