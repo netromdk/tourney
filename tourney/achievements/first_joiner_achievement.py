@@ -6,12 +6,18 @@ from .behavior import JOIN_BEHAVIOR
 class FirstJoinerAchievement(TieredAchievement):
   def __init__(self):
     tiers = (
-      (1,   "Early Bird",    "Be the first player to join the game of the day."),
-      (5,   "Earlier Bird",  "Be the first player to join five times."),
-      (10,  "Earliest Bird", "Be the first player to join ten times."),
-      (25,  "Night Owl",     "Be the first player to join twenty five times."),
-      (50,  "Pterosaur",     "Earliest of the birds! Be the first player to join fifty times."),
-      (100, "Hipster",       "Joined before it was cool! Be the first player to join one hundred times."),
+      (1,   "Early Bird",
+       "Be the first player to join the game of the day."),
+      (5,   "Earlier Bird",
+       "Be the first player to join five times."),
+      (10,  "Earliest Bird",
+       "Be the first player to join ten times."),
+      (25,  "Night Owl",
+       "Be the first player to join twenty five times."),
+      (50,  "Pterosaur",
+       "Earliest of the birds! Be the first player to join fifty times."),
+      (100, "Hipster",
+       "Joined before it was cool! Be the first player to join one hundred times."),
     )
     super().__init__("FirstJoiner", tiers)
 
