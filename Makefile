@@ -12,6 +12,7 @@ setup-venv: clean-venv
 	virtualenv -p python3 .venv
 
 setup-reqs-venv: clean
+	.venv/bin/python -m pip install --upgrade pip
 	.venv/bin/pip install -r requirements.txt
 
 setup-reqs: clean
