@@ -1,6 +1,28 @@
 from .player_skill import PlayerSkill
 from .stats import Stats
 from .constants import PREFERRED_ROUNDS
+from .state import State
+from .teams import Teams
+from .teamnames import Teamnames
+from .teamname_generator import generate_teamnames
+
+def create_teams():
+  """Create teams and random team names."""
+  participants = State.get().participants()
+
+  teams = Teams.get().get_teams_for_players(participants)
+
+  if not teams:
+    return None, None
+
+  teamnames = Teamnames.get()
+  names = generate_teamnames(len(teams))
+  for (i, team) in enumerate(teams):
+    name = teamnames.teamname(team)
+    if name:
+      names[i] = name
+
+  return teams, names
 
 def all_team_combinations(teams):
   """Returns all combinations of pairs of teams"""

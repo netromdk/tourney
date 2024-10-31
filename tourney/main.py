@@ -12,8 +12,6 @@ from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, Score
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
   ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand
 from .state import State
-from .teamnames import Teamnames
-from .teamname_generator import generate_teamnames
 from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
   MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, \
@@ -27,7 +25,7 @@ from .teams import Teams
 from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
   schedule_text, is_positive_reaction, is_negative_reaction
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
-from .scheduler import create_schedule
+from .scheduler import create_teams, create_schedule
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -56,24 +54,6 @@ if DEMO:
     }
     return [event]
   client.rtm_read = wrap_rtm_read
-
-def create_teams():
-  """Create teams and random team names."""
-  participants = State.get().participants()
-
-  teams = Teams.get().get_teams_for_players(participants)
-
-  if not teams:
-    return None, None
-
-  teamnames = Teamnames.get()
-  names = generate_teamnames(len(teams))
-  for (i, team) in enumerate(teams):
-    name = teamnames.teamname(team)
-    if name:
-      names[i] = name
-
-  return teams, names
 
 def create_matches():
   state = State.get()
