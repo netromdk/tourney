@@ -18,14 +18,12 @@ from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
   MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, DEBUG, RTM_READ_DELAY, LOAD_TEST, \
   NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING, PREFERRED_ROUNDS
 from .scores import Scores
-from .player_skill import PlayerSkill
 from .config import Config
 from .stats import Stats
-from .teams import Teams
 from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
   schedule_text, is_positive_reaction, is_negative_reaction
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
-from .scheduler import create_teams, create_schedule
+from .scheduler import create_matches
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
@@ -54,59 +52,6 @@ if DEMO:
     }
     return [event]
   client.rtm_read = wrap_rtm_read
-
-def create_matches():
-  state = State.get()
-  response = "<!channel>\n"
-  teams, names = create_teams()
-
-  if teams is None:
-    response += "No games possible! At least 2 players are required!"
-  else:
-    # Whether or not to do matchmaking or random matchups.
-    if not MATCHMAKING:
-      rand_matches = True
-    else:
-      # 50% chance of random. Range is [0.0, 1.0)
-      rand_matches = random() < 0.5  # nosec
-
-    sched = create_schedule(teams, rand_matches)
-    unrecorded_matches = []
-    for match in sched:
-      key = [match[0], match[1]]
-      key.sort()
-      unrecorded_matches.append(key)
-
-    # Remember teams and unrecorded matches but clear participants, morning announce, and users that
-    # didn't want today's reminder.
-    state.set_schedule(sched)
-    state.set_teams(teams)
-    state.set_team_names(names)
-    state.set_unrecorded_matches(unrecorded_matches)
-
-    if len(teams) > 3 and rand_matches:
-      response += ":tractor::dash: {} :tractor::dash:\n\n".\
-        format("Today's matchups brought to you by the RANDOM FACTOR TRACTOR")
-
-    # Generate response for the channel.
-    response += schedule_text(lookup)
-
-    tteams = Teams.get()
-    (gen2p, gen3p) = tteams.get_regenerated_users()
-    regen_set = set(gen2p + gen3p)
-    if len(regen_set) > 0:
-      response += "\n\n:recycle: Regenerated teams for:\n"
-      for p in regen_set:
-        response += "  {}\n".format(lookup.user_name_by_id(p))
-
-  # Clean state
-  state.set_participants([])
-  state.set_morning_announce(None)
-  state.set_dont_remind_users([])
-  state.save()
-
-  channel_id = state.channel_id()
-  client.api_call("chat.postMessage", channel=channel_id, text=response)
 
 # If not running as a service then execute "autoupdate.sh" that will git pull and run tourney.py
 # again. Otherwise, it will run "update.sh" that will git pull only. In both cases this process will
@@ -242,7 +187,9 @@ def parse_command(event):
   # Special command handling.
   if command_allowed(command, user_id):
     if command == "generate":
-      create_matches()
+      matches = create_matches(lookup)
+      channel_id = state.channel_id()
+      client.api_call("chat.postMessage", channel=channel_id, text=matches)
     elif command == "autoupdate":
       autoupdate()
     elif command == "speak" and len(args) > 0:
@@ -432,7 +379,9 @@ def scheduled_actions():
   if start <= now < end and not state.midday_announce():
     state.set_midday_announce(True)
     state.save()
-    create_matches()
+    matches = create_matches(lookup)
+    channel_id = state.channel_id()
+    client.api_call("chat.postMessage", channel=channel_id, text=matches)
   elif now > end and state.midday_announce():
     print("Clearing midday announce")
     state.set_midday_announce(False)
