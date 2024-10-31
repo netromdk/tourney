@@ -6,7 +6,6 @@ from time import sleep, time
 from datetime import datetime, date
 import calendar
 from random import random
-from slackclient import SlackClient
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
@@ -26,7 +25,16 @@ from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, Se
 from .match_scheduling import create_matches
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
-client = SlackClient(bot_token)
+
+class FakeSlackClient:
+  """Remove eventually!"""
+  def api_call(self, method, **kwargs):
+    print("<<FAKE SLACK CLIENT>>: {}({})".format(method, kwargs))
+    return {
+      "user_id": "FAKE_USER_ID",
+    }
+
+client = FakeSlackClient()
 lookup = Lookup(client)
 
 # Change functionality in demo mode so that invoking API calls just prints to stdout, and reading
