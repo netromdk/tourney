@@ -23,7 +23,7 @@ from .stats import Stats
 from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
   schedule_text, is_positive_reaction, is_negative_reaction
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
-from .scheduler import create_matches
+from .match_scheduling import create_matches
 
 bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
 client = SlackClient(bot_token)
