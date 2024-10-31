@@ -6,6 +6,7 @@ from time import sleep, time
 from datetime import datetime, date
 import calendar
 from random import random
+from botbuilder.schema import Activity
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
@@ -23,8 +24,19 @@ from .util import command_allowed, unescape_text, this_season_filter, nth_last_s
   schedule_text, is_positive_reaction, is_negative_reaction
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 from .match_scheduling import create_matches
+from . import bot
 
-bot_token = os.environ.get("TOURNEY_BOT_TOKEN")
+bot_app_id = os.environ.get("TOURNEY_BOT_APP_ID", "")
+bot_app_password = os.environ.get("TOURNEY_BOT_APP_PASSWORD", "")
+bot_host = "localhost"
+bot_port = 3978
+
+async def handle_message_activity(activity: Activity) -> str | list[str]:
+  """TODO: Implement this!"""
+  return "test: " + activity.text
+
+bot_app = bot.init(app_id=bot_app_id, app_password=bot_app_password,
+                   message_activity_func=handle_message_activity)
 
 class FakeSlackClient:
   """Remove eventually!"""
@@ -440,14 +452,14 @@ def init():
     state.set_bot_id(client.api_call("auth.test")["user_id"])
   print("Tourney bot ID: {}".format(state.bot_id()))
 
-  # Find the channel ID of designated channel name.
-  if not DEMO and state.channel_id() is None:
-    channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
-    if channel_id is None:
-      print("Could not find ID for channel: {}".format(CHANNEL_NAME))
-      sys.exit(1)
-    state.set_channel_id(channel_id)
-  print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
+  ## Find the channel ID of designated channel name.
+  #if not DEMO and state.channel_id() is None:
+  #  channel_id = lookup.channel_id_by_name(CHANNEL_NAME)
+  #  if channel_id is None:
+  #    print("Could not find ID for channel: {}".format(CHANNEL_NAME))
+  #    sys.exit(1)
+  #  state.set_channel_id(channel_id)
+  #print("#{} channel ID: {}".format(CHANNEL_NAME, state.channel_id()))
 
   state.save()
 
@@ -473,10 +485,13 @@ def start_tourney():
   if DEMO:
     print("=== Running in demo mode! ===")
   else:
-    if not bot_token:
-      print("TOURNEY_BOT_TOKEN must be defined in environment!")
+    if not bot_app_id:
+      print("TOURNEY_BOT_APP_ID must be defined in environment!")
       sys.exit(1)
-    connect()
+    if not bot_app_password:
+      print("TOURNEY_BOT_APP_PASSWORD must be defined in environment!")
+      sys.exit(1)
+  #  connect()
 
   init()
 
@@ -484,4 +499,5 @@ def start_tourney():
     print("Exiting load test.")
     sys.exit(0)
 
-  repl()
+  #repl()
+  bot.run(bot_app, host=bot_host, port=bot_port)
