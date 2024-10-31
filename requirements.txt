@@ -6,6 +6,11 @@ async-timeout==4.0.3
 attrs==24.2.0
 azure-core==1.31.0
 bandit==1.7.10
+botbuilder-core==4.16.2
+botbuilder-integration-aiohttp==4.16.2
+botbuilder-schema==4.16.2
+botframework-connector==4.16.2
+botframework-streaming==4.16.2
 certifi==2024.8.30
 cffi==1.17.1
 chardet==5.2.0
