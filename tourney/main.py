@@ -11,7 +11,7 @@ from botbuilder.schema import Activity
 from .commands import Command, HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
   ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand, \
-  WinChartCommand, GenerateCommand
+  WinChartCommand, GenerateCommand, AutoupdateCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
@@ -66,20 +66,6 @@ if DEMO:
     }
     return [event]
   client.rtm_read = wrap_rtm_read
-
-# If not running as a service then execute "autoupdate.sh" that will git pull and run tourney.py
-# again. Otherwise, it will run "update.sh" that will git pull only. In both cases this process will
-# exit with code 0. Note that when running as a service it is extected that the service will respawn
-# the process when it is terminated!
-def autoupdate():
-  client.api_call("chat.postMessage", channel=State.get().channel_id(),
-                  text="Going offline to auto-update and restart..")
-  cwd = os.getcwd()
-  script = "autoupdate.sh"
-  if Config.get().running_as_service():
-    script = "update.sh"
-  subprocess.run(["/bin/sh", script], cwd=cwd)  # nosec # pylint: disable=subprocess-run-check
-  sys.exit(0)
 
 def start_season():
   state = State.get()
@@ -187,7 +173,8 @@ def parse_command(activity: Activity):
       cmd = GenerateCommand()
       channel = state.channel_id()
     elif command == "autoupdate":
-      autoupdate()
+      cmd = AutoupdateCommand(client)
+      channel = state.channel_id()
     elif command == "speak" and len(args) > 0:
       client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
     elif command == "startseason":
