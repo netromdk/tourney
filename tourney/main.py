@@ -8,7 +8,7 @@ import calendar
 from random import random
 from botbuilder.schema import Activity
 
-from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
+from .commands import Command, HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
   ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand
 from .state import State
@@ -30,13 +30,6 @@ bot_app_id = os.environ.get("TOURNEY_BOT_APP_ID", "")
 bot_app_password = os.environ.get("TOURNEY_BOT_APP_PASSWORD", "")
 bot_host = "localhost"
 bot_port = 3978
-
-async def handle_message_activity(activity: Activity) -> str | list[str]:
-  """TODO: Implement this!"""
-  return "test: " + activity.text
-
-bot_app = bot.init(app_id=bot_app_id, app_password=bot_app_password,
-                   message_activity_func=handle_message_activity)
 
 class FakeSlackClient:
   """Remove eventually!"""
@@ -129,10 +122,10 @@ def start_season():
 
   state.save()
 
-def parse_command(event):
-  msg = event["text"].strip()
-  user_id = event["user"]
-  channel = event["channel"]
+def parse_command(activity: Activity):
+  msg = activity.text.strip()
+  user_id = activity.from_property.id
+  channel_id = activity.channel_id
   achievements = Achievements.get()
 
   m = re.match(COMMAND_REGEX, msg)
@@ -143,6 +136,7 @@ def parse_command(event):
   args = m.group(2).strip()
   state = State.get()
   cmd = None
+  channel = None
   if command == "help":
     cmd = HelpCommand()
   elif command == "list":
@@ -224,7 +218,7 @@ def parse_command(event):
     client.api_call("chat.postEphemeral", channel=channel, text=response, user=user_id)
 
   if cmd is None:
-    return None
+    return "Unknown command! Try `!help` for supported commands."
 
   cmd.set_user_id(user_id)
   cmd.set_args(args)
@@ -320,10 +314,11 @@ def handle_command(cmd):
   if response is None:
     response = "Unknown command! Try `!help` for supported commands."
 
-  if ephemeral:
-    client.api_call("chat.postEphemeral", channel=channel_id, text=response, user=user_id)
-  else:
-    client.api_call("chat.postMessage", channel=channel_id, text=response)
+  # if ephemeral:
+  #   client.api_call("chat.postEphemeral", channel=channel_id, text=response, user=user_id)
+  # else:
+  #   client.api_call("chat.postMessage", channel=channel_id, text=response)
+  return response
 
 def scheduled_actions():
   """Execute actions at scheduled times."""
@@ -422,6 +417,22 @@ def scheduled_actions():
     state.set_participants([])
     state.set_dont_remind_users([])
     state.save()
+
+async def handle_message_activity(activity: Activity) -> None | str | list[str]:
+  cmd = parse_command(activity)
+
+  # If unknown then it will return that message as a string, not a command object.
+  if isinstance(cmd, str):
+    return cmd
+
+  # Othwerwise, process the command.
+  if isinstance(cmd, Command):
+    return handle_command(cmd)
+
+  return None
+
+bot_app = bot.init(app_id=bot_app_id, app_password=bot_app_password,
+                   message_activity_func=handle_message_activity)
 
 def connect():
   delay = RECONNECT_DELAY
