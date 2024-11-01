@@ -178,8 +178,6 @@ def parse_command(activity: Activity):
     elif command == "speak" and len(args) > 0:
       cmd = SpeakCommand(client=client, text=args)
       channel = state.channel_id()
-    elif command == "startseason":
-      start_season()
 
   # Only send ephemeral message if command hasn't been parsed into a command instance because
   # `handle_command()` will do it otherwise.
