@@ -33,5 +33,5 @@ As the foosball bot, I accept the following commands:
 
 Positive reactions: {}
 Negative reactions: {}
-""".format(" ".join([":{}:".format(r) for r in POSITIVE_REACTIONS]),
-           " ".join([":{}:".format(r) for r in NEGATIVE_REACTIONS]))
+""".format(" ".join(["({})".format(r) for r in POSITIVE_REACTIONS]),
+           " ".join(["({})".format(r) for r in NEGATIVE_REACTIONS]))
