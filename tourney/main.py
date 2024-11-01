@@ -10,7 +10,7 @@ from botbuilder.schema import Activity
 
 from .commands import Command, HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
-  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand
+  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand, WinChartCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
@@ -177,26 +177,8 @@ def parse_command(activity: Activity):
     cmd = TeamnameCommand()
     channel = state.channel_id()
   elif command == "winchart":
-    scores = Scores.get()
-    # TODO: DM personalized wincharts
-    winrate_plot = scores.get_season_winrate_plot(time_filter=this_season_filter,
-                                                  lookup=lookup)
-    if winrate_plot is None:
-      client.api_call("chat.postMessage", channel=channel, text="Not enough season data!")
-    else:
-      try:
-        with open(winrate_plot, mode="rb") as file_content:
-          client.api_call(
-            "files.upload",
-            channels=channel,
-            file=file_content,
-            initial_comment="Win percentage progression for the current season",
-            title="Season win progression"
-          )
-      except IOError as e:
-        response = "Could not open generated winchart"
-        client.api_call("chat.postMessage", channel=channel, text=response)
-        print("I/O error({0}): {1}".format(e.errno, e.strerror))
+    cmd = WinChartCommand(client)
+    channel = state.channel_id()
 
   # Special command handling.
   if command_allowed(command, user_id):
