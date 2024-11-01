@@ -15,6 +15,7 @@ from .schedule_command import ScheduleCommand
 from .teamname_command import TeamnameCommand
 from .winchart_command import WinChartCommand
 from .generate_command import GenerateCommand
+from .autoupdate_command import AutoupdateCommand
 
 __all__ = [
   "HelpCommand",
@@ -33,5 +34,6 @@ __all__ = [
   "ScheduleCommand",
   "TeamnameCommand",
   "WinChartCommand",
-  "GenerateCommand"
+  "GenerateCommand",
+  "AutoupdateCommand"
 ]
