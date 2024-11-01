@@ -38,6 +38,18 @@ class FakeSlackClient:
     print("<<FAKE SLACK CLIENT>>: {}({})".format(method, kwargs))
     return {
       "user_id": "FAKE_USER_ID",
+      "channels": [
+        "FAKE_CHANNEL_ID"
+      ],
+      "members": [
+        {
+          "id": "FAKE_USER_ID",
+          "name": "FAKE_USER_NAME",
+          "profile": {
+            "display_name": "FAKE_DISPLAY_NAME"
+          }
+        }
+      ]
     }
 
 client = FakeSlackClient()
