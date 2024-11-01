@@ -91,6 +91,8 @@ class Scores:
       monthscores = [x for x in self.__scores if
                      datetime.fromtimestamp(x[0]).month == datetime.now().month]
 
+    if len(monthscores) == 0:
+      return None
     monthscores.sort(key=lambda x: x[0])
 
     # Get the highest number of matches a single person has played

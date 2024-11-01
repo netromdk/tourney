@@ -14,6 +14,10 @@ from .results_command import ResultsCommand
 from .teams_command import TeamsCommand
 from .schedule_command import ScheduleCommand
 from .teamname_command import TeamnameCommand
+from .winchart_command import WinChartCommand
+from .generate_command import GenerateCommand
+from .autoupdate_command import AutoupdateCommand
+from .speak_command import SpeakCommand
 
 __all__ = [
   "Command",
@@ -31,5 +35,9 @@ __all__ = [
   "ResultsCommand",
   "TeamsCommand",
   "ScheduleCommand",
-  "TeamnameCommand"
+  "TeamnameCommand",
+  "WinChartCommand",
+  "GenerateCommand",
+  "AutoupdateCommand",
+  "SpeakCommand",
 ]
