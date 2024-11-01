@@ -3,7 +3,8 @@ from botbuilder.core import BotFrameworkAdapter, BotFrameworkAdapterSettings, Tu
 from botbuilder.schema import Activity, ActivityTypes
 from typing import Callable
 
-def init(app_id: str, app_password: str, message_activity_func: Callable[[Activity], str | list[str]]):
+def init(app_id: str, app_password: str,
+         message_activity_func: Callable[[Activity], None | str | list[str]]):
   settings = BotFrameworkAdapterSettings(app_id, app_password)
   adapter = BotFrameworkAdapter(settings)
 
@@ -15,10 +16,13 @@ def init(app_id: str, app_password: str, message_activity_func: Callable[[Activi
     async def on_turn(turn_context: TurnContext):
       if activity.type == ActivityTypes.message:
         resps = await message_activity_func(activity)
+        if resps is None:
+          return
         if isinstance(resps, str):
           resps = [resps]
         for resp in resps:
-          await turn_context.send_activity(resp)
+          if not resp is None:
+            await turn_context.send_activity(resp)
  
     await adapter.process_activity(activity, auth_header, on_turn)
     return web.Response(status=200)

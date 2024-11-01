@@ -1,3 +1,4 @@
+from .command import Command
 from .help_command import HelpCommand
 from .list_command import ListCommand
 from .join_command import JoinCommand
@@ -15,6 +16,7 @@ from .schedule_command import ScheduleCommand
 from .teamname_command import TeamnameCommand
 
 __all__ = [
+  "Command",
   "HelpCommand",
   "ListCommand",
   "JoinCommand",
