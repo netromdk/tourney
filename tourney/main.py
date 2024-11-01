@@ -10,7 +10,8 @@ from botbuilder.schema import Activity
 
 from .commands import Command, HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
-  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand, WinChartCommand
+  ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand, \
+  WinChartCommand, GenerateCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
@@ -183,9 +184,8 @@ def parse_command(activity: Activity):
   # Special command handling.
   if command_allowed(command, user_id):
     if command == "generate":
-      matches = create_matches(lookup)
-      channel_id = state.channel_id()
-      client.api_call("chat.postMessage", channel=channel_id, text=matches)
+      cmd = GenerateCommand()
+      channel = state.channel_id()
     elif command == "autoupdate":
       autoupdate()
     elif command == "speak" and len(args) > 0:
