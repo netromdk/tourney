@@ -11,7 +11,7 @@ from botbuilder.schema import Activity
 from .commands import Command, HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
   WinLoseCommand, StatsCommand, MyStatsCommand, UndoTeamsCommand, AchievementsCommand, \
   ResultsCommand, TeamsCommand, ScheduleCommand, AllStatsCommand, TeamnameCommand, \
-  WinChartCommand, GenerateCommand, AutoupdateCommand
+  WinChartCommand, GenerateCommand, AutoupdateCommand, SpeakCommand
 from .state import State
 from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
@@ -176,7 +176,8 @@ def parse_command(activity: Activity):
       cmd = AutoupdateCommand(client)
       channel = state.channel_id()
     elif command == "speak" and len(args) > 0:
-      client.api_call("chat.postMessage", channel=state.channel_id(), text=args)
+      cmd = SpeakCommand(client=client, text=args)
+      channel = state.channel_id()
     elif command == "startseason":
       start_season()
 

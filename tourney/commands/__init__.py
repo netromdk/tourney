@@ -17,6 +17,7 @@ from .teamname_command import TeamnameCommand
 from .winchart_command import WinChartCommand
 from .generate_command import GenerateCommand
 from .autoupdate_command import AutoupdateCommand
+from .speak_command import SpeakCommand
 
 __all__ = [
   "Command",
@@ -37,5 +38,6 @@ __all__ = [
   "TeamnameCommand",
   "WinChartCommand",
   "GenerateCommand",
-  "AutoupdateCommand"
+  "AutoupdateCommand",
+  "SpeakCommand",
 ]
