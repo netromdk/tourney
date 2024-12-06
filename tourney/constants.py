@@ -80,6 +80,8 @@ POSITIVE_REACTIONS = [
   "woman-gesturing-ok",
   "woman-raising-hand",
   "100",
+  "this-is-fine",
+  "this-is-fine-fire",
 ]
 
 NEGATIVE_REACTIONS = [
