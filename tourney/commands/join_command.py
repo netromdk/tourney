@@ -35,6 +35,8 @@ class JoinCommand(Command):
       if len(scored_teams) > 0:
         return "Sorry, {}, you cannot join after matches have been scored.".format(user_name)
 
+      Achievements.get().interact(JoinBehavior(self.user_id()))
+
       # Late-join a 1p (preferred) or 2p team
       for i in range(1, 3):
         joinable_teams = [x for x in teams if len(x) <= i and x not in scored_teams]
@@ -84,9 +86,9 @@ class JoinCommand(Command):
       return response
 
     if self.user_id() not in participants:
+      Achievements.get().interact(JoinBehavior(self.user_id()))
       state.add_participant(self.user_id())
       state.save()
-      Achievements.get().interact(JoinBehavior(self.user_id()))
       return "{}, you've joined today's game!".format(user_name)
 
     return "{}, you've _already_ joined today's game!".format(user_name)

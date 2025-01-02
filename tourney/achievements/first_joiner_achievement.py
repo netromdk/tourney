@@ -37,7 +37,7 @@ class FirstJoinerAchievement(TieredAchievement):
     if user_id in self.data:
       self.convert_from_untiered(user_id)
 
-    if len(participants) == 1:
+    if len(participants) == 0:
       if self.inc_progress(user_id):
         return True
 
