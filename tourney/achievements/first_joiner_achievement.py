@@ -33,11 +33,12 @@ class FirstJoinerAchievement(TieredAchievement):
     user_id = behavior.user_id()
     state = State.get()
     participants = state.participants()
+    teams = state.teams()
 
     if user_id in self.data:
       self.convert_from_untiered(user_id)
 
-    if len(participants) == 0:
+    if len(participants) == 0 and len(teams) == 0:
       if self.inc_progress(user_id):
         return True
 
