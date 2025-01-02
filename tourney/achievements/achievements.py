@@ -23,6 +23,7 @@ from .threeplayer_win_achievement import ThreePlayerWinAchievement
 from .threetwo_win_achievement import ThreeVTwoWinAchievement
 from .season_top_five_achievement import SeasonTopFiveAchievement
 from .improvement_achievement import SelfImprovementAchievement
+from .latejoin_achievement import LateJoinAchievement
 
 class Achievements:
   __instance = None
@@ -94,7 +95,8 @@ class Achievements:
       ThreePlayerWinAchievement(),
       ThreeVTwoWinAchievement(),
       SeasonTopFiveAchievement(),
-      SelfImprovementAchievement()
+      SelfImprovementAchievement(),
+      LateJoinAchievement()
     ]
 
     # Saved responses of obtained achievements for broadcasting.
