@@ -5,7 +5,7 @@ from .command import Command
 
 class WinChartCommand(Command):
   def __init__(self, client):
-    super(WinChartCommand, self).__init__("stats")
+    super(WinChartCommand, self).__init__("winchart")
     self.client = client
     self.set_ephemeral(False)
 

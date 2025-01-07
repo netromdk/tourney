@@ -2,7 +2,7 @@ from .command import Command
 
 class SpeakCommand(Command):
   def __init__(self, client, text):
-    super(SpeakCommand, self).__init__("stats")
+    super(SpeakCommand, self).__init__("speak")
     self.client = client
     self.text = text
     self.set_ephemeral(False)

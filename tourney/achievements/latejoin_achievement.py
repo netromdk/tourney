@@ -5,7 +5,6 @@ from .behavior import JOIN_BEHAVIOR
 
 class LateJoinAchievement(TieredAchievement):
   def __init__(self):
-    print("late join init")
     tiers = (
       (1,   "Fashionably Late",
        "Join after teams have been generated."),

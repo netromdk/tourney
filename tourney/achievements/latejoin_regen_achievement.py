@@ -25,11 +25,9 @@ class LateJoinRegenerateAchievement(TieredAchievement):
     state = State.get()
     teams = state.teams()
     if len(teams) == 0:
-      print("no teams")
       return False  # No teams
 
     if any(user_id in t for t in teams):
-      print("already on a team")
       return False  # Already on a team
 
     scored_teams = []
@@ -38,7 +36,6 @@ class LateJoinRegenerateAchievement(TieredAchievement):
       scored_teams.append(score[3])
 
     if len(scored_teams) > 0:
-      print("scored teams")
       return False  # Cannot late join after first score
 
     if not any(len(t) < 3 and t not in scored_teams for t in teams):
