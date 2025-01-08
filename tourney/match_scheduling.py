@@ -1,10 +1,10 @@
+from random import random
 from .player_skill import PlayerSkill
 from .constants import PREFERRED_ROUNDS, MATCHMAKING
 from .state import State
 from .teams import Teams
 from .teamnames import Teamnames
 from .teamname_generator import generate_teamnames
-from random import random
 from .util import schedule_text
 
 def create_teams():

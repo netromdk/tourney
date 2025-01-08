@@ -7,7 +7,7 @@ from .command import Command
 
 class AutoupdateCommand(Command):
   def __init__(self, client):
-    super(AutoupdateCommand, self).__init__("stats")
+    super().__init__("stats")
     self.client = client
     self.set_ephemeral(False)
 
