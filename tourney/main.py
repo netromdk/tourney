@@ -5,7 +5,6 @@ import sys
 from time import sleep, time
 from datetime import datetime, date
 import calendar
-from random import random
 from slackclient import SlackClient
 
 from .commands import HelpCommand, ListCommand, JoinCommand, LeaveCommand, ScoreCommand, \
@@ -17,12 +16,13 @@ from .lookup import Lookup
 from .constants import DEMO, COMMAND_REGEX, REACTION_REGEX, MORNING_ANNOUNCE, \
   MORNING_ANNOUNCE_DELTA, REMINDER_ANNOUNCE, REMINDER_ANNOUNCE_DELTA, MIDDAY_ANNOUNCE, \
   MIDDAY_ANNOUNCE_DELTA, RECONNECT_DELAY, CHANNEL_NAME, DEBUG, RTM_READ_DELAY, LOAD_TEST, \
-  NIGHT_CLEARING, NIGHT_CLEARING_DELTA, MATCHMAKING, PREFERRED_ROUNDS
+  NIGHT_CLEARING, NIGHT_CLEARING_DELTA
 from .scores import Scores
 from .config import Config
 from .stats import Stats
-from .util import command_allowed, unescape_text, this_season_filter, nth_last_season_filter, \
-  schedule_text, is_positive_reaction, is_negative_reaction
+from .util import command_allowed, unescape_text, is_positive_reaction, is_negative_reaction, \
+  nth_last_season_filter
+
 from .achievements import Achievements, InvokeBehavior, LeaveChannelBehavior, SeasonStartBehavior
 from .match_scheduling import create_matches
 

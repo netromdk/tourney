@@ -11,13 +11,15 @@ class AutoupdateCommand(Command):
     self.client = client
     self.set_ephemeral(False)
 
-  # If not running as a service then execute "autoupdate.sh" that will git pull and run tourney.py
-  # again. Otherwise, it will run "update.sh" that will git pull only. In both cases this process will
-  # exit with code 0. Note that when running as a service it is extected that the service will respawn
-  # the process when it is terminated!
+  # If not running as a service then execute "autoupdate.sh" that will
+  # git pull and run tourney.py again. Otherwise, it will run
+  # "update.sh" that will git pull only. In both cases this process
+  # will exit with code 0. Note that when running as a service it is
+  # extected that the service will respawn the process when it is
+  # terminated!
   def execute(self, lookup=None):
     self.client.api_call("chat.postMessage", channel=State.get().channel_id(),
-                    text="Going offline to auto-update and restart..")
+                         text="Going offline to auto-update and restart..")
     cwd = os.getcwd()
     script = "autoupdate.sh"
     if not os.path.isfile(os.path.join(cwd, script)):

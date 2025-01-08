@@ -1,5 +1,4 @@
 from .player_skill import PlayerSkill
-from .stats import Stats
 from .constants import PREFERRED_ROUNDS, MATCHMAKING
 from .state import State
 from .teams import Teams
