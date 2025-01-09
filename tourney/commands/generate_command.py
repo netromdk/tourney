@@ -4,7 +4,7 @@ from .command import Command
 
 class GenerateCommand(Command):
   def __init__(self):
-    super().__init__("stats")
+    super().__init__("generate")
     self.set_ephemeral(False)
 
   def execute(self, lookup=None):
