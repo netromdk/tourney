@@ -1,10 +1,12 @@
 from random import choice
+import itertools
 
 from tourney.teamname_generator import decorate_teamname
 from tourney.scores import Scores
 from tourney.state import State
 from tourney.achievements import Achievements, JoinBehavior
 from tourney.util import decorated_playername_list
+from tourney.match_scheduling import create_matches
 
 from .command import Command
 
@@ -29,6 +31,11 @@ class JoinCommand(Command):
       for score in Scores.get().today():
         scored_teams.append(score[1])
         scored_teams.append(score[3])
+
+      if len(scored_teams) > 0:
+        return "Sorry, {}, you cannot join after matches have been scored.".format(user_name)
+
+      Achievements.get().interact(JoinBehavior(self.user_id()))
 
       # Late-join a 1p (preferred) or 2p team
       for i in range(1, 3):
@@ -63,12 +70,25 @@ class JoinCommand(Command):
             "Check `!schedule` for overview.".\
             format(user_name, formatted_team_name, formatted_new_team_name)
 
-      return "{}, you're too late. No late-joinable teams were found.".format(user_name)
+      # No joinable teams found - create new schedule!
+      # Flatten teams lists.
+      state.set_participants(list(itertools.chain.from_iterable(state.teams())) + [self.user_id()])
+
+      state.set_teams([])
+      state.set_team_names([])
+      state.set_schedule([])
+      state.set_unrecorded_matches([])
+
+      response = "No teams available for {} to late-join! "\
+        "Regenerating all matches.\n".format(user_name)
+      response += create_matches(lookup)
+
+      return response
 
     if self.user_id() not in participants:
+      Achievements.get().interact(JoinBehavior(self.user_id()))
       state.add_participant(self.user_id())
       state.save()
-      Achievements.get().interact(JoinBehavior(self.user_id()))
       return "{}, you've joined today's game!".format(user_name)
 
     return "{}, you've _already_ joined today's game!".format(user_name)
