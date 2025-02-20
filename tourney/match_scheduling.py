@@ -83,8 +83,8 @@ def create_schedule(teams, rand_matches):
     matches = all_combinations[best_index]
   else:
     if len(teams) % 2 == 0:
-      # Add one-round matches for random pairs of teams
-      matches = [(i, i + 1, 2) for i in range(0, len(teams), 2)]
+      # Add preferred-round matches for random pairs of teams
+      matches = [(i, i + 1, PREFERRED_ROUNDS) for i in range(0, len(teams), 2)]
     else:
       twoRounders = len(teams) - 3
       if twoRounders > 0:
