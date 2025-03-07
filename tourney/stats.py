@@ -5,6 +5,7 @@ from datetime import datetime
 from .constants import DATA_PATH, MEDAL_LIST
 from .scores import Scores
 from .util import fmt_duration, to_ordinal
+from .teamnames import Teamnames
 
 class Stats:
   __instance = None
@@ -165,6 +166,10 @@ class Stats:
       avg_score = sum(scores) / len(scores)
       return avg_score / 800 + pair[1][0]
 
+    teamnames = Teamnames.get()
+    print(teams)
+    teams = {team: score for team, score in teams.items() if teamnames.teamname(team.split(',')) is not None}
+    print(teams)
     self.__top_teams = to_list(teams)
     self.__top_teams.sort(key=teams_key, reverse=True)
 
@@ -198,7 +203,7 @@ class Stats:
     qualifying_winners = self.__qualifying_players(self.__top_winners)
     top_players_rounds = self.__fmt_top(qualifying_winners, top_range, lookup)
     top_teams = self.__fmt_top_teams(self.__top_teams, team_range, lookup)
-    return f"""
+    response = f"""
 Total matches: {self.__matches}
 Total rounds: {self.__rounds}
 Total teams: {self.__team_amount}
@@ -206,10 +211,17 @@ Total score: {self.__total_score}
 Total duration: {total_dur}
 Average score: {self.__avg_score:.2f}
 Average delta: {self.__avg_delta:.2f}
-Top {top_amount} players (avg score / round): {top_players_score}
-Top {top_amount} players (% of rounds won): {top_players_rounds}
-Top {team_amount} teams (% of rounds won): {top_teams}
 """
+    if len(top_players_score) > 0:
+      response += f"""Top {top_amount} players (avg score / round): {top_players_score}
+"""
+    if len(top_players_rounds) > 0:
+      response += f"""Top {top_amount} players (% of rounds won): {top_players_rounds}
+"""
+    if len(top_teams) > 0:
+      response += f"""Top {team_amount} named teams (% of matches won): {top_teams}
+"""
+    return response
 
   def personal_response(self, lookup, user_id):
     if user_id not in self.__personal:
@@ -357,6 +369,7 @@ You have been in {} teams: {}
 
   def __fmt_top_teams(self, lst, team_range, lookup):
     res = ""
+    teamnames = Teamnames.get()
     for index in team_range:
       if index >= len(lst):
         break
@@ -367,7 +380,8 @@ You have been in {} teams: {}
       placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
-      res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
+      teamname = teamnames.teamname(team[0])
+      res += "\n\t{}{} ({}): {} ({} rounds)".format(placement_str, teamname, names, win_ratio, rounds)
     return res
 
   def get_personals(self):
