@@ -106,7 +106,7 @@ class Stats:
         win_score = score_b
 
       player_win_count(win_team)
-      
+
       # Count wins and matches for team configurations.
       team_win_count(team_a_key, team_a, win_team)
       team_win_count(team_b_key, team_b, win_team)
@@ -171,7 +171,8 @@ class Stats:
       return avg_score / 800 + pair[1][0]
 
     teamnames = Teamnames.get()
-    teams = {team: score for team, score in teams.items() if teamnames.teamname(team.split(',')) is not None}
+    teams = {team: score for team, score in teams.items()
+             if teamnames.teamname(team.split(',')) is not None}
     self.__top_teams = to_list(teams)
     self.__top_teams.sort(key=teams_key, reverse=True)
 
@@ -383,7 +384,8 @@ You have been in {} teams: {}
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
       teamname = teamnames.teamname(team[0])
-      res += "\n\t{}{} ({}): {} ({} matches)".format(placement_str, teamname, names, win_ratio, matches)
+      res += "\n\t{}{} ({}): {} ({} matches)".format(
+        placement_str, teamname, names, win_ratio, matches)
     return res
 
   def get_personals(self):
