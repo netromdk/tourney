@@ -5,6 +5,7 @@ from datetime import datetime
 from .constants import DATA_PATH, MEDAL_LIST
 from .scores import Scores
 from .util import fmt_duration, to_ordinal
+from .teamnames import Teamnames
 
 class Stats:
   __instance = None
@@ -46,6 +47,12 @@ class Stats:
     oldest_time = None
     newest_time = None
 
+    def player_win_count(win_team):
+      for player in win_team:
+        if player not in player_wins:
+          player_wins[player] = 0
+        player_wins[player] += 1
+
     def player_score_count(team, score):
       for player in team:
         if player not in player_scores:
@@ -55,11 +62,11 @@ class Stats:
           player_matches[player] = 0
         player_matches[player] += 1
 
-    def team_win_count(team_key, team, win_team, match_rounds):
+    def team_win_count(team_key, team, win_team):
       if team_key not in teams:
         teams[team_key] = (0, 0)
       t = teams[team_key]
-      teams[team_key] = (t[0] + (match_rounds if team == win_team else 0), t[1] + match_rounds)
+      teams[team_key] = (t[0] + (1 if team == win_team else 0), t[1] + 1)
 
     now = datetime.utcnow()
     for match in matches:
@@ -98,18 +105,15 @@ class Stats:
         win_team = team_b
         win_score = score_b
 
+      player_win_count(win_team)
+
+      # Count wins and matches for team configurations.
+      team_win_count(team_a_key, team_a, win_team)
+      team_win_count(team_b_key, team_b, win_team)
+
       # Count rounds won.
       match_rounds = win_score // 8
       rounds += match_rounds
-
-      # Count rounds and wins for team configurations.
-      team_win_count(team_a_key, team_a, win_team, match_rounds)
-      team_win_count(team_b_key, team_b, win_team, match_rounds)
-
-      for player in win_team:
-        if player not in player_wins:
-          player_wins[player] = 0
-        player_wins[player] += match_rounds
       for player in team_a + team_b:
         if player not in player_rounds:
           player_rounds[player] = 0
@@ -126,13 +130,14 @@ class Stats:
     self.__oldest_score_time = oldest_time
     self.__newest_score_time = newest_time
 
-    # Average all players' total scores and won rounds by the amount of rounds they played.
+    # Average all players' total scores by the amount of rounds they played.
     for player in player_scores:
       player_scores[player] /= player_rounds[player]
+    # Work out percentage of games won
     for player in player_wins:
-      player_wins[player] = player_wins[player] / player_rounds[player] * 100.0
+      player_wins[player] = player_wins[player] / player_matches[player] * 100.0
 
-    # Substitute all team wins with the ratio of winning compared to rounds played.
+    # Substitute all team wins with the ratio of winning compared to matches played.
     for (team, res) in teams.items():
       teams[team] = (res[0] / res[1], res[1])
 
@@ -165,6 +170,9 @@ class Stats:
       avg_score = sum(scores) / len(scores)
       return avg_score / 800 + pair[1][0]
 
+    teamnames = Teamnames.get()
+    teams = {team: score for team, score in teams.items()
+             if teamnames.teamname(team.split(',')) is not None}
     self.__top_teams = to_list(teams)
     self.__top_teams.sort(key=teams_key, reverse=True)
 
@@ -198,7 +206,7 @@ class Stats:
     qualifying_winners = self.__qualifying_players(self.__top_winners)
     top_players_rounds = self.__fmt_top(qualifying_winners, top_range, lookup)
     top_teams = self.__fmt_top_teams(self.__top_teams, team_range, lookup)
-    return f"""
+    response = f"""
 Total matches: {self.__matches}
 Total rounds: {self.__rounds}
 Total teams: {self.__team_amount}
@@ -206,10 +214,17 @@ Total score: {self.__total_score}
 Total duration: {total_dur}
 Average score: {self.__avg_score:.2f}
 Average delta: {self.__avg_delta:.2f}
-Top {top_amount} players (avg score / round): {top_players_score}
-Top {top_amount} players (% of rounds won): {top_players_rounds}
-Top {team_amount} teams (% of rounds won): {top_teams}
 """
+    if len(top_players_score) > 0:
+      response += f"""Top {top_amount} players (avg score / round): {top_players_score}
+"""
+    if len(top_players_rounds) > 0:
+      response += f"""Top {top_amount} players (% of matches won): {top_players_rounds}
+"""
+    if len(top_teams) > 0:
+      response += f"""Top {team_amount} named teams (% of matches won): {top_teams}
+"""
+    return response
 
   def personal_response(self, lookup, user_id):
     if user_id not in self.__personal:
@@ -348,26 +363,29 @@ You have been in {} teams: {}
       player = players[index]
       name = lookup.user_name_by_id(player[0])
       num = self.__fmt_num(player[1])
-      rounds = self.__personal[player[0]]["total_rounds"]
+      matches = self.__personal[player[0]]["total_matches"]
       placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
-      res += "\n\t{}{}: {} ({} rounds)".format(placement_str, name, num, rounds)
+      res += "\n\t{}{}: {} ({} matches)".format(placement_str, name, num, matches)
     return res
 
   def __fmt_top_teams(self, lst, team_range, lookup):
     res = ""
+    teamnames = Teamnames.get()
     for index in team_range:
       if index >= len(lst):
         break
       team = lst[index]
       names = ", ".join([lookup.user_name_by_id(uid) for uid in team[0]])
       win_ratio = self.__fmt_num(team[1][0] * 100.0)
-      rounds = team[1][1]
+      matches = team[1][1]
       placement_str = "{} ".format(to_ordinal(index + 1))
       if index < 3:
         placement_str = ":{}: ".format(MEDAL_LIST[index])
-      res += "\n\t{}{}: {} ({} rounds)".format(placement_str, names, win_ratio, rounds)
+      teamname = teamnames.teamname(team[0])
+      res += "\n\t{}{} ({}): {} ({} matches)".format(
+        placement_str, teamname, names, win_ratio, matches)
     return res
 
   def get_personals(self):
